@@ -13,3 +13,4 @@ override.tf.json
 .terraformrc
 terraform.rc
 /infrastructure/builds/*
+/infrastructure/tfplan

@@ -8,14 +8,9 @@ variable "hosted_zone_id" {
   description = "The Hosted Zone ID. This is automatically generated and can be referenced by zone records."
 }
 
-variable "profile" {
+variable "aws_profile" {
   type        = string
   description = "Credentials profile to use for aws s3 sync command."
-}
-
-variable "relative_local_source_directory" {
-  type        = string
-  description = "Relative path to S3 source directory."
 }
 
 variable "Application" {
