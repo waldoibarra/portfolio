@@ -4,9 +4,9 @@ module "s3-cloudfront-static-website_example" {
   resource_uid   = var.domain_name
   domain_name    = var.domain_name
   hosted_zone_id = var.hosted_zone_id
-  profile        = var.profile
+  profile        = var.aws_profile
   sync_directories = [{
-    local_source_directory = abspath("${path.root}/${var.relative_local_source_directory}")
+    local_source_directory = abspath("${path.cwd}/public")
     s3_target_directory    = ""
   }]
   providers = {
