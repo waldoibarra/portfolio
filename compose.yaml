@@ -1,0 +1,13 @@
+name: portfolio-front-end
+
+services:
+  website:
+    image: waldoibarra/website
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/.git
+      - /app/infrastructure
+      - /app/node_modules

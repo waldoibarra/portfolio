@@ -14,24 +14,6 @@ To run the website on development mode with hot realoding included, run the foll
 make start
 ```
 
-To see the logs of the container running the website:
-
-``` sh
-make logs
-```
-
-To stop the background fired container:
-
-``` sh
-make stop
-```
-
-To manually run the tests you can use:
-
-``` sh
-make test
-```
-
 ## Deployment
 
 Some environment variables are required to be defined in your current proccess, you can find more on some of these on [vars.tf](infrastructure/vars.tf) file.
@@ -58,4 +40,4 @@ make plan
 make apply
 ```
 
-This will update the website [waldoibarra.com](https://waldoibarra.com/) with the contents of the built app, which is the output of `make build_website`.
+This will update the website [waldoibarra.com](https://waldoibarra.com/) with the contents of the built app.
