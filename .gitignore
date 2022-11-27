@@ -14,3 +14,23 @@ override.tf.json
 terraform.rc
 /infrastructure/builds/*
 /infrastructure/tfplan
+
+# Dependencies.
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing.
+/coverage
+
+# Production output.
+/build
+
+# Optional npm cache directory.
+.npm
+
+# Misc.
+.DS_Store
+
+# Logs.
+npm-debug.log*
