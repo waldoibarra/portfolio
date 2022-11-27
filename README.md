@@ -23,12 +23,22 @@ export TF_VAR_aws_profile="default"
 export TF_VAR_Application="Personal static website"
 ```
 
+## Development
+
+Just use these commands to start, stop, test and see the logs of the development environment. You can access the website locally on [localhost:3000](http://localhost:3000).
+
+``` sh
+make start
+make stop
+make logs
+make test
+```
+
 ## Deployment
 
 Pretty much just have to use commands on the [Makefile](Makefile) to accomplish that, they use Docker and Terraform to deploy the website.
 
 ``` sh
-make init
 make plan
 make apply
 ```
