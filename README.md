@@ -2,9 +2,37 @@
 
 This is pretty much a work in progress, hope you enjoy reading this code as much as I enjoyed writing it.
 
-## Setup
+## Requirements
 
-> Be sure Docker is installed on host computer.
+The only needed tool you need to install in your machine is [Docker](https://www.docker.com).
+
+## Development
+
+To run the website on development mode with hot realoding included, run the following command and visit [localhost:3000](http://localhost:3000).
+
+``` sh
+make start
+```
+
+To see the logs of the container running the website:
+
+``` sh
+make logs
+```
+
+To stop the background fired container:
+
+``` sh
+make stop
+```
+
+To manually run the tests you can use:
+
+``` sh
+make test
+```
+
+## Deployment
 
 Some environment variables are required to be defined in your current proccess, you can find more on some of these on [vars.tf](infrastructure/vars.tf) file.
 
@@ -23,19 +51,6 @@ export TF_VAR_aws_profile="default"
 export TF_VAR_Application="Personal static website"
 ```
 
-## Development
-
-Just use these commands to start, stop, test and see the logs of the development environment. You can access the website locally on [localhost:3000](http://localhost:3000).
-
-``` sh
-make start
-make stop
-make logs
-make test
-```
-
-## Deployment
-
 Pretty much just have to use commands on the [Makefile](Makefile) to accomplish that, they use Docker and Terraform to deploy the website.
 
 ``` sh
@@ -43,4 +58,4 @@ make plan
 make apply
 ```
 
-This will update the website [waldoibarra.com](https://waldoibarra.com/) with the contents on the [public](public) directory.
+This will update the website [waldoibarra.com](https://waldoibarra.com/) with the contents of the built app, which is the output of `make build_website`.
