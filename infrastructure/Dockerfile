@@ -1,5 +1,7 @@
 FROM hashicorp/terraform:1.3.5
 
+WORKDIR /app
+
 RUN apk add --no-cache aws-cli
 
 ARG AWS_PROFILE

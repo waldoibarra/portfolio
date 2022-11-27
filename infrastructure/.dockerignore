@@ -1,0 +1,5 @@
+*Dockerfile*
+*docker-compose*
+.terraform
+builds
+tfplan
