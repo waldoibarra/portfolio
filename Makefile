@@ -14,6 +14,9 @@ build_website:
 
 # Terraform commands.
 
+lint_tf:
+	docker compose -f $(tf_compose_file) run --rm --entrypoint tflint $(tf_service) $(tf_workdir)
+
 init:
 	docker compose -f $(tf_compose_file) run --rm $(tf_service) -chdir=$(tf_workdir) init
 
