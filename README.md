@@ -2,11 +2,23 @@
 
 This is pretty much a work in progress, hope you enjoy reading this code as much as I enjoyed writing it.
 
-## Requirements
+## Key Features
+
+- Trunk Based Development as branching model.
+- Infrastructure as code with Terraform, which includes a private S3 bucket, CloudFront distribution (SSL certs and cache) and Route 53 A records.
+- Makefile as an entrypoint of the app to simplify usage of this repository.
+- Docker Compose to reduce need to install dependencies and standardize development on any OS.
+- Linting of Terraform, TypeScript and CSS files.
+- Unit tests for React code using Jest and testing library.
+- Hot realoding enabled on save of React files.
+
+## Local Development
+
+### Requirements
 
 The only needed tool you need to install in your machine is [Docker](https://www.docker.com).
 
-## Development
+### Run Website Locally
 
 To run the website on development mode with hot realoding included, run the following command and visit [localhost:3000](http://localhost:3000).
 
@@ -14,7 +26,9 @@ To run the website on development mode with hot realoding included, run the foll
 make start
 ```
 
-## Deployment
+## Manual Deployment
+
+> :warning: This is to be done by a CI/CD pipeline soon.
 
 Some environment variables are required to be defined in your current proccess, you can find more on some of these on [vars.tf](infrastructure/vars.tf) file.
 
