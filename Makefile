@@ -7,7 +7,7 @@ tf_plan_file = tfplan
 # Website commands.
 
 start:
-	docker compose up $(website_service)
+	docker compose up --build $(website_service)
 
 lint:
 	docker compose run --rm $(website_service) npm run lint
@@ -17,9 +17,6 @@ lint_fix:
 
 build_website:
 	docker compose run --rm $(website_service) npm run build
-
-rebuild_website_image:
-	docker compose build $(website_service)
 
 debug:
 	docker compose run --rm $(website_service) sh
