@@ -7,7 +7,7 @@ tf_plan_file = tfplan
 # Website commands.
 
 start:
-	docker compose up $(website_service)
+	docker compose up --build $(website_service)
 
 build_website:
 	docker compose run --rm $(website_service) npm run build
