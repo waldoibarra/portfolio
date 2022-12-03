@@ -15,6 +15,12 @@ lint:
 lint_fix:
 	docker compose run --rm $(website_service) npm run lint:fix
 
+test:
+	docker compose run --rm $(website_service) npm test
+
+test_watch:
+	docker compose run --rm $(website_service) npm run test:watch
+
 build_website:
 	docker compose run --rm $(website_service) npm run build
 
