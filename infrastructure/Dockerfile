@@ -1,8 +1,4 @@
-FROM ghcr.io/terraform-linters/tflint:v0.43.0 AS tflint
-
 FROM hashicorp/terraform:1.3.5
-
-COPY --from=tflint /usr/local/bin/tflint /usr/local/bin
 
 WORKDIR /app
 

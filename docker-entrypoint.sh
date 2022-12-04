@@ -7,6 +7,9 @@ command=$@
 echo "Syncing node_modules directory."
 rsync -ar /cache/node_modules/. /app/node_modules
 
+# Enable Git hooks.
+npx husky install
+
 if [ -z "$command" ];
 then
     exec npm start
