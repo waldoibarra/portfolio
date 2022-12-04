@@ -17,4 +17,4 @@ services:
       TF_VAR_Application: ${TF_VAR_Application:?err}
     volumes:
       - .:/app/infrastructure
-      - ../build:/app/build
+      - ../build:/app/website_content
