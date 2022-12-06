@@ -1,0 +1,32 @@
+name: Deploy Website CI/CD
+
+on:
+  push:
+    branches:
+      - trunk
+
+jobs:
+  lint-test-build-deploy:
+    name: Lint, test, build and deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build website Docker image
+        id: build-website-image
+        run: |
+          docker buildx build -t waldoibarra/website --target production .
+
+      - name: Lint Terraform, TypeScript, CSS files
+        id: lint-files
+        run: |
+          docker container run --rm waldoibarra/website npm run lint
+          docker container run --rm -v ${{ github.workspace }}/infrastructure:/data -t ghcr.io/terraform-linters/tflint:v0.43.0
+
+      - name: Unit test React code
+        id: unit-test-react
+        run: |
+          docker container run --rm waldoibarra/website npm test
