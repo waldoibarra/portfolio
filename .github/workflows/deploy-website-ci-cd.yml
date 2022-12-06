@@ -4,6 +4,16 @@ on:
   push:
     branches:
       - trunk
+      - test-pipeline
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  TF_TOKEN_app_terraform_io: ${{ secrets.TF_TOKEN_app_terraform_io }}
+  TF_VAR_domain_name: waldoibarra.com
+  TF_VAR_hosted_zone_id: ${{ secrets.TF_VAR_hosted_zone_id }}
+  TF_VAR_aws_profile: default
+  TF_VAR_Application: Personal static website
 
 jobs:
   lint-test-build-deploy:
@@ -30,3 +40,18 @@ jobs:
         id: unit-test-react
         run: |
           docker container run --rm waldoibarra/website npm test
+
+      - name: Build React app
+        id: build-react-app
+        run: |
+          docker container run --name site-build waldoibarra/website npm run build
+          docker container cp site-build:/app/build .
+          docker container rm site-build
+
+      - name: Deploy website
+        id: deploy-website
+        run: |
+          docker compose -f infrastructure/compose.yaml build terraform
+          docker compose -f infrastructure/compose.yaml run -T --rm terraform init
+          docker compose -f infrastructure/compose.yaml run -T --rm terraform plan -out tfplan
+          docker compose -f infrastructure/compose.yaml run -T --rm terraform apply tfplan

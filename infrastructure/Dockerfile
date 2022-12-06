@@ -1,8 +1,16 @@
-FROM hashicorp/terraform:1.3.5
+# FROM hashicorp/terraform:1.3.6
+FROM golang:1.19.3-alpine AS tf-build
 
-WORKDIR /app
+RUN apk add --no-cache git \
+    && git clone --depth 1 --branch v1.3.6 https://github.com/hashicorp/terraform.git \
+    && cd terraform \
+    && go install
 
-RUN apk add --no-cache aws-cli
+FROM alpine:3.17.0
+
+COPY --from=tf-build /go/bin/terraform /usr/local/bin/
+
+RUN apk add --no-cache aws-cli git
 
 ARG AWS_PROFILE
 ARG AWS_ACCESS_KEY_ID
@@ -12,3 +20,10 @@ ARG AWS_SECRET_ACCESS_KEY
 RUN aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID} --profile ${AWS_PROFILE} \
     && aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY} --profile ${AWS_PROFILE} \
     && aws configure set output json --profile ${AWS_PROFILE}
+
+WORKDIR /app
+COPY ./infrastructure infrastructure
+COPY ./build website_content
+WORKDIR /app/infrastructure
+
+ENTRYPOINT ["terraform"]
