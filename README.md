@@ -1,5 +1,7 @@
 # Welcome To My Personal Website Code
 
+[![Deploy Website CI/CD](https://github.com/waldoibarra/portfolio/actions/workflows/deploy-website-ci-cd.yml/badge.svg)](https://github.com/waldoibarra/portfolio/actions/workflows/deploy-website-ci-cd.yml)
+
 This is pretty much a work in progress, hope you enjoy reading this code as much as I enjoyed writing it.
 
 ## Key Features
