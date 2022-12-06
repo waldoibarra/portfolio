@@ -1,6 +1,7 @@
-*Dockerfile*
-*docker-compose*
+Dockerfile
+compose.yml
 .git
 node_modules
-build
-infrastructure
+infrastructure/.terraform
+infrastructure/builds
+infrastructure/tfplan
