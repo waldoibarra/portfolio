@@ -1,16 +1,4 @@
-# FROM hashicorp/terraform:1.3.6
-FROM golang:1.19.3-alpine AS tf-build
-
-RUN apk add --no-cache git \
-    && git clone --depth 1 --branch v1.3.6 https://github.com/hashicorp/terraform.git \
-    && cd terraform \
-    && go install
-
-FROM alpine:3.17.0
-
-COPY --from=tf-build /go/bin/terraform /usr/local/bin/
-
-RUN apk add --no-cache aws-cli git
+FROM waldoibarra/terraform-aws:1.1.1
 
 ARG AWS_PROFILE
 ARG AWS_ACCESS_KEY_ID
