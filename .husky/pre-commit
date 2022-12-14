@@ -7,9 +7,9 @@ echo "Running Terraform linter."
 docker container run --rm -v $(PWD)/infrastructure:/data -t ghcr.io/terraform-linters/tflint:v0.43.0
 
 echo "Running TypeScript and CSS linters."
-docker compose run -T --rm $website_service npm run lint
+docker compose run -T --rm $website_service npm run ci:lint
 
 echo "Running tests."
-docker compose run -T --rm $website_service npm test
+docker compose run -T --rm $website_service npm run ci:test
 
 echo "All good. ❤️"
