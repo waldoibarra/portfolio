@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+set -e
+
+website_service="website"
+
+echo "Running commit message linter."
+docker compose run -T --rm $website_service npx --no -- commitlint --edit ${1}

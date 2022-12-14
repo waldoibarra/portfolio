@@ -17,6 +17,8 @@
     "web-vitals": "2.1.4"
   },
   "devDependencies": {
+    "@commitlint/cli": "17.3.0",
+    "@commitlint/config-conventional": "17.3.0",
     "@swc/jest": "0.2.23",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "13.4.0",

@@ -10,8 +10,9 @@ This is pretty much a work in progress, hope you enjoy reading this code as much
 - Infrastructure as code with Terraform, which includes a private S3 bucket, CloudFront distribution (SSL certs and cache) and Route 53 A records.
 - Makefile as an entrypoint of the app to simplify usage of this repository.
 - Docker Compose to reduce need to install dependencies and standardize development on any OS.
-- Linting of Terraform, TypeScript and CSS files automatically checked before every commit.
-- Unit tests for React code using Jest and testing library automatically checked before every commit.
+- Linting of Terraform, TypeScript and CSS files automatically checked before every commit and on CI.
+- Linting of commit messages locally and on CI, conforming to [conventional commits](https://conventionalcommits.org/) spectification.
+- Unit tests for React code using Jest and testing library automatically checked before every commit and on CI.
 - Hot reloading enabled on save of React files.
 - Automated deployments with a GitHub Actions CI/CD pipeline.
 
