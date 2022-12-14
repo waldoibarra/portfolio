@@ -35,7 +35,7 @@ jobs:
         run: |
           docker container run --rm ${{ env.website_service }} npm run lint
           docker container run --rm -v ${{ github.workspace }}/infrastructure:/data -t ghcr.io/terraform-linters/tflint:v0.43.0
-          docker container run --rm ${{ env.website_service }} echo ${{ github.event.head_commit.message }} | npx commitlint
+          docker container run --rm ${{ env.website_service }} echo "${{ github.event.head_commit.message }}" | npx commitlint
 
       - name: Unit test React code
         id: unit-test-react
