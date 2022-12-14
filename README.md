@@ -12,7 +12,7 @@ This is pretty much a work in progress, hope you enjoy reading this code as much
 - Docker Compose to reduce need to install dependencies and standardize development on any OS.
 - Linting of Terraform, TypeScript and CSS files automatically checked before every commit.
 - Unit tests for React code using Jest and testing library automatically checked before every commit.
-- Hot realoding enabled on save of React files.
+- Hot reloading enabled on save of React files.
 - Automated deployments with a GitHub Actions CI/CD pipeline.
 
 ## Local Development
@@ -23,7 +23,7 @@ The only needed tool you need to install in your machine is [Docker](https://www
 
 ### Run Website Locally
 
-To run the website on development mode with hot realoding included, run the following command and visit [localhost:3000](http://localhost:3000).
+To run the website on development mode with hot reloading included, run the following command and visit [localhost:3000](http://localhost:3000).
 
 ``` sh
 make start
