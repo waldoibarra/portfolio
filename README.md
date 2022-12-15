@@ -24,8 +24,14 @@ The only needed tool you need to install in your machine is [Docker](https://www
 
 ### Run Website Locally
 
-To run the website on development mode with hot reloading included, run the following command and visit [localhost:3000](http://localhost:3000).
+To run the website on development mode, run the following command and visit [localhost:3000](http://localhost:3000).
 
 ``` sh
 make start
+```
+
+Or to see available commands in Makefile run:
+
+``` sh
+make help
 ```
