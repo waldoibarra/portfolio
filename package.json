@@ -3,56 +3,34 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "react-scripts start",
-    "ci:build": "react-scripts build",
-    "ci:lint": "eslint --ignore-path .gitignore . && stylelint **/*.css",
+    "dev": "vite",
+    "ci:build": "tsc -b && vite build",
+    "ci:lint": "eslint --ignore-pattern .gitignore . && stylelint **/*.css",
     "ci:lint:commit": "echo \"$COMMIT_MESSAGE\" | commitlint",
-    "ci:test": "env NODE_ENV=test jest --config=jest.config.js --ci",
-    "test:watch": "env NODE_ENV=test jest --watch --config=jest.config.js",
-    "eject": "react-scripts eject",
-    "lint:fix": "eslint --fix --ignore-path .gitignore . && stylelint --fix **/*.css"
+    "lint:fix": "eslint --fix --ignore-pattern .gitignore . && stylelint --ignore-path .gitignore --fix **/*.css"
   },
   "dependencies": {
     "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "web-vitals": "2.1.4"
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
     "@commitlint/cli": "17.3.0",
     "@commitlint/config-conventional": "17.3.0",
-    "@swc/jest": "0.2.23",
-    "@testing-library/jest-dom": "5.16.5",
-    "@testing-library/react": "13.4.0",
-    "@testing-library/user-event": "13.5.0",
-    "@types/jest": "27.5.2",
-    "@types/node": "16.18.3",
+    "@eslint/js": "9.11.1",
     "@types/react": "18.0.25",
     "@types/react-dom": "18.0.9",
     "@typescript-eslint/eslint-plugin": "5.45.0",
     "@typescript-eslint/parser": "5.45.0",
-    "eslint": "8.29.0",
-    "eslint-config-airbnb": "19.0.4",
-    "eslint-config-airbnb-typescript": "17.0.0",
-    "eslint-plugin-import": "2.26.0",
-    "eslint-plugin-jsx-a11y": "6.6.1",
-    "eslint-plugin-react": "7.31.11",
+    "@vitejs/plugin-react": "4.3.2",
+    "eslint": "8.57.1",
     "eslint-plugin-react-hooks": "4.6.0",
+    "eslint-plugin-react-refresh": "0.4.12",
+    "globals": "15.10.0",
     "husky": "8.0.2",
-    "react-scripts": "5.0.1",
-    "stylelint": "14.16.0",
-    "stylelint-config-standard": "29.0.0",
-    "typescript": "4.9.3"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "stylelint": "16.9.0",
+    "stylelint-config-standard": "36.0.1",
+    "typescript": "5.5.4",
+    "typescript-eslint": "8.8.0",
+    "vite": "5.4.8"
   }
 }
