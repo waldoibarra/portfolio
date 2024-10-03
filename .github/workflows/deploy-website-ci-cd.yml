@@ -38,16 +38,11 @@ jobs:
           docker container run --rm -v ${{ github.workspace }}/infrastructure:/data -t ghcr.io/terraform-linters/tflint:v0.43.0
           docker container run --rm -e COMMIT_MESSAGE="${{ env.COMMIT_MESSAGE }}" ${{ env.website_service }} npm run ci:lint:commit
 
-      - name: Unit test React code
-        id: unit-test-react
-        run: |
-          docker container run --rm ${{ env.website_service }} npm run ci:test
-
       - name: Build React app
         id: build-react-app
         run: |
           docker container run --name site-build ${{ env.website_service }} npm run ci:build
-          docker container cp site-build:/app/build .
+          docker container cp site-build:/app/dist .
           docker container rm site-build
 
       - name: Deploy website

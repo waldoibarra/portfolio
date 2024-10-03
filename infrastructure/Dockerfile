@@ -11,7 +11,7 @@ RUN aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID} --profile ${AWS_PRO
 
 WORKDIR /app
 COPY ./infrastructure infrastructure
-COPY ./build website_content
+COPY ./dist website_content
 WORKDIR /app/infrastructure
 
 ENTRYPOINT ["terraform"]

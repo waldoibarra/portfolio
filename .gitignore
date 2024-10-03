@@ -24,13 +24,14 @@ terraform.rc
 /coverage
 
 # Production output.
-/build
+/dist
 
 # Optional npm cache directory.
 .npm
 
 # Misc.
 .DS_Store
+/tsconfig.*.tsbuildinfo
 
 # Logs.
 npm-debug.log*
