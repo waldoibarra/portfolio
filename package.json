@@ -7,7 +7,8 @@
     "ci:build": "tsc -b && vite build",
     "ci:lint": "eslint --ignore-pattern .gitignore . && stylelint **/*.css",
     "ci:lint:commit": "echo \"$COMMIT_MESSAGE\" | commitlint",
-    "lint:fix": "eslint --fix --ignore-pattern .gitignore . && stylelint --ignore-path .gitignore --fix **/*.css"
+    "lint:fix": "eslint --fix --ignore-pattern .gitignore . && stylelint --ignore-path .gitignore --fix **/*.css",
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "18.2.0",
