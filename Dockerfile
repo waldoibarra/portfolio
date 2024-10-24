@@ -1,14 +1,12 @@
 FROM node:18.12.1-alpine AS base
-# ENV NODE_ENV=production
+
 # Use rsync to make copying files faster after first time.
 RUN apk add --no-cache rsync git
-EXPOSE 3000
 RUN mkdir /app && chown -R node:node /app \
-    && mkdir /cache && chown -R node:node /cache
+  && mkdir /cache && chown -R node:node /cache
 WORKDIR /cache
 USER node
 COPY --chown=node:node package*.json ./
-# RUN npm ci --only=production && npm cache clean --force
 RUN npm install && npm cache clean --force
 WORKDIR /app
 

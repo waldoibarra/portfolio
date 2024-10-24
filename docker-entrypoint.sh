@@ -22,7 +22,7 @@ enable_git_hooks() {
 start_website() {
     sync_node_modules
     enable_git_hooks
-    exec npm start
+    exec npm run dev
 }
 
 run_one_off_command() {
