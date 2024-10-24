@@ -17,8 +17,8 @@ env:
   TF_VAR_Application: Personal static website
 
 jobs:
-  lint-test-build-deploy:
-    name: Lint, test, build and deploy
+  lint-build-deploy:
+    name: Lint, build and deploy
     runs-on: ubuntu-latest
     environment: production
 
@@ -38,8 +38,8 @@ jobs:
           docker container run --rm -v ${{ github.workspace }}/infrastructure:/data -t ghcr.io/terraform-linters/tflint:v0.43.0
           docker container run --rm -e COMMIT_MESSAGE="${{ env.COMMIT_MESSAGE }}" ${{ env.website_service }} npm run ci:lint:commit
 
-      - name: Build React app
-        id: build-react-app
+      - name: Build app
+        id: build-app
         run: |
           docker container run --name site-build ${{ env.website_service }} npm run ci:build
           docker container cp site-build:/app/dist .

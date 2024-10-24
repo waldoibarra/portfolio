@@ -12,8 +12,7 @@ This is pretty much a work in progress, hope you enjoy reading this code as much
 - Docker Compose to reduce need to install dependencies and standardize development on any OS.
 - Linting of Terraform, TypeScript and CSS files automatically checked before every commit and on CI.
 - Linting of commit messages locally and on CI, conforming to [conventional commits](https://conventionalcommits.org/) spectification.
-- Unit tests for React code using Jest and testing library automatically checked before every commit and on CI.
-- Hot reloading enabled on save of React files.
+- Hot reloading enabled on save of files.
 - Automated deployments with a GitHub Actions CI/CD pipeline.
 
 ## Local Development
