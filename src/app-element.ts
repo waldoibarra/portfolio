@@ -1,7 +1,7 @@
-import { LitElement, html, css } from "lit";
-import { customElement } from "lit/decorators.js";
+import { LitElement, html, css } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
-@customElement("app-element")
+@customElement('app-element')
 export class AppElement extends LitElement {
   static styles = css`
     .app {
@@ -57,6 +57,6 @@ export class AppElement extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "app-element": AppElement;
+    'app-element': AppElement;
   }
 }

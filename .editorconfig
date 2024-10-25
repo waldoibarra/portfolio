@@ -8,5 +8,8 @@ indent_style = space
 indent_size = 2
 charset = utf-8
 
+[*.{ts,js,mjs}]
+quote_type = single
+
 [Makefile]
 indent_style = tab
