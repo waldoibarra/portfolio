@@ -3,7 +3,7 @@ import pluginJs from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
 export default [
-  { ignores: ['.gitignore', 'dist/'] },
+  { ignores: ['.gitignore', 'dist/', 'public/demo/'] },
   { files: ['**/*.{js,mjs,cjs,ts}'] },
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
