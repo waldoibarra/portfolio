@@ -20,6 +20,13 @@ export class AppElement extends LitElement {
     .app-link {
       color: #61dafb;
     }
+
+    .app-footer {
+      position: absolute;
+      bottom: 1.5rem;
+      font-size: 0.8rem;
+      color: #abb2bf;
+    }
   `;
 
   render() {
@@ -50,6 +57,7 @@ export class AppElement extends LitElement {
             GitHub repository</a
           >. ✌️
         </p>
+        <footer class="app-footer">© 2026 Waldo Ibarra</footer>
       </div>
     `;
   }
