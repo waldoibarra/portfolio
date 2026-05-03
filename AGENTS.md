@@ -31,6 +31,19 @@ Personal portfolio website deployed as a static site to AWS (S3 + CloudFront) vi
 
 **Important:** `npm run build` does NOT exist. The build command is `npm run ci:build` (runs `tsc -b && vite build`). Do NOT use `npm run build` in scripts or docs.
 
+## GitHub CLI (gh)
+
+Available and authenticated. Essential for CI/CD verification in this project:
+
+| Command | Purpose |
+|---------|---------|
+| `gh run list --limit N` | List recent workflow runs (check if a push triggered or skipped the pipeline) |
+| `gh run watch <ID> --exit-status` | Watch a workflow run until it completes (blocks, shows step progress) |
+| `gh run list --limit N --json ... --jq ...` | Query runs by commit message, status, branch, etc. |
+| `gh run view <ID>` | View details of a specific run |
+
+**Usage pattern:** After pushing to trunk, use `gh run list --limit 5` to verify whether the pipeline triggered (source change) or skipped (docs-only change). Use `gh run watch <ID> --exit-status` to monitor a specific run to completion.
+
 ## Commit Conventions
 
 Enforced by commitlint (Husky pre-commit hook + CI):
