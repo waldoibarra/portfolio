@@ -1,4 +1,4 @@
-FROM node:18.12.1-alpine AS base
+FROM node:24-alpine AS base
 
 # Use rsync to make copying files faster after first time.
 RUN apk add --no-cache rsync git
@@ -6,7 +6,7 @@ RUN mkdir /app && chown -R node:node /app \
   && mkdir /cache && chown -R node:node /cache
 WORKDIR /cache
 USER node
-COPY --chown=node:node package*.json ./
+COPY --chown=node:node package*.json .npmrc ./
 RUN npm install && npm cache clean --force
 WORKDIR /app
 
