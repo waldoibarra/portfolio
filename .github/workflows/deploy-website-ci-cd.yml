@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - trunk
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - '.editorconfig'
 
 env:
   website_service: waldoibarra/website
