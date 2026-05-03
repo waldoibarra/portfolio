@@ -1,0 +1,9 @@
+[tools]
+node = "24"
+terraform = "1.15.1"
+awscli = "2"
+tflint = "0.62.0"
+just = "1.50.0"
+
+[env]
+_.file = ".env"
