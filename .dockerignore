@@ -5,3 +5,6 @@ node_modules
 infrastructure/.terraform
 infrastructure/builds
 infrastructure/tfplan
+
+# Local secrets — never bake into any image.
+.env

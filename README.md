@@ -74,6 +74,10 @@ make lint_tf       # Run Terraform linter
 make debug         # Get inside the container for debugging
 ```
 
+### Infrastucture Changes
+
+For working with Terraform and AWS infrastructure locally, see [docs/infrastructure.md](docs/infrastructure.md).
+
 ## Current Status
 
 The website is currently under construction. The main component (`app-element.ts`) displays a placeholder page with links to the GitHub project and repository.
