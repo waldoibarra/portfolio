@@ -1,7 +1,8 @@
 # CI/CD Pipeline
 
-The pipeline is defined in `.github/workflows/deploy-website-ci-cd.yml` and runs on every push to
-the `trunk` branch that touches a tracked file (see [Path Filtering](#path-filtering) below).
+The deployment pipeline is defined in `.github/workflows/deploy-website-ci-cd.yml` and runs on
+every push to the `trunk` branch that touches a tracked file
+(see [Path Filtering](#path-filtering) below).
 
 ## Trigger
 
