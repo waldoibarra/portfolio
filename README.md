@@ -74,9 +74,10 @@ make lint_tf       # Run Terraform linter
 make debug         # Get inside the container for debugging
 ```
 
-### Infrastucture Changes
+### Infrastructure Changes
 
 For working with Terraform and AWS infrastructure locally, see [docs/infrastructure.md](docs/infrastructure.md).
+For CI/CD pipeline details and trigger rules, see [docs/ci-cd-pipeline.md](docs/ci-cd-pipeline.md).
 
 ## Current Status
 
