@@ -52,3 +52,20 @@ jobs:
           docker compose -f infrastructure/compose.yaml run -T --rm terraform init
           docker compose -f infrastructure/compose.yaml run -T --rm terraform plan -out tfplan
           docker compose -f infrastructure/compose.yaml run -T --rm terraform apply tfplan
+
+      - name: Invalidate CloudFront cache
+        id: invalidate-cloudfront
+        run: |
+          DIST_ID=$(docker compose -f infrastructure/compose.yaml run -T --rm terraform output -raw cloudfront_distribution_id)
+          INVALIDATION_ID=$(docker compose -f infrastructure/compose.yaml run -T --rm --entrypoint "" terraform \
+            aws cloudfront create-invalidation \
+            --distribution-id "$DIST_ID" \
+            --paths "/*" \
+            --query 'Invalidation.Id' \
+            --output text)
+          echo "Created invalidation: $INVALIDATION_ID"
+          docker compose -f infrastructure/compose.yaml run -T --rm --entrypoint "" terraform \
+            aws cloudfront wait invalidation-completed \
+            --distribution-id "$DIST_ID" \
+            --id "$INVALIDATION_ID"
+          echo "Invalidation $INVALIDATION_ID completed."
