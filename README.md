@@ -11,7 +11,7 @@ This is a work in progress, hope you enjoy reading this code as much as I enjoye
 - **Build Tool**: [Vite](https://vitejs.dev/) for development and production builds
 - **Styling**: CSS-in-component with Lit's `css` tagged templates
 - **Infrastructure**: [Terraform](https://developer.hashicorp.com/terraform) with AWS (S3 + CloudFront + Route 53)
-- **CI/CD**: [GitHub Actions](https://github.com/features/actions) with [Docker](https://www.docker.com/)-based builds
+- **CI/CD**: [GitHub Actions](https://github.com/features/actions) with [Mise](https://mise.jdx.dev)-managed toolchain
 
 ## Key Features
 
@@ -21,8 +21,8 @@ This is a work in progress, hope you enjoy reading this code as much as I enjoye
   - Private S3 bucket for static hosting
   - CloudFront distribution (SSL certificates and caching)
   - Route 53 A records for DNS management
-- **Makefile** as an entrypoint to simplify repository usage
-- **Docker Compose** to reduce dependency installation and standardize development across any OS
+- **Justfile** as an entrypoint to simplify repository usage
+- **Mise** for declarative toolchain pinning (Node, Terraform, AWS CLI, TFLint, just) so any contributor gets the exact same versions
 - **Comprehensive Linting** automatically checked before every commit and on CI:
   - TypeScript (ESLint)
   - CSS (Stylelint)
@@ -43,35 +43,35 @@ portfolio/
 │   └── main.tf            # AWS S3 + CloudFront module
 ├── index.html              # Entry point
 ├── vite.config.ts          # Vite configuration
-└── compose.yaml           # Docker Compose for local dev
+├── .mise.toml             # Toolchain version pins
+└── justfile               # Local command runner
 ```
 
 ## Local Development
 
 ### Requirements
 
-The only tool you need to install on your machine is [Docker](https://www.docker.com).
+The only tool you need to install on your machine is [Mise](https://mise.jdx.dev). After cloning, run `mise trust && mise install && npm install` to get the full toolchain plus Husky hooks.
 
 ### Run Website Locally
 
 To run the website in development mode, run the following command and visit [localhost:5173](http://localhost:5173).
 
 ```sh
-make start
+just dev
 ```
 
-Or to see available commands in the Makefile, run:
+Or to see available commands in the justfile, run:
 
 ```sh
-make help
+just --list
 ```
 
 ### Other Useful Commands
 
 ```sh
-make lint          # Run linter and fix problems for TypeScript and CSS files
-make lint_tf       # Run Terraform linter
-make debug         # Get inside the container for debugging
+just lint          # Run linter and fix problems for TypeScript and CSS files
+just lint-tf       # Run Terraform linter
 ```
 
 ### Infrastructure Changes

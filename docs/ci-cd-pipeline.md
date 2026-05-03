@@ -47,73 +47,71 @@ ignored pattern. New source files are automatically picked up without touching t
 
 1. **Docs-only push** — commit a change that only touches `README.md` or `docs/*.md`. The
    `deploy-website-ci-cd` workflow should NOT appear in the GitHub Actions run list.
-2. **Source push** — commit a change to any file in `src/`, `infrastructure/`, `Dockerfile`, or
-   `package.json`. The workflow SHOULD appear and complete all 5 steps.
+2. **Source push** — commit a change to any file in `src/`, `infrastructure/`, or
+   `package.json`. The workflow SHOULD appear and complete all steps.
 
 ## Pipeline Steps
 
-The single job `lint-build-deploy` runs five steps in order:
+The single job `lint-build-deploy` runs on `ubuntu-latest` and executes these steps in order:
 
-### 1. Docker Build
+### 1. Set Up Toolchain (Mise)
 
-```sh
-docker buildx build -t waldoibarra/website --target production .
+```yaml
+- uses: jdx/mise-action@v4
+  with:
+    cache: true
+    github_token: ${{ github.token }}
 ```
 
-Builds the production Docker image from the root `Dockerfile`. This image is reused by subsequent
-steps so tools (Node, ESLint, Stylelint) are consistent across environments.
+Reads `.mise.toml` at the repo root and provisions the pinned versions of Node, Terraform,
+AWS CLI v2, TFLint, and just onto the runner's PATH. The action caches the tool directory
+between runs.
 
-### 2. Lint
-
-```sh
-docker container run --rm waldoibarra/website npm run ci:lint
-docker container run --rm -v ${{ github.workspace }}/infrastructure:/data \
-  ghcr.io/terraform-linters/tflint:v0.43.0
-docker container run --rm -e COMMIT_MESSAGE="..." waldoibarra/website npm run ci:lint:commit
-```
-
-Three checks run in the same step:
-
-- **ESLint + Stylelint** — via `npm run ci:lint` inside the website image
-- **TFLint** — lints the Terraform configuration in `infrastructure/`
-- **Commit message lint** — via `npm run ci:lint:commit` (commitlint)
-
-### 3. TypeScript Build (Vite)
+### 2. Install npm Dependencies
 
 ```sh
-docker container run --name site-build waldoibarra/website npm run ci:build
-docker container cp site-build:/app/dist .
-docker container rm site-build
+npm ci
 ```
 
-Runs `vite build` inside the image, then copies the compiled `dist/` folder out of the container
-into the workflow workspace so Terraform can upload it to S3.
+Uses `actions/cache@v4` keyed on `package-lock.json` to avoid re-downloading every run.
 
-### 4. Terraform Plan + Apply
+### 3. Lint
 
 ```sh
-docker compose -f infrastructure/compose.yaml build terraform
-docker compose -f infrastructure/compose.yaml run -T --rm terraform init
-docker compose -f infrastructure/compose.yaml run -T --rm terraform plan -out tfplan
-docker compose -f infrastructure/compose.yaml run -T --rm terraform apply tfplan
+npm run ci:lint           # ESLint + Stylelint
+tflint --chdir infrastructure
+npm run ci:lint:commit    # commitlint via $COMMIT_MESSAGE env var
 ```
 
-Runs Terraform inside the `infrastructure/` Docker image (which includes the AWS CLI). The remote
-backend is Terraform Cloud (`waldo-io/waldoibarra-com` workspace). `apply` uploads the `dist/`
-folder to the S3 origin bucket and updates any infrastructure resources that changed.
+### 4. TypeScript Build (Vite)
+
+```sh
+npm run ci:build          # tsc -b && vite build
+```
+
+Produces `dist/` directly in the runner workspace — no container copy step needed.
+
+### 5. Terraform Plan + Apply
+
+```sh
+cd infrastructure
+terraform init
+terraform plan -out tfplan
+terraform apply tfplan
+```
+
+Uses Terraform Cloud as the remote backend (`waldo-io/waldoibarra-com` workspace). The module's
+`sync_directories` block uploads `../dist` (the repo-root build output) to the S3 origin bucket.
 
 For local Terraform usage, see [docs/infrastructure.md](docs/infrastructure.md).
 
-### 5. CloudFront Cache Invalidation
+### 6. CloudFront Cache Invalidation
 
 ```sh
-DISTRIBUTION_ID=$(... terraform output -raw cloudfront_distribution_id)
-INVALIDATION_ID=$(... aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths "/*")
+DISTRIBUTION_ID=$(terraform -chdir=infrastructure output -raw cloudfront_distribution_id)
+INVALIDATION_ID=$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths "/*" --query 'Invalidation.Id' --output text)
 aws cloudfront wait invalidation-completed --distribution-id "$DISTRIBUTION_ID" --id "$INVALIDATION_ID"
 ```
 
-Reads the CloudFront distribution ID from Terraform output, creates an `/*` invalidation, then
-waits for it to complete. This ensures users see the new version immediately after deploy.
-
-The AWS CLI is run inside the same Terraform container by overriding its entrypoint — the same
-pattern used for local testing (see [docs/infrastructure.md](docs/infrastructure.md)).
+Reads the CloudFront distribution ID from Terraform output, creates an `/*` invalidation,
+then waits for it to complete. AWS CLI v2 reads credentials from the workflow `env:` block.
