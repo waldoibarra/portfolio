@@ -59,6 +59,12 @@ jobs:
         id: build-app
         run: npm run ci:build
 
+      - name: Configure AWS profile for Terraform module
+        run: |
+          mkdir -p ~/.aws
+          printf '[default]\naws_access_key_id = %s\naws_secret_access_key = %s\n' \
+            "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY" > ~/.aws/credentials
+
       - name: Deploy website
         id: deploy-website
         working-directory: infrastructure
