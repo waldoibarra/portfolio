@@ -12,22 +12,30 @@ Personal portfolio website deployed as a static site to AWS (S3 + CloudFront) vi
 - **Build:** Vite 5.4
 - **IaC:** Terraform with third-party module `InterweaveCloud/s3-cloudfront-static-website` (Change 3 in the plan will replace this)
 - **CI/CD:** GitHub Actions — single workflow `.github/workflows/deploy-website-ci-cd.yml`
-- **Local dev:** Docker Compose (`make start` runs `docker compose up`)
+- **Local dev:** Mise for declarative toolchain pinning (Node, Terraform, AWS CLI, TFLint, just)
 - **Linting:** ESLint, Stylelint, TFLint, commitlint — all enforced in CI and via Husky pre-commit hook
 
 ## Commands
 
+**`just` commands** (primary human-facing, wraps npm/terraform):
+
 | Command | Purpose |
 |---------|---------|
-| `npm run dev` | Vite dev server (local, no Docker) |
+| `just dev` | Run Vite development server |
+| `just lint` | Run linter and auto-fix problems |
+| `just lint-tf` | Run TFLint on infrastructure/ |
+| `just ci-lint` | Run linters in CI mode (no auto-fix) |
+| `just ci-build` | TypeScript check + Vite production build |
+
+**`npm run` commands** (CI/scripting):
+
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Vite dev server |
 | `npm run ci:build` | TypeScript check + Vite production build |
 | `npm run ci:lint` | ESLint + Stylelint |
 | `npm run lint:fix` | Auto-fix lint issues |
 | `npm run preview` | Preview production build locally |
-| `make start` | Docker Compose dev server |
-| `make lint` | Docker-based lint + fix |
-| `make lint_tf` | TFLint on infrastructure/ |
-| `make debug` | Shell into Docker container |
 
 **Important:** `npm run build` does NOT exist. The build command is `npm run ci:build` (runs `tsc -b && vite build`). Do NOT use `npm run build` in scripts or docs.
 
@@ -70,12 +78,15 @@ See `docs/ci-cd-pipeline.md` for full documentation.
 
 **Trigger:** Push to `trunk` with `paths-ignore` denylist. Docs-only pushes are skipped.
 
-**Steps (all Docker-based):**
-1. Build website Docker image
-2. Lint (ESLint + Stylelint, TFLint, commitlint)
-3. Build app (`tsc -b && vite build` inside Docker)
-4. Terraform plan + apply (deploys `dist/` to S3 via `sync_directories`)
-5. CloudFront invalidation (`/*`)
+**Steps:**
+1. Checkout
+2. Set up toolchain (mise-action)
+3. Cache npm dependencies
+4. Install npm dependencies
+5. Lint (native: ESLint, Stylelint, TFLint, commitlint)
+6. Build (native: `tsc -b && vite build`)
+7. Deploy (native: terraform init/plan/apply)
+8. Invalidate CloudFront cache (native: `aws cloudfront`)
 
 ## Project Structure
 
@@ -86,19 +97,16 @@ portfolio/
 │   ├── index.css            # Global styles
 │   └── vite-env.d.ts        # Vite type declarations
 ├── infrastructure/           # Terraform IaC
-│   ├── main.tf              # S3 + CloudFront module config
-│   └── compose.yaml         # Docker for Terraform local dev
+│   └── main.tf              # S3 + CloudFront module config
 ├── .github/workflows/        # CI/CD
 │   └── deploy-website-ci-cd.yml
 ├── docs/
 │   ├── cicd-improvements-plan.md  # Living CI/CD improvement plan
 │   ├── ci-cd-pipeline.md          # Pipeline documentation
-│   └── infrastructure.md          # Terraform/Docker workflow docs
+│   └── infrastructure.md          # Terraform/Mise workflow docs
 ├── index.html                # Entry point
-├── Dockerfile                # Website build container
-├── docker-entrypoint.sh      # Container entry point
-├── compose.yaml              # Local dev Docker Compose
-├── Makefile                  # Convenience commands (Docker-based)
+├── .mise.toml                # Toolchain pinning (Node, Terraform, AWS CLI, TFLint, just)
+├── justfile                  # Convenience commands (wraps npm/terraform)
 ├── vite.config.ts
 ├── tsconfig.json
 ├── eslint.config.mjs
@@ -112,7 +120,7 @@ portfolio/
 `docs/cicd-improvements-plan.md` is a living document tracking multi-session CI/CD changes. Each change ships independently. Current status:
 
 - **Change 1** — Path filtering ✅ Shipped
-- **Change 2** — Drop Docker, adopt Mise (planned, HIGH risk)
+- **Change 2** — Drop Docker, adopt Mise ✅ Shipped
 - **Change 3** — Separate Terraform from artifact upload + own IaC + C4 docs (planned, HIGHEST risk)
 - **Change 4** — Split into multiple workflows + update README (planned, Medium risk)
 
@@ -127,7 +135,7 @@ When starting a new change, read this plan first. Mark changes as shipped when t
 - **`**.md` in paths-ignore covers ALL markdown recursively** — no need to list `LICENSE.md`, `README.md`, or `.atl/*.md` separately.
 - **Changes to the workflow YAML itself always trigger the pipeline** regardless of `paths-ignore`, because the YAML file isn't in the ignore list.
 - **The third-party Terraform module does infrastructure AND artifact upload** (`sync_directories`). Change 3 will separate these concerns.
-- **Docker is overkill for this project** — it's a static site. Change 2 replaces Docker with Mise for toolchain management.
+- **Docker has been removed.** Mise manages the toolchain (Node, Terraform, AWS CLI, TFLint, just) — see `.mise.toml`.
 
 ## SDD Preferences
 
