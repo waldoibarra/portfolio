@@ -136,6 +136,12 @@ When starting a new change, read this plan first. Mark changes as shipped when t
 - **Changes to the workflow YAML itself always trigger the pipeline** regardless of `paths-ignore`, because the YAML file isn't in the ignore list.
 - **The third-party Terraform module does infrastructure AND artifact upload** (`sync_directories`). Change 3 will separate these concerns.
 - **Docker has been removed.** Mise manages the toolchain (Node, Terraform, AWS CLI, TFLint, just) — see `.mise.toml`.
+- **`infrastructure/versions.tf` must match `.mise.toml` exactly.** The `required_version` should be an exact pin (`= "1.15.1"`), not a range. A range defeats the purpose of Mise's deterministic pinning — if someone bypasses Mise, a range would silently accept a different version.
+- **GitHub Actions secrets are automatically masked in logs.** Never add `::add-mask::` for values that come from `${{ secrets.* }}` — the runner masks them by default. Adding extra echo commands just clutters the log.
+- **The Terraform module hardcodes `--profile default`.** The `InterweaveCloud/s3-cloudfront-static-website` module runs `aws s3 sync --profile default` in a local-exec provisioner. Without Docker, there's no named AWS profile — the CI workflow must write `~/.aws/credentials` before Terraform runs. This will be removed when Change 3 replaces the module.
+- **`infrastructure/main.tf` sync path is `../dist`.** Not `../website_content` (that was a Docker artifact path). Vite outputs to `dist/` in the repo root, and Terraform's `path.cwd` resolves from `infrastructure/`.
+- **`package.json` needs `"prepare": "husky"`.** Without it, fresh clones don't get git hooks installed. Previously Docker's entrypoint ran `npx husky install` — now npm's `prepare` lifecycle script handles it.
+- **`actions/cache@v4` is deprecated** (forces Node v24 on June 2nd). Use `actions/cache@v5`.
 
 ## SDD Preferences
 
