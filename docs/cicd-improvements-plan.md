@@ -79,7 +79,7 @@ doesn't deploy → fix the filter, push again.
 
 ---
 
-### Change 2 — Drop Docker, adopt Mise for local + CI
+### Change 2 — Drop Docker, adopt Mise for local + CI ✅ Shipped
 
 **Goal:** Eliminate Docker plumbing across the project. Use Mise for
 toolchain pinning (Node, Terraform, AWS CLI). Match Waldo's other
@@ -122,6 +122,17 @@ breaks the ability to ship.
 - Local: `npm run dev` works, `npm run build` works, `terraform plan`
   works (against existing remote state, no changes expected)
 - CI: full pipeline runs end-to-end, deploys successfully
+
+**Verification — passed:**
+- `mise install` from clean state → all tools installed correctly ✅
+- Local: `just dev`, `just lint`, `just lint-tf`, `just ci-build` all work ✅
+- Local: `npm run ci:lint` and `npm run ci:build` work without Docker ✅
+- Local: `terraform init` and `terraform plan` work against existing remote state ✅
+- CI: full pipeline runs end-to-end, deploys successfully ✅
+- Pre-commit hook fires natively (tflint + eslint + stylelint + commitlint) ✅
+- All Docker files deleted, no orphan references ✅
+
+**Sessions used:** 2
 
 **Note:** This change does NOT touch the Terraform module config or the
 S3 sync mechanism. Terraform still does artifact upload via
@@ -262,8 +273,7 @@ the correct paths and only on those paths.
 ## Cross-cutting reminders
 
 - After **Change 2:** README's "CI/CD: GitHub Actions with Docker-based
-  builds" line is technically wrong. Update it AT LEAST in Change 4 (or
-  earlier if it bothers you).
+  builds" line was updated as part of Change 2. ✅ Done.
 - After **Change 4:** README workflow badge URL changes. Don't forget.
 - Each change ends with `mem_session_summary` for cross-session
   continuity.

@@ -28,7 +28,7 @@ The pipeline uses a **denylist** (`paths-ignore`) rather than an allowlist (`pat
 ### Why denylist over allowlist?
 
 An allowlist forces you to enumerate every source file that matters (e.g. `src/**`, `infrastructure/**`,
-`Dockerfile`, `package.json`, …). Any new directory or config file added later is silently ignored
+`.mise.toml`, `package.json`, …). Any new directory or config file added later is silently ignored
 unless the allowlist is updated — a common source of "why didn't the pipeline run?" bugs.
 
 A denylist is safer: it runs by default and only skips commits where every changed file matches an
