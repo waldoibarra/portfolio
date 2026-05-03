@@ -61,8 +61,6 @@ jobs:
 
       - name: Configure AWS profile for Terraform module
         run: |
-          echo "::add-mask::$AWS_ACCESS_KEY_ID"
-          echo "::add-mask::$AWS_SECRET_ACCESS_KEY"
           mkdir -p ~/.aws
           printf '[default]\naws_access_key_id = %s\naws_secret_access_key = %s\n' \
             "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY" > ~/.aws/credentials
