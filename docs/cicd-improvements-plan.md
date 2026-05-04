@@ -6,19 +6,28 @@
 
 ## Context (current state)
 
-- Single workflow: `.github/workflows/deploy-website-ci-cd.yml`
-- Triggered on push to `trunk` with `paths-ignore` denylist
-  (docs-only pushes are skipped)
+- Two domain-focused workflows:
+  - `.github/workflows/website.yml` — lint → build → deploy site
+    (path-filtered for `src/` and source configuration)
+  - `.github/workflows/infrastructure.yml` — lint-tf → tf-test →
+    tf-plan-out → tf-apply (path-filtered for `infrastructure/`)
+- Both triggered on push to `trunk` with allowlist path filters
+  (docs-only pushes are skipped by design)
 - Uses Mise for toolchain (Node, Terraform, AWS CLI, TFLint, Just)
   — Docker removed in Change 2
 - Custom Terraform IaC (no third-party module) with OAC, hardened S3,
   TLSv1.2_2021 — shipped in Change 3
 - `aws s3 sync` for artifact upload (separate from Terraform) — shipped
   in Change 3
-- Terraform tests exist (`infrastructure/tests/main.tftest.hcl`) but
-  are NOT run in CI
-- Husky pre-commit hook runs tflint + ESLint + Stylelint natively
-- Husky commit-msg hook runs commitlint
+- Terraform tests (`infrastructure/tests/main.tftest.hcl`) run in CI
+  via `just tf-test` as a gate before `terraform plan` — shipped in
+  Change 4
+- Justfile is the single command interface (CI, Husky, local dev all
+  use `just` recipes) — shipped in Change 4
+- Husky pre-commit hook calls `just lint-tf` and `just lint`
+- Husky commit-msg hook runs commitlint (local only — removed from CI)
+- No commitlint in CI (Husky enforces locally)
+- No `npm run ci:*` scripts (removed in Change 4)
 - CloudFront invalidation uses `/*` (works fine, deferred)
 
 ## Architectural decisions driving the plan
@@ -243,7 +252,7 @@ add `allow_overwrite = true` to `aws_route53_record.cert_validation` in
 
 ---
 
-### Change 4 — Split workflows, rebuild justfile, run Terraform tests in CI
+### Change 4 — Split workflows, rebuild justfile, run Terraform tests in CI ✅ Shipped
 
 **Goal:** Replace the single mega-workflow with two focused, independent
 pipelines. Make the justfile the single source of truth for all commands
@@ -600,7 +609,23 @@ Saves ~10-15s per infrastructure run. Free optimization.
 - Terraform provider cache restores correctly (check logs for cache hit)
 - README badges render correctly on GitHub
 
-**Estimated sessions:** 2-3
+**Verification — passed:**
+- Both workflows triggered and passed for cutover commit `29bbcc9` ✅
+- `website.yml`: lint → build → s3-sync → invalidate all passed ✅
+- `infrastructure.yml`: tf-init → lint-tf → tf-test (8/8 passed) → tf-plan-out → tf-apply-auto all passed ✅
+- Docs-only commit (`215819e`) correctly skipped both workflows — path filters working ✅
+- `terraform test` runs as a CI gate in `infrastructure.yml` (step "Run just tf-test: completed (success)") ✅
+- TF provider cache: cold start on first run (expected), saved for next run ✅
+- Live site `waldoibarra.com` loads — HTTP/2 200, AES256 encryption confirmed ✅
+- Pre-commit hook continues to work (fired during subsequent commits) ✅
+- `just --list`, `just lint`, `just lint-tf`, `just build`, `just tf-init`, `just tf-test` all pass locally ✅
+
+**Gotchas discovered:**
+- `terraform -chdir=infrastructure` requires `=` sign, not a space (`-chdir=infrastructure`, not `-chdir infrastructure`)
+- Just doc-comments must precede `[group()]` attributes, not follow them — e.g. `# doc\n[group("X")]\nrecipe:` not `[group("X")]\n# doc\nrecipe:`
+- `--ignore-path .gitignore` is needed in `just lint` recipe to prevent ESLint from scanning `dist/` output
+
+**Sessions used:** 1
 
 ---
 
@@ -629,10 +654,9 @@ Saves ~10-15s per infrastructure run. Free optimization.
   uses OAC instead of OAI. AWS provider upgraded to 5.x. S3 bucket has public
   access block, encryption config, and ownership controls. `aws s3 sync`
   replaces `null_resource` for artifact upload.
-- After **Change 4:** README workflow badge URLs change (two badges now).
-  Husky hooks call `just` recipes instead of inline commands. `npm run`
-  scripts removed from CI — just is the single interface. `terraform test`
-  runs in CI for the first time.
+- After **Change 4:** ✅ Done. README shows two workflow badges. Husky hooks
+  call `just` recipes. No `npm run ci:*` scripts. Justfile is the single
+  command interface. `terraform test` runs in CI. No commitlint in CI.
 - Each change ends with `mem_session_summary` for cross-session
   continuity.
 - Each change should ship independently and be verified in production
