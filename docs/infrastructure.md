@@ -72,6 +72,9 @@ terraform init
 # Validate syntax and type checking.
 terraform validate
 
+# Run tests (mock providers, plan-mode assertions).
+terraform test
+
 # Preview changes.
 terraform plan -out tfplan
 
@@ -105,8 +108,11 @@ just lint-tf      # tflint --chdir infrastructure
 
 The project includes native Terraform tests under `infrastructure/tests/main.tftest.hcl`.
 These run plan-mode assertions validating bucket name, OAC configuration, TLS version,
-allowed methods, and tag presence.
+allowed methods, and tag presence. In CI, these tests run automatically via
+`infrastructure.yml` as a gate before `terraform apply` — if tests fail, the plan
+is never applied.
 
 ```sh
+just tf-test                       # using the just recipe
 terraform -chdir=infrastructure test
 ```
