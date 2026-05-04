@@ -67,7 +67,8 @@ jobs:
       - name: Upload website artifacts to S3
         id: upload-artifacts
         run: |
-          aws s3 sync ./dist "s3://$(terraform -chdir=infrastructure output -raw s3_bucket_id)" --delete
+          S3_BUCKET_ID=$(terraform -chdir=infrastructure output -raw s3_bucket_id)
+          aws s3 sync ./dist "s3://$S3_BUCKET_ID" --delete
 
       - name: Invalidate CloudFront cache
         id: invalidate-cloudfront
