@@ -8,8 +8,8 @@ Personal portfolio website deployed as a static site to AWS (S3 + CloudFront) vi
 
 ## Tech Stack
 
-- **Frontend:** Lit 3.2 (Web Components), TypeScript (strict mode)
-- **Build:** Vite 5.4
+- **Frontend:** Lit (Web Components), TypeScript (strict mode)
+- **Build:** Vite
 - **IaC:** Custom Terraform (S3, CloudFront, ACM, Route53) — no third-party modules
 - **CI/CD:** GitHub Actions — single workflow `.github/workflows/deploy-website-ci-cd.yml`
 - **Local dev:** Mise for declarative toolchain pinning (Node, Terraform, AWS CLI, TFLint, just)
@@ -162,7 +162,7 @@ When starting a new change, read this plan first. Mark changes as shipped when t
 
 When running SDD commands for this project:
 
-- **Execution mode:** Interactive (ask before each phase)
+- **Execution mode:** Automatic
 - **Artifact store:** Engram
 - **Delivery strategy:** Trunk-based — direct commits to `trunk`, no PRs
-- **Strict TDD:** Disabled (no test runner in the project)
+- **Strict TDD:** Enabled
