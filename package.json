@@ -8,10 +8,6 @@
   "scripts": {
     "dev": "vite",
     "prepare": "husky",
-    "ci:build": "tsc -b && vite build",
-    "ci:lint": "eslint . && stylelint **/*.css",
-    "ci:lint:commit": "echo \"$COMMIT_MESSAGE\" | commitlint",
-    "lint:fix": "eslint --fix . && stylelint --ignore-path .gitignore --fix **/*.css",
     "preview": "vite preview"
   },
   "dependencies": {
