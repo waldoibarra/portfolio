@@ -100,12 +100,21 @@ terraform plan -out tfplan
 terraform apply tfplan
 ```
 
-Uses Terraform Cloud as the remote backend (`waldo-io/waldoibarra-com` workspace). The module's
-`sync_directories` block uploads `../dist` (the repo-root build output) to the S3 origin bucket.
+Uses Terraform Cloud as the remote backend (`waldo-io/waldoibarra-com` workspace).
 
 For local Terraform usage, see [docs/infrastructure.md](docs/infrastructure.md).
 
-### 6. CloudFront Cache Invalidation
+### 6. Upload Website Artifacts to S3
+
+```sh
+S3_BUCKET_ID=$(terraform -chdir=infrastructure output -raw s3_bucket_id)
+aws s3 sync ./dist "s3://$S3_BUCKET_ID" --delete
+```
+
+Reads the S3 bucket name from Terraform output and syncs the built `dist/` directory to S3.
+The `--delete` flag removes any stale files from the bucket.
+
+### 7. CloudFront Cache Invalidation
 
 ```sh
 DISTRIBUTION_ID=$(terraform -chdir=infrastructure output -raw cloudfront_distribution_id)
