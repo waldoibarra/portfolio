@@ -68,7 +68,7 @@ All commands are available as `just` recipes from the repo root (see [justfile](
 just tf-init
 
 # Validate syntax and type checking.
-terraform -chdir=infrastructure validate
+just tf-validate
 
 # Run tests (mock providers, plan-mode assertions).
 just tf-test
@@ -99,7 +99,7 @@ This is the same toolchain the CI/CD pipeline uses (see `docs/ci-cd-pipeline.md`
 ## Linting
 
 ```sh
-just lint-tf      # tflint --chdir infrastructure
+just lint-tf
 ```
 
 ## Terraform Tests

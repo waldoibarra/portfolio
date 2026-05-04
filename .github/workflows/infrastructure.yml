@@ -41,8 +41,9 @@ jobs:
           path: ${{ github.workspace }}/.terraform.d/plugin-cache
           key: tf-providers-${{ runner.os }}-${{ hashFiles('infrastructure/.terraform.lock.hcl') }}
 
+      - run: just lint-tf
+      - run: just lint-tf
       - run: just tf-init
-      - run: just lint-tf       # GATE
-      - run: just tf-test       # GATE — mock-provider tests
+      - run: just tf-test
       - run: just tf-plan-out
       - run: just tf-apply-auto

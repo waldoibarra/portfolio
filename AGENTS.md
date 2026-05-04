@@ -21,7 +21,7 @@ Personal portfolio website deployed as a static site to AWS (S3 + CloudFront) vi
 
 | Command | Purpose |
 |---------|---------|
-| `just dev` | Start Vite development server |
+| `just start` | Start Vite development server |
 | `just lint` | ESLint + Stylelint check |
 | `just lint-fix` | Auto-fix ESLint + Stylelint issues |
 | `just lint-tf` | TFLint on infrastructure/ |
@@ -37,15 +37,6 @@ Personal portfolio website deployed as a static site to AWS (S3 + CloudFront) vi
 | `just invalidate` | CloudFront cache invalidation |
 | `just deploy` | Full production deploy: build + sync + invalidate |
 | `just check` | Full local check: lint all + build + TF tests |
-
-**`npm run` commands** (CI/scripting):
-
-| Command | Purpose |
-|---------|---------|
-| `npm run dev` | Vite dev server |
-| `npm run preview` | Preview production build locally |
-
-**Important:** `npm run build` does NOT exist. The build command is `just build` (runs `tsc -b && vite build`). Do NOT use `npm run build` in scripts or docs.
 
 ## GitHub CLI (gh)
 
@@ -126,17 +117,6 @@ portfolio/
 ├── .commitlintrc.json
 └── .editorconfig
 ```
-
-## Living Improvement Plans
-
-`docs/cicd-improvements-plan.md` is a living document tracking multi-session CI/CD changes. Each change ships independently. Current status:
-
-- **Change 1** — Path filtering ✅ Shipped
-- **Change 2** — Drop Docker, adopt Mise ✅ Shipped
-- **Change 3** — Own IaC + separate deploy ✅ Shipped
-- **Change 4** — Split into multiple workflows + update README ✅ Shipped
-
-When starting a new change, read this plan first. Mark changes as shipped when they land.
 
 ## Gotchas & Lessons Learned
 
