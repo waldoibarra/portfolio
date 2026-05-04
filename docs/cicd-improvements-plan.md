@@ -143,76 +143,101 @@ implementation)
 
 ---
 
-### Change 3 — Separate Terraform from artifact upload + own the IaC code + C4 docs
+### Change 3 — Own the IaC code + separate deploy ✅ Shipped
 
 **Goal:** Stop using the third-party `InterweaveCloud/s3-cloudfront-static-website`
-module. Own the Terraform code in this repo. Move `dist/` upload out of
-Terraform into a dedicated `aws s3 sync` step in the pipeline. Document the architecture
-with C4/Structurizr or a similar alternative.
+module. Own the Terraform code in this repo from scratch. Move `dist/` upload
+out of Terraform into a dedicated `aws s3 sync` step in the pipeline.
+
+**Strategy: Full clean break.** We accept downtime (~1-3 hours for CloudFront
+propagation + ACM DNS validation) because the site is in progress. No `moved`
+blocks, no `terraform import` — we destroy all resources, delete all Terraform
+files, and recreate everything from new code following best practices.
 
 **Approach:**
 
-**Part A — Replace the module with own Terraform code:**
-- Read the current module's source to understand exactly what it
-  provisions (S3 bucket, CloudFront distribution, Route53 records,
-  ACM cert, OAI/OAC, bucket policy, etc.)
-- Rewrite those resources directly in `infrastructure/*.tf` files,
-  organized by concern (e.g., `s3.tf`, `cloudfront.tf`, `dns.tf`,
-  `acm.tf`); check for best practices on how to separate files.
-- Again, check for best practices on how to manage a Terraform project,
-  make sure to plan for this, what are the best practices for naming
-  things like variables and resources. What about testing Terraform?
-- Drop `sync_directories` entirely — Terraform no longer touches the
-  website content
-- Plan a migration path that does NOT recreate the S3 bucket or
-  CloudFront distribution (use `terraform import` or `moved` blocks
-  carefully — losing the bucket means dropping the site). If a migration
-  seems too complex, what is the alternative to have the site up again,
-  it is okay if the site goes down for a couple hours, just not days.
+**Part A — Document current state, then destroy and recreate from scratch:**
+
+1. **Document current state** — Create a reference doc (`docs/infrastructure-reference.md`)
+   capturing every resource ID, configuration, and setting before destroying.
+   This is the safety net for recreation:
+   - S3 bucket name, region, ACL, encryption settings, bucket policy JSON
+   - CloudFront distribution ID, domain, aliases, cache behavior, viewer cert,
+     minimum protocol version, OAI ID
+   - ACM certificate ARN, domain, SANs, validation method
+   - Route53 zone ID, record names and types
+   - All current tags, provider versions
+2. **Destroy all infrastructure** — `terraform destroy` removes all 14 managed
+   resources. S3 bucket must have `force_destroy = true` to delete objects.
+3. **Delete all Terraform files** — Remove `infrastructure/*.tf`,
+   `infrastructure/.terraform/`, `infrastructure/.terraform.lock.hcl`,
+   `infrastructure/builds/`, `infrastructure/tfplan`. Start from zero.
+4. **Write new Terraform from scratch** following best practices:
+   - File organization by concern: `s3.tf`, `acm.tf`, `cloudfront.tf`,
+     `dns.tf`, `provider.tf`, `versions.tf`, `vars.tf`, `outputs.tf`
+   - Clean naming: purpose-based names (`site`, `site_root`, `site_www`)
+     instead of generic module names (`website_files`, `s3_distribution`)
+   - AWS provider 5.x (upgrade from 4.10.0)
+   - **OAC** (Origin Access Control) instead of OAI (legacy)
+   - **Security hardening:**
+     - `aws_s3_bucket_public_access_block` (block all public access)
+     - `aws_s3_bucket_server_side_encryption_configuration` (manage AES256 in code)
+     - `aws_s3_bucket_ownership_controls` (enforce `BucketOwnerEnforced`, no ACLs)
+     - CloudFront minimum protocol version `TLSv1.2_2021` (upgrade from TLSv1.1)
+     - CloudFront allowed methods restricted to `GET`, `HEAD`, `OPTIONS` only
+   - No third-party module dependency
+   - No `sync_directories`, no `null_resource`, no `aws_profile` variable
+   - Deterministic S3 bucket name (not auto-generated prefix)
+   - `force_destroy = true` on S3 bucket (clean teardown for a personal project)
+5. **`terraform apply` fresh** — Recreate all infrastructure from new code.
 
 **Part B — Add `aws s3 sync` deploy step:**
 - After `terraform apply`, run `aws s3 sync ./dist s3://<bucket> --delete`
-- Pull the bucket name from `terraform output` (need a new output)
-- Keep the existing CloudFront `/*` invalidation step (deferred per
-  decision in this session)
-
-**Part C — Architectural documentation with Structurizr DSL:**
-- Add Structurizr CLI / DSL workflow (likely as a Mise-managed tool),
-  make sure to evaluate alternatives, open source is preferred.
-- Create `docs/architecture/workspace.dsl` describing:
-  - **Context:** Visitor → portfolio site → AWS edge
-  - **Containers:** S3 bucket, CloudFront, Route53, ACM, future Lambda
-    for LLM interface
-  - **Components:** within each container as needed
-  - **Deployment view:** trunk → GitHub Actions → AWS
-- Render diagrams to `docs/architecture/*.png` or `*.svg` (committed,
-  so README can link them)
-- Document HOW to regenerate the diagrams locally (Mise + Structurizr
-  CLI)
-- Update `docs/infrastructure.md` to reference the C4 diagrams
+- Pull bucket name from `terraform output -raw s3_bucket_id`
+- Remove the `Configure AWS profile for Terraform module` step (no longer
+  needed — no `local-exec` with `--profile default`)
+- Keep the existing CloudFront `/*` invalidation step (deferred per prior
+  decision)
 
 **Files touched (estimated):**
-- `infrastructure/*.tf` (rewrite extensively)
-- `infrastructure/outputs.tf` (add bucket name output)
-- `.github/workflows/deploy-website-ci-cd.yml` (add `aws s3 sync` step)
-- `.mise.toml` (add Structurizr CLI tool)
-- `docs/architecture/workspace.dsl` (new)
-- `docs/architecture/*.svg|png` (generated, new)
-- `docs/infrastructure.md` (rewrite)
+- `infrastructure/*.tf` — ALL new (destroyed and recreated from scratch)
+- `docs/infrastructure-reference.md` (new — pre-destruction reference)
+- `.github/workflows/deploy-website-ci-cd.yml` (add `aws s3 sync`, remove profile hack)
+- `docs/infrastructure.md` (update to reflect new IaC structure)
 
-**Risk:** HIGHEST. Touches live AWS infrastructure. State migration is
-delicate. Mistakes can take the site down or, worse, cause data loss
-on the bucket.
+**Files deleted:**
+- `infrastructure/main.tf` (module call removed)
+- `infrastructure/vars.tf` (`aws_profile` variable removed)
+- `infrastructure/.terraform/` (entire directory)
+- `infrastructure/.terraform.lock.hcl`
+- `infrastructure/builds/` (local archive artifacts)
+- `infrastructure/tfplan`
 
-**Verification:**
-- `terraform plan` shows ZERO changes after the rewrite (proves the
-  rewrite is functionally identical to the module)
-- `aws s3 sync` correctly uploads `dist/` after Terraform completes
-- Site loads, no broken links, hashed assets cached correctly
-- C4 diagrams render and accurately reflect the deployed architecture
+**Risk:** HIGHEST. Full destruction of live AWS infrastructure. Site will be
+down for ~1-3 hours during recreation (CloudFront propagation + ACM DNS
+validation). Acceptable for a personal portfolio in progress. The reference
+doc is the safety net.
 
-**Estimated sessions:** 3-4 (this is genuinely a big change; explore +
-propose alone may take a full session)
+**Verification — passed:**
+- `terraform plan` on the new code shows 13 creates (no surprises) ✅
+- `terraform apply` succeeded — 13 resources created ✅
+- `aws s3 sync` correctly uploaded `dist/` (7 files) to `s3://waldoibarra-com-site` ✅
+- Site loads at `waldoibarra.com` and `www.waldoibarra.com` — HTTP 200, HTTPS
+  via HTTP/2, AES256 encryption confirmed via `x-amz-server-side-encryption`
+  header ✅
+- CloudFront serves via OAC (not OAI) ✅
+- S3 bucket has public access block, encryption, and ownership controls ✅
+- No third-party module in state ✅
+- CloudFront invalidation `IA4ZV7GOPWHLGXBZGDMWZBVT5A` completed ✅
+- Pre-commit hook passes natively (tflint, eslint, stylelint, commitlint) ✅
+
+**Gotcha discovered:** ACM certificate CNAME validation records in Route53
+persist after `terraform destroy`. When recreating, the new cert needs the
+same CNAME but Route53 rejects `CREATE` if the record already exists. Fix:
+add `allow_overwrite = true` to `aws_route53_record.cert_validation` in
+`infrastructure/acm.tf`. Commit: `fix: Allow overwrite on ACM validation CNAME`.
+
+**Sessions used:** 4
 
 ---
 
@@ -262,6 +287,10 @@ the correct paths and only on those paths.
 
 ## Deferred (not in this plan)
 
+- **C4 architecture documentation.** Originally part of Change 3, now
+  deferred to a future change. Will use Mermaid C4 in Markdown (not
+  Structurizr DSL — the CLI was archived Feb 2026). Structurizr DSL was
+  the original plan but is no longer viable.
 - **Surgical CloudFront invalidation** (`/index.html` + `/` instead of
   `/*`). Current `/*` is acceptable. Revisit if invalidation cost or
   propagation time becomes a real problem.
@@ -269,11 +298,18 @@ the correct paths and only on those paths.
   the current asset count. Revisit at 1000+ files or multi-GB transfers.
 - **PR-based workflows.** Trunk-based development → no PRs. If the
   branching strategy ever changes, add `pull_request` triggers then.
+- **OAI to OAC migration.** Handled in Change 3 — we're starting with OAC
+  directly in the new code (no migration needed).
 
 ## Cross-cutting reminders
 
 - After **Change 2:** README's "CI/CD: GitHub Actions with Docker-based
   builds" line was updated as part of Change 2. ✅ Done.
+- After **Change 3:** ✅ Done. The `aws_profile` variable, `sync_directories`
+  variable, and `Configure AWS profile` CI step are all removed. CloudFront
+  uses OAC instead of OAI. AWS provider upgraded to 5.x. S3 bucket has public
+  access block, encryption config, and ownership controls. `aws s3 sync`
+  replaces `null_resource` for artifact upload.
 - After **Change 4:** README workflow badge URL changes. Don't forget.
 - Each change ends with `mem_session_summary` for cross-session
   continuity.
