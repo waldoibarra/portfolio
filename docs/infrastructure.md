@@ -61,28 +61,26 @@ Resources are organized by concern across separate files:
 
 ## Running Terraform Locally
 
-All commands run natively from the `infrastructure/` directory:
+All commands are available as `just` recipes from the repo root (see [justfile](../justfile)):
 
 ```sh
-cd infrastructure
-
 # Initialize the remote backend.
-terraform init
+just tf-init
 
 # Validate syntax and type checking.
-terraform validate
+terraform -chdir=infrastructure validate
 
 # Run tests (mock providers, plan-mode assertions).
-terraform test
+just tf-test
 
 # Preview changes.
-terraform plan -out tfplan
+just tf-plan
 
 # Apply the previewed plan.
-terraform apply tfplan
+just tf-apply
 
 # Read an output (e.g. the S3 bucket name).
-terraform output -raw s3_bucket_id
+just tf-output -raw s3_bucket_id
 ```
 
 ## Running AWS CLI
@@ -113,6 +111,5 @@ allowed methods, and tag presence. In CI, these tests run automatically via
 is never applied.
 
 ```sh
-just tf-test                       # using the just recipe
-terraform -chdir=infrastructure test
+just tf-test
 ```
