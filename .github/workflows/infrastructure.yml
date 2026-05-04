@@ -42,7 +42,6 @@ jobs:
           key: tf-providers-${{ runner.os }}-${{ hashFiles('infrastructure/.terraform.lock.hcl') }}
 
       - run: just lint-tf
-      - run: just lint-tf
       - run: just tf-init
       - run: just tf-test
       - run: just tf-plan-out
