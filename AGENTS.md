@@ -10,7 +10,7 @@ Personal portfolio website deployed as a static site to AWS (S3 + CloudFront) vi
 
 - **Frontend:** Lit 3.2 (Web Components), TypeScript (strict mode)
 - **Build:** Vite 5.4
-- **IaC:** Terraform with third-party module `InterweaveCloud/s3-cloudfront-static-website` (Change 3 in the plan will replace this)
+- **IaC:** Custom Terraform (S3, CloudFront, ACM, Route53) — no third-party modules
 - **CI/CD:** GitHub Actions — single workflow `.github/workflows/deploy-website-ci-cd.yml`
 - **Local dev:** Mise for declarative toolchain pinning (Node, Terraform, AWS CLI, TFLint, just)
 - **Linting:** ESLint, Stylelint, TFLint, commitlint — all enforced in CI and via Husky pre-commit hook
@@ -85,8 +85,9 @@ See `docs/ci-cd-pipeline.md` for full documentation.
 4. Install npm dependencies
 5. Lint (native: ESLint, Stylelint, TFLint, commitlint)
 6. Build (native: `tsc -b && vite build`)
-7. Deploy (native: terraform init/plan/apply)
-8. Invalidate CloudFront cache (native: `aws cloudfront`)
+7. Deploy infrastructure (native: terraform init/plan/apply)
+8. Upload website artifacts to S3 (native: `aws s3 sync`)
+9. Invalidate CloudFront cache (native: `aws cloudfront`)
 
 ## Project Structure
 
@@ -97,7 +98,15 @@ portfolio/
 │   ├── index.css            # Global styles
 │   └── vite-env.d.ts        # Vite type declarations
 ├── infrastructure/           # Terraform IaC
-│   └── main.tf              # S3 + CloudFront module config
+│   ├── acm.tf               # ACM certificate + DNS validation
+│   ├── cloud.tf             # Terraform Cloud backend config
+│   ├── cloudfront.tf        # OAC + CloudFront distribution + tag locals
+│   ├── dns.tf               # Route53 data source + alias records
+│   ├── outputs.tf           # s3_bucket_id, cloudfront_distribution_id
+│   ├── provider.tf          # AWS providers (us-west-2 + us-east-1 alias)
+│   ├── s3.tf                # S3 bucket + public access block + SSE + ownership + OAC policy
+│   ├── vars.tf              # domain_name, application (with defaults)
+│   └── versions.tf          # Terraform + provider version pins
 ├── .github/workflows/        # CI/CD
 │   └── deploy-website-ci-cd.yml
 ├── docs/
@@ -121,7 +130,7 @@ portfolio/
 
 - **Change 1** — Path filtering ✅ Shipped
 - **Change 2** — Drop Docker, adopt Mise ✅ Shipped
-- **Change 3** — Separate Terraform from artifact upload + own IaC + C4 docs (planned, HIGHEST risk)
+- **Change 3** — Own IaC + separate deploy ✅ Shipped
 - **Change 4** — Split into multiple workflows + update README (planned, Medium risk)
 
 When starting a new change, read this plan first. Mark changes as shipped when they land.
@@ -130,18 +139,24 @@ When starting a new change, read this plan first. Mark changes as shipped when t
 
 - **`npm run build` doesn't exist.** Always use `npm run ci:build`.
 - **Commit headers must be ≤50 chars, sentence-case.** The AI tendency to write long descriptive subjects will get rejected by commitlint.
-- **Lit requires `useDefineForClassFields: false`.** Do not enable this — Litdecorators break without it.
+- **Lit requires `useDefineForClassFields: false`.** Do not enable this — Lit decorators break without it.
 - **`paths-ignore` and `paths` are mutually exclusive** in GitHub Actions. Cannot combine them on the same trigger.
 - **`**.md` in paths-ignore covers ALL markdown recursively** — no need to list `LICENSE.md`, `README.md`, or `.atl/*.md` separately.
 - **Changes to the workflow YAML itself always trigger the pipeline** regardless of `paths-ignore`, because the YAML file isn't in the ignore list.
-- **The third-party Terraform module does infrastructure AND artifact upload** (`sync_directories`). Change 3 will separate these concerns.
 - **Docker has been removed.** Mise manages the toolchain (Node, Terraform, AWS CLI, TFLint, just) — see `.mise.toml`.
 - **`infrastructure/versions.tf` must match `.mise.toml` exactly.** The `required_version` should be an exact pin (`= "1.15.1"`), not a range. A range defeats the purpose of Mise's deterministic pinning — if someone bypasses Mise, a range would silently accept a different version.
 - **GitHub Actions secrets are automatically masked in logs.** Never add `::add-mask::` for values that come from `${{ secrets.* }}` — the runner masks them by default. Adding extra echo commands just clutters the log.
-- **The Terraform module hardcodes `--profile default`.** The `InterweaveCloud/s3-cloudfront-static-website` module runs `aws s3 sync --profile default` in a local-exec provisioner. Without Docker, there's no named AWS profile — the CI workflow must write `~/.aws/credentials` before Terraform runs. This will be removed when Change 3 replaces the module.
-- **`infrastructure/main.tf` sync path is `../dist`.** Not `../website_content` (that was a Docker artifact path). Vite outputs to `dist/` in the repo root, and Terraform's `path.cwd` resolves from `infrastructure/`.
 - **`package.json` needs `"prepare": "husky"`.** Without it, fresh clones don't get git hooks installed. Previously Docker's entrypoint ran `npx husky install` — now npm's `prepare` lifecycle script handles it.
 - **`actions/cache@v4` is deprecated** (forces Node v24 on June 2nd). Use `actions/cache@v5`.
+- **ACM validation CNAME records persist after `terraform destroy`.** When recreating (clean break), use `allow_overwrite = true` on `aws_route53_record.cert_validation` — otherwise Terraform fails with "record already exists."
+- **`infra:` is not a valid conventional commit type.** Use `chore:`, `feat:`, `fix:`, `docs:`, etc. instead.
+- **Route53 hosted zone should NOT be managed by Terraform.** Use `data "aws_route53_zone"` to look it up by domain name. This prevents `terraform destroy` from deleting the zone and its NS/SOA records, and eliminates the need for a `TF_VAR_hosted_zone_id` variable.
+- **OAC bucket policy uses Service principal, not IAM ARN.** The policy must use `type = "Service"` with `identifiers = ["cloudfront.amazonaws.com"]` and a `StringEquals` condition on `aws:SourceArn` (the distribution ARN). This replaces the old OAI approach which used an IAM ARN principal.
+- **S3 bucket names must be deterministic in new code.** The old module used `bucket_prefix` which generated random suffixes (`waldoibarra-com20220722202658658100000002`). Custom code uses `bucket = "waldoibarra-com-site"` (exact, no randomness).
+- **`terraform test` with `for_each` resources requires `override_resource` and `mock_resource`.** Computed attributes like `domain_validation_options` can't be evaluated at plan time. Use `override_during = plan` at the file level and provide stable defaults via `mock_resource` for all computed fields.
+- **No third-party Terraform modules.** Custom IaC only. The `InterweaveCloud/s3-cloudfront-static-website` module has been replaced entirely.
+- **Artifact upload is a CI step, not a Terraform resource.** `aws s3 sync` runs in GitHub Actions after `terraform apply`. No `null_resource`, no `local-exec`, no `--profile` flags.
+- **`.env.example` only needs one variable: `TF_TOKEN_app_terraform_io`.** AWS credentials come from `~/.aws/credentials` (local) or GitHub Secrets env vars (CI). `domain_name` and `application` have defaults in `vars.tf`. Route53 hosted zone is looked up via data source.
 
 ## SDD Preferences
 
