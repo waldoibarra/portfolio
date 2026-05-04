@@ -53,8 +53,7 @@ jobs:
             npm-${{ runner.os }}-
 
       - run: npm ci
-      - run: just lint        # GATE — stops deployment on lint failure
+      - run: just lint
       - run: just build
-      - run: just tf-init     # required to read outputs
       - run: just s3-sync
       - run: just invalidate

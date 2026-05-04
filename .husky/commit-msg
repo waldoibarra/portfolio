@@ -1,5 +1,5 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -e
 
 echo "Running commit message linter."
-npx --no -- commitlint --edit ${1}
+just lint-commit "${1}"

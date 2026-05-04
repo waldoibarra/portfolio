@@ -5,18 +5,20 @@ default:
 
 # Start development server
 [group("Development")]
-dev:
+start:
     npx vite
 
 # Check TypeScript and CSS for problems
 [group("Linting")]
 lint:
-    npx eslint . && npx stylelint --ignore-path .gitignore "**/*.css"
+    npx eslint .
+    npx stylelint --ignore-path .gitignore "**/*.css"
 
 # Auto-fix TypeScript and CSS problems
 [group("Linting")]
 lint-fix:
-    npx eslint --fix . && npx stylelint --ignore-path .gitignore --fix "**/*.css"
+    npx eslint --fix .
+    npx stylelint --ignore-path .gitignore --fix "**/*.css"
 
 # Check Terraform for problems
 [group("Linting")]
@@ -31,15 +33,26 @@ lint-all: (lint) (lint-tf)
 [group("Linting")]
 check: (lint) (lint-tf) (build) (tf-init) (tf-test)
 
+# Lint commit message
+[group("Linting")]
+lint-commit *ARGS:
+    npx --no -- commitlint --edit {{ ARGS }}
+
 # Typecheck and build for production
 [group("Building")]
 build:
-    npx tsc -b && npx vite build
+    npx tsc -b
+    npx vite build
 
 # Initialize Terraform
 [group("Terraform")]
 tf-init:
     terraform -chdir=infrastructure init
+
+# Validate Terraform syntax and type checking.
+[group("Terraform")]
+tf-validate:
+    terraform -chdir=infrastructure validate
 
 # Run Terraform tests
 [group("Terraform")]

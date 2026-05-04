@@ -1,10 +1,19 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -e
+
+echo "Running TypeScript and CSS linters."
+just lint
 
 echo "Running Terraform linter."
 just lint-tf
 
-echo "Running TypeScript and CSS linters."
-just lint
+echo "Running Typecheck and build."
+just build
+
+echo "Initializing Terraform."
+just tf-init
+
+echo "Running Terraform tests."
+just tf-test
 
 echo "All good. ❤️"

@@ -37,15 +37,12 @@ This is a work in progress, hope you enjoy reading this code as much as I enjoye
 
 ```
 portfolio/
-├── src/
-│   ├── app-element.ts      # Root Web Component (Lit)
-│   ├── index.css           # Global styles
-│   └── vite-env.d.ts      # Vite type declarations
-├── infrastructure/         # Terraform IaC
-│   └── main.tf            # AWS S3 + CloudFront module
-├── index.html              # Entry point
-├── vite.config.ts          # Vite configuration
+├── .github/               # CI/CD pipeline
+├── infrastructure/        # Terraform IaC
+├── public/                # Website static files
+├── src/                   # Website components
 ├── .mise.toml             # Toolchain version pins
+├── index.html             # Website entry point
 └── justfile               # Local command runner
 ```
 
@@ -60,7 +57,7 @@ The only tool you need to install on your machine is [Mise](https://mise.jdx.dev
 To run the website in development mode, run the following command and visit [localhost:5173](http://localhost:5173).
 
 ```sh
-just dev
+just start
 ```
 
 Or to see available commands in the justfile, run:
