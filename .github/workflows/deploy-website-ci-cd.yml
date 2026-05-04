@@ -17,9 +17,6 @@ env:
   AWS_DEFAULT_REGION: us-east-1
   TF_TOKEN_app_terraform_io: ${{ secrets.TF_TOKEN_app_terraform_io }}
   TF_VAR_domain_name: waldoibarra.com
-  TF_VAR_hosted_zone_id: ${{ secrets.TF_VAR_hosted_zone_id }}
-  TF_VAR_aws_profile: default
-  TF_VAR_Application: Personal static website
 
 jobs:
   lint-build-deploy:
@@ -59,19 +56,18 @@ jobs:
         id: build-app
         run: npm run ci:build
 
-      - name: Configure AWS profile for Terraform module
-        run: |
-          mkdir -p ~/.aws
-          printf '[default]\naws_access_key_id = %s\naws_secret_access_key = %s\n' \
-            "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY" > ~/.aws/credentials
-
-      - name: Deploy website
-        id: deploy-website
+      - name: Deploy infrastructure
+        id: deploy-infrastructure
         working-directory: infrastructure
         run: |
           terraform init
           terraform plan -out tfplan
           terraform apply tfplan
+
+      - name: Upload website artifacts to S3
+        id: upload-artifacts
+        run: |
+          aws s3 sync ./dist "s3://$(terraform -chdir=infrastructure output -raw s3_bucket_id)" --delete
 
       - name: Invalidate CloudFront cache
         id: invalidate-cloudfront
