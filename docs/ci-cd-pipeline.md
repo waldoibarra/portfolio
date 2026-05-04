@@ -1,126 +1,123 @@
 # CI/CD Pipeline
 
-The deployment pipeline is defined in `.github/workflows/deploy-website-ci-cd.yml` and runs on
-every push to the `trunk` branch that touches a tracked file
-(see [Path Filtering](#path-filtering) below).
+## Overview
 
-## Trigger
+The project uses two focused GitHub Actions workflows instead of one monolithic pipeline:
+
+- `website.yml` — builds and deploys the website
+- `infrastructure.yml` — validates, tests, and applies Terraform infrastructure
+
+Both workflows are path-filtered: only the relevant pipeline runs for a given change. See [Path Filtering](#path-filtering).
+
+Both workflows use the [justfile](../justfile) as the single command interface. CI, local development, and Husky pre-commit hooks all call the same `just` recipes. No inline commands, no `npm run ci:*` scripts.
+
+## Workflows
+
+### Website Pipeline (`.github/workflows/website.yml`)
+
+Triggers on push to `trunk` when source files change:
 
 ```yaml
-on:
-  push:
-    branches:
-      - trunk
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.gitignore'
-      - '.editorconfig'
+paths:
+  - 'src/**'
+  - 'public/**'
+  - 'index.html'
+  - 'package.json'
+  - 'package-lock.json'
+  - 'vite.config.ts'
+  - 'tsconfig.json'
+  - 'eslint.config.mjs'
+  - '.stylelintrc.json'
+  - '.mise.toml'
+  - '.github/workflows/website.yml'
 ```
 
-Pushes that only touch the ignored paths are skipped entirely — GitHub marks the check as
-"skipped" rather than "passed", which is the expected behavior.
+Steps (all via `just` recipes):
+
+1. Checkout
+2. Set up toolchain (mise-action, all tools from cache)
+3. Cache npm dependencies (`actions/cache@v5`, keyed on `package-lock.json`)
+4. `npm ci`
+5. `just lint` — ESLint + Stylelint (GATE: stops deployment if lint fails)
+6. `just build` — `tsc -b && vite build`
+7. `just tf-init` — init Terraform to read outputs
+8. `just s3-sync` — upload `dist/` to S3
+9. `just invalidate` — CloudFront cache invalidation `/*`
+
+Secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, `TF_TOKEN_app_terraform_io`
+
+Concurrency: group `website`, `cancel-in-progress: false`
+
+**Note**: Requires at least one successful `infrastructure.yml` run to populate Terraform outputs (S3 bucket ID, CloudFront distribution ID). For initial project setup, run `infrastructure.yml` manually via `workflow_dispatch`.
+
+### Infrastructure Pipeline (`.github/workflows/infrastructure.yml`)
+
+Triggers on push to `trunk` when infrastructure files change:
+
+```yaml
+paths:
+  - 'infrastructure/**'
+  - '.mise.toml'
+  - '.github/workflows/infrastructure.yml'
+```
+
+Steps (all via `just` recipes):
+
+1. Checkout
+2. Set up toolchain (mise-action, all tools from cache)
+3. Cache Terraform providers (`actions/cache@v5`, key on `infrastructure/.terraform.lock.hcl` hash, env `TF_PLUGIN_CACHE_DIR`)
+4. `just tf-init` — initialize Terraform
+5. `just lint-tf` — TFLint
+6. `just tf-test` — Terraform tests (CI GATE: 8 mock-provider tests covering S3, OAC, CloudFront)
+7. `just tf-plan-out` — `terraform plan -out=tfplan`
+8. `just tf-apply-auto` — `terraform apply -auto-approve tfplan`
+
+Secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, `TF_TOKEN_app_terraform_io`, `TF_VAR_domain_name`
+
+Concurrency: group `infrastructure`, `cancel-in-progress: false`
 
 ## Path Filtering
 
-The pipeline uses a **denylist** (`paths-ignore`) rather than an allowlist (`paths`).
+Each workflow uses an **allowlist** (`paths`) rather than a denylist.
 
-### Why denylist over allowlist?
+### Why allowlist?
 
-An allowlist forces you to enumerate every source file that matters (e.g. `src/**`, `infrastructure/**`,
-`.mise.toml`, `package.json`, …). Any new directory or config file added later is silently ignored
-unless the allowlist is updated — a common source of "why didn't the pipeline run?" bugs.
+Allowlists are explicit about what triggers a given pipeline. `website.yml` only runs for source changes; `infrastructure.yml` only runs for infrastructure changes. Unlike the old single-workflow denylist approach (`paths-ignore`), there is no risk of a new config file being silently skipped — each workflow declares exactly which paths it owns. A change that touches both source and infrastructure triggers both pipelines in parallel.
 
-A denylist is safer: it runs by default and only skips commits where every changed file matches an
-ignored pattern. New source files are automatically picked up without touching the workflow.
+### What triggers which pipeline
 
-### Currently ignored patterns
+| Change | Triggered |
+|--------|-----------|
+| `src/**`, `public/**`, `index.html`, `package.json`, etc. | `website.yml` only |
+| `infrastructure/**` | `infrastructure.yml` only |
+| Both source AND infrastructure | Both workflows in parallel |
+| `docs/**`, `**.md`, `.gitignore`, `.editorconfig` | Neither (both skip) |
 
-| Pattern | What is skipped |
-|---------|-----------------|
-| `**.md` | Any Markdown file anywhere in the repo |
-| `docs/**` | Everything under the `docs/` directory |
-| `.gitignore` | Git ignore rules |
-| `.editorconfig` | Editor config |
+### How to verify
 
-### How to verify the filter works
+1. **Docs-only push** — commit a change that only touches `README.md`. Neither workflow should appear.
+2. **Source push** — commit a change to `src/`. Only `website.yml` should appear.
+3. **Infrastructure push** — commit a change to `infrastructure/`. Only `infrastructure.yml` should appear.
 
-1. **Docs-only push** — commit a change that only touches `README.md` or `docs/*.md`. The
-   `deploy-website-ci-cd` workflow should NOT appear in the GitHub Actions run list.
-2. **Source push** — commit a change to any file in `src/`, `infrastructure/`, or
-   `package.json`. The workflow SHOULD appear and complete all steps.
+## Commands (Justfile)
 
-## Pipeline Steps
+All CI steps call `just` recipes. See [justfile](../justfile) for the full list.
 
-The single job `lint-build-deploy` runs on `ubuntu-latest` and executes these steps in order:
+Key recipes:
 
-### 1. Set Up Toolchain (Mise)
+| Recipe | Purpose |
+|--------|---------|
+| `just lint` | ESLint + Stylelint |
+| `just lint-tf` | TFLint on infrastructure/ |
+| `just build` | `tsc -b && vite build` |
+| `just tf-test` | Run Terraform tests (8 assertions, mock providers) |
+| `just tf-plan-out` | Plan and save to file (CI) |
+| `just tf-apply-auto` | Apply saved plan (CI) |
+| `just s3-sync` | Upload `dist/` to S3 |
+| `just invalidate` | CloudFront cache invalidation |
+| `just deploy` | Full pipeline: build + sync + invalidate |
 
-```yaml
-- uses: jdx/mise-action@v4
-  with:
-    cache: true
-    github_token: ${{ github.token }}
-```
+## History
 
-Reads `.mise.toml` at the repo root and provisions the pinned versions of Node, Terraform,
-AWS CLI v2, TFLint, and just onto the runner's PATH. The action caches the tool directory
-between runs.
-
-### 2. Install npm Dependencies
-
-```sh
-npm ci
-```
-
-Uses `actions/cache@v4` keyed on `package-lock.json` to avoid re-downloading every run.
-
-### 3. Lint
-
-```sh
-npm run ci:lint           # ESLint + Stylelint
-tflint --chdir infrastructure
-npm run ci:lint:commit    # commitlint via $COMMIT_MESSAGE env var
-```
-
-### 4. TypeScript Build (Vite)
-
-```sh
-npm run ci:build          # tsc -b && vite build
-```
-
-Produces `dist/` directly in the runner workspace — no container copy step needed.
-
-### 5. Terraform Plan + Apply
-
-```sh
-cd infrastructure
-terraform init
-terraform plan -out tfplan
-terraform apply tfplan
-```
-
-Uses Terraform Cloud as the remote backend (`waldo-io/waldoibarra-com` workspace).
-
-For local Terraform usage, see [docs/infrastructure.md](docs/infrastructure.md).
-
-### 6. Upload Website Artifacts to S3
-
-```sh
-S3_BUCKET_ID=$(terraform -chdir=infrastructure output -raw s3_bucket_id)
-aws s3 sync ./dist "s3://$S3_BUCKET_ID" --delete
-```
-
-Reads the S3 bucket name from Terraform output and syncs the built `dist/` directory to S3.
-The `--delete` flag removes any stale files from the bucket.
-
-### 7. CloudFront Cache Invalidation
-
-```sh
-DISTRIBUTION_ID=$(terraform -chdir=infrastructure output -raw cloudfront_distribution_id)
-INVALIDATION_ID=$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths "/*" --query 'Invalidation.Id' --output text)
-aws cloudfront wait invalidation-completed --distribution-id "$DISTRIBUTION_ID" --id "$INVALIDATION_ID"
-```
-
-Reads the CloudFront distribution ID from Terraform output, creates an `/*` invalidation,
-then waits for it to complete. AWS CLI v2 reads credentials from the workflow `env:` block.
+- **Change 1** — Added `paths-ignore` to single workflow (skip docs-only commits)
+- **Change 4** — Split into two workflows (`website.yml` + `infrastructure.yml`), moved all commands to justfile, added `terraform test` as CI gate

@@ -11,7 +11,7 @@ Personal portfolio website deployed as a static site to AWS (S3 + CloudFront) vi
 - **Frontend:** Lit (Web Components), TypeScript (strict mode)
 - **Build:** Vite
 - **IaC:** Custom Terraform (S3, CloudFront, ACM, Route53) — no third-party modules
-- **CI/CD:** GitHub Actions — single workflow `.github/workflows/deploy-website-ci-cd.yml`
+- **CI/CD:** GitHub Actions — two workflows (`website.yml` for source changes, `infrastructure.yml` for Terraform changes)
 - **Local dev:** Mise for declarative toolchain pinning (Node, Terraform, AWS CLI, TFLint, just)
 - **Linting:** ESLint, Stylelint, TFLint, commitlint — all enforced in CI and via Husky pre-commit hook
 
@@ -21,23 +21,31 @@ Personal portfolio website deployed as a static site to AWS (S3 + CloudFront) vi
 
 | Command | Purpose |
 |---------|---------|
-| `just dev` | Run Vite development server |
-| `just lint` | Run linter and auto-fix problems |
-| `just lint-tf` | Run TFLint on infrastructure/ |
-| `just ci-lint` | Run linters in CI mode (no auto-fix) |
-| `just ci-build` | TypeScript check + Vite production build |
+| `just dev` | Start Vite development server |
+| `just lint` | ESLint + Stylelint check |
+| `just lint-fix` | Auto-fix ESLint + Stylelint issues |
+| `just lint-tf` | TFLint on infrastructure/ |
+| `just lint-all` | Run all linters (TypeScript, CSS, Terraform) |
+| `just build` | TypeScript check + Vite production build |
+| `just tf-test` | Run Terraform tests (mock providers) |
+| `just tf-plan` | Interactive Terraform plan |
+| `just tf-plan-out` | Plan and save to file (for CI) |
+| `just tf-apply` | Interactive Terraform apply |
+| `just tf-apply-auto` | Apply saved plan (for CI) |
+| `just tf-output` | Read Terraform outputs |
+| `just s3-sync` | Upload dist/ to S3 |
+| `just invalidate` | CloudFront cache invalidation |
+| `just deploy` | Full production deploy: build + sync + invalidate |
+| `just check` | Full local check: lint all + build + TF tests |
 
 **`npm run` commands** (CI/scripting):
 
 | Command | Purpose |
 |---------|---------|
 | `npm run dev` | Vite dev server |
-| `npm run ci:build` | TypeScript check + Vite production build |
-| `npm run ci:lint` | ESLint + Stylelint |
-| `npm run lint:fix` | Auto-fix lint issues |
 | `npm run preview` | Preview production build locally |
 
-**Important:** `npm run build` does NOT exist. The build command is `npm run ci:build` (runs `tsc -b && vite build`). Do NOT use `npm run build` in scripts or docs.
+**Important:** `npm run build` does NOT exist. The build command is `just build` (runs `tsc -b && vite build`). Do NOT use `npm run build` in scripts or docs.
 
 ## GitHub CLI (gh)
 
@@ -76,18 +84,12 @@ When writing commit messages, keep the subject under 50 chars and use sentence-c
 
 See `docs/ci-cd-pipeline.md` for full documentation.
 
-**Trigger:** Push to `trunk` with `paths-ignore` denylist. Docs-only pushes are skipped.
+Two workflows replace the old monolithic pipeline:
 
-**Steps:**
-1. Checkout
-2. Set up toolchain (mise-action)
-3. Cache npm dependencies
-4. Install npm dependencies
-5. Lint (native: ESLint, Stylelint, TFLint, commitlint)
-6. Build (native: `tsc -b && vite build`)
-7. Deploy infrastructure (native: terraform init/plan/apply)
-8. Upload website artifacts to S3 (native: `aws s3 sync`)
-9. Invalidate CloudFront cache (native: `aws cloudfront`)
+- **`website.yml`** — Triggered by source changes (`src/**`, `public/**`, `index.html`, config files). Runs `just lint` (gate) → `just build` → `just s3-sync` → `just invalidate`.
+- **`infrastructure.yml`** — Triggered by infrastructure changes (`infrastructure/**`, `.mise.toml`). Runs `just lint-tf` (gate) → `just tf-test` (gate) → `just tf-plan-out` → `just tf-apply-auto`.
+
+Both workflows use `actions/cache@v5` and execute all steps via `just` recipes. Each workflow's `paths` allowlist ensures only the relevant pipeline runs for a given change.
 
 ## Project Structure
 
@@ -108,7 +110,8 @@ portfolio/
 │   ├── vars.tf              # domain_name, application (with defaults)
 │   └── versions.tf          # Terraform + provider version pins
 ├── .github/workflows/        # CI/CD
-│   └── deploy-website-ci-cd.yml
+│   ├── website.yml           # Source build + deploy pipeline
+│   └── infrastructure.yml    # Terraform validate + test + apply pipeline
 ├── docs/
 │   ├── cicd-improvements-plan.md  # Living CI/CD improvement plan
 │   ├── ci-cd-pipeline.md          # Pipeline documentation
@@ -131,13 +134,13 @@ portfolio/
 - **Change 1** — Path filtering ✅ Shipped
 - **Change 2** — Drop Docker, adopt Mise ✅ Shipped
 - **Change 3** — Own IaC + separate deploy ✅ Shipped
-- **Change 4** — Split into multiple workflows + update README (planned, Medium risk)
+- **Change 4** — Split into multiple workflows + update README ✅ Shipped
 
 When starting a new change, read this plan first. Mark changes as shipped when they land.
 
 ## Gotchas & Lessons Learned
 
-- **`npm run build` doesn't exist.** Always use `npm run ci:build`.
+- **`npm run build` doesn't exist.** Always use `just build`.
 - **Commit headers must be ≤50 chars, sentence-case.** The AI tendency to write long descriptive subjects will get rejected by commitlint.
 - **Lit requires `useDefineForClassFields: false`.** Do not enable this — Lit decorators break without it.
 - **`paths-ignore` and `paths` are mutually exclusive** in GitHub Actions. Cannot combine them on the same trigger.
