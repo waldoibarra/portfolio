@@ -2,9 +2,9 @@
 set -e
 
 echo "Running Terraform linter."
-tflint --chdir infrastructure
+just lint-tf
 
 echo "Running TypeScript and CSS linters."
-npm run ci:lint
+just lint
 
 echo "All good. ❤️"

@@ -1,6 +1,7 @@
 # Welcome To My Personal Website Code
 
-[![Deploy Website CI/CD](https://github.com/waldoibarra/portfolio/actions/workflows/deploy-website-ci-cd.yml/badge.svg)](https://github.com/waldoibarra/portfolio/actions/workflows/deploy-website-ci-cd.yml)
+[![Website CI/CD](https://github.com/waldoibarra/portfolio/actions/workflows/website.yml/badge.svg)](https://github.com/waldoibarra/portfolio/actions/workflows/website.yml)
+[![Infrastructure CI/CD](https://github.com/waldoibarra/portfolio/actions/workflows/infrastructure.yml/badge.svg)](https://github.com/waldoibarra/portfolio/actions/workflows/infrastructure.yml)
 
 This is a work in progress, hope you enjoy reading this code as much as I enjoyed writing it.
 
@@ -11,7 +12,8 @@ This is a work in progress, hope you enjoy reading this code as much as I enjoye
 - **Build Tool**: [Vite](https://vitejs.dev/) for development and production builds
 - **Styling**: CSS-in-component with Lit's `css` tagged templates
 - **Infrastructure**: [Terraform](https://developer.hashicorp.com/terraform) with AWS (S3 + CloudFront + Route 53)
-- **CI/CD**: [GitHub Actions](https://github.com/features/actions) with [Mise](https://mise.jdx.dev)-managed toolchain
+- **CI/CD**: [GitHub Actions](https://github.com/features/actions) with two domain-focused workflows (`website.yml`, `infrastructure.yml`) and [Mise](https://mise.jdx.dev)-managed toolchain
+- **Testing**: `terraform test` with mock providers (`infrastructure/tests/main.tftest.hcl`)
 
 ## Key Features
 
@@ -70,13 +72,17 @@ just --list
 ### Other Useful Commands
 
 ```sh
-just lint          # Run linter and fix problems for TypeScript and CSS files
-just lint-tf       # Run Terraform linter
+just lint          # ESLint + Stylelint
+just lint-tf       # TFLint
+just build         # tsc + vite build
+just tf-test       # Terraform mock-provider tests
+just check         # Full local check (lint + build + tf-test)
 ```
 
 ### Infrastructure Changes
 
 For working with Terraform and AWS infrastructure locally, see [docs/infrastructure.md](docs/infrastructure.md).
+
 For CI/CD pipeline details and trigger rules, see [docs/ci-cd-pipeline.md](docs/ci-cd-pipeline.md).
 
 ## Current Status
