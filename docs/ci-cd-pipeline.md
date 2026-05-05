@@ -71,12 +71,12 @@ Steps (all via `just` recipes):
 1. Checkout
 2. Set up toolchain (mise-action, all tools from cache)
 3. Cache Terraform providers (`actions/cache@v5`, key on `infrastructure/.terraform.lock.hcl` hash,
-   env `TF_PLUGIN_CACHE_DIR`)
-4. `just tf-init` — initialize Terraform
-5. `just lint-tf` — TFLint
-6. `just tf-test` — Terraform tests (CI GATE: 8 mock-provider tests covering S3, OAC, CloudFront)
-7. `just tf-plan-out` — `terraform plan -out=tfplan`
-8. `just tf-apply-auto` — `terraform apply -auto-approve tfplan`
+    env `TF_PLUGIN_CACHE_DIR`)
+4. `just lint-tf` — TFLint (GATE: stops apply if lint fails)
+5. `just tf-check` — init + validate + test (CI GATE: 8 mock-provider tests covering S3, OAC,
+    CloudFront)
+6. `just tf-plan-out` — `terraform plan -out=tfplan`
+7. `just tf-apply-auto` — `terraform apply -auto-approve tfplan`
 
 Secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`,
 `TF_TOKEN_app_terraform_io`, `TF_VAR_domain_name`
@@ -107,10 +107,10 @@ infrastructure triggers both pipelines in parallel.
 ### How to verify
 
 1. **Docs-only push** — commit a change that only touches `README.md`. Neither workflow should
-   appear.
+    appear.
 2. **Source push** — commit a change to `src/`. Only `website.yml` should appear.
 3. **Infrastructure push** — commit a change to `infrastructure/`. Only `infrastructure.yml` should
-   appear.
+    appear.
 
 ## Commands (Justfile)
 
@@ -122,7 +122,11 @@ Key recipes:
 | ------ | ------ |
 | `just lint` | ESLint + Stylelint |
 | `just lint-tf` | TFLint on infrastructure/ |
+| `just lint-md` | markdownlint-cli2 check |
+| `just lint-ec` | editorconfig-checker |
+| `just lint-all` | All linters (TypeScript, CSS, Markdown, Terraform, Editorconfig) |
 | `just build` | `tsc -b && vite build` |
+| `just tf-validate` | Validate Terraform syntax and types |
 | `just tf-test` | Run Terraform tests (8 assertions, mock providers) |
 | `just tf-plan-out` | Plan and save to file (CI) |
 | `just tf-apply-auto` | Apply saved plan (CI) |

@@ -38,29 +38,29 @@ are organized by concern across separate files:
 
 2. From the repo root, install the pinned tools:
 
-   ```sh
-   mise trust
-   mise install
-   ```
+    ```sh
+    mise trust
+    mise install
+    ```
 
-   This provisions Node, Terraform, AWS CLI v2, TFLint, and just.
+    This provisions Node, Terraform, AWS CLI v2, TFLint, and just.
 
 3. Copy the environment template and fill in the values:
 
-   ```sh
-   cp .env.example .env
-   ```
+    ```sh
+    cp .env.example .env
+    ```
 
-   See the comments in `.env.example` for what each variable is and where to get it. The only
-   required value is `TF_TOKEN_app_terraform_io` (Terraform Cloud API token). AWS credentials come
-   from `~/.aws/credentials` or environment variables. Route53 hosted zone is looked up
-   automatically by domain name — no `hosted_zone_id` variable needed.
+    See the comments in `.env.example` for what each variable is and where to get it. The only
+    required value is `TF_TOKEN_app_terraform_io` (Terraform Cloud API token). AWS credentials come
+    from `~/.aws/credentials` or environment variables. Route53 hosted zone is looked up
+    automatically by domain name — no `hosted_zone_id` variable needed.
 
 4. The Terraform Cloud remote backend is the `waldoibarra-com` workspace in the `waldo-io`
-   organization: <https://app.terraform.io/app/waldo-io/workspaces/waldoibarra-com>
+    organization: <https://app.terraform.io/app/waldo-io/workspaces/waldoibarra-com>
 
-   Generate a personal API token at <https://app.terraform.io/app/settings/tokens> and put it in
-   `TF_TOKEN_app_terraform_io`.
+    Generate a personal API token at <https://app.terraform.io/app/settings/tokens> and put it in
+    `TF_TOKEN_app_terraform_io`.
 
 ## Running Terraform Locally
 

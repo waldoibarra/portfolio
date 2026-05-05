@@ -5,6 +5,7 @@ awscli = "2"
 tflint = "0.62.0"
 just = "1.50.0"
 markdownlint-cli2 = "0.22.1"
+editorconfig-checker = "3.6.1"
 
 [env]
 _.file = ".env"
