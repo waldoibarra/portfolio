@@ -1,4 +1,4 @@
-# Domain-Split CI/CD Workflows with Allowlist Paths
+# Domain-Split CI/CD Workflows
 
 ## Context and Problem Statement
 
