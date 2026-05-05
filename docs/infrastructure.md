@@ -68,7 +68,7 @@ are organized by concern across separate files:
 
 ## Running Terraform Locally
 
-All commands are available as `just` recipes from the repo root (see [justfile](../justfile)):
+All commands are available as `just` recipes from the repo root (see [justfile](/justfile)):
 
 ```sh
 # Initialize the remote backend.

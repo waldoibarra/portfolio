@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -e
 
 echo "Running full check: lint, build, test."

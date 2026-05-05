@@ -3,9 +3,24 @@
 default:
     @just --list
 
+# Initialize project dependencies
+[group("Setup")]
+init: (install-tools) (install-node-deps) (install-hooks)
+
+# Install tools with Mise
+[group("Setup")]
+install-tools:
+  mise trust
+  mise install
+
+# Install Git Hooks
+[group("Setup")]
+install-hooks:
+  hk install
+
 # Install Node dependencies (clean, lockfile-respecting)
 [group("Setup")]
-install:
+install-node-deps:
     npm ci
 
 # Start development server
@@ -51,7 +66,7 @@ check: (lint-all) (build) (tf-check)
 # Lint commit message
 [group("Linting")]
 lint-commit *ARGS:
-    npx --no -- commitlint --edit {{ ARGS }}
+    committed --config config/committed.toml --commit-file {{ ARGS }}
 
 # Typecheck and build for production
 [group("Building")]
@@ -123,5 +138,3 @@ invalidate: (tf-init)
         --distribution-id "$DISTRIBUTION_ID" \
         --id "$INVALIDATION_ID" \
     && echo "Invalidation $INVALIDATION_ID completed."
-
-
