@@ -10,9 +10,8 @@ The project uses two focused GitHub Actions workflows instead of one monolithic 
 Both workflows are path-filtered: only the relevant pipeline runs for a given change. See
 [Path Filtering](#path-filtering).
 
-Both workflows use the [justfile](../justfile) as the single command interface. CI, local
-development, and Husky pre-commit hooks all call the same `just` recipes. No inline commands, no
-`npm run ci:*` scripts.
+Both workflows use the [justfile](/justfile) as the single command interface. CI, local
+development, and Git hooks all call the same `just` recipes. No inline commands.
 
 ## Workflows
 
@@ -40,7 +39,7 @@ Steps (all via `just` recipes):
 1. Checkout
 2. Set up toolchain (mise-action, all tools from cache)
 3. Cache npm dependencies (`actions/cache@v5`, keyed on `package-lock.json`)
-4. `just install` (wraps `npm ci`)
+4. `just install-node-deps` (wraps `npm ci`)
 5. `just lint` — ESLint + Stylelint (GATE: stops deployment if lint fails)
 6. `just build` — `tsc -b && vite build`
 7. `just tf-init` — init Terraform to read outputs
@@ -137,7 +136,7 @@ specific run to completion.
 
 ## Commands (Justfile)
 
-All CI steps call `just` recipes. See [justfile](../justfile) for the full list.
+All CI steps call `just` recipes. See [justfile](/justfile) for the full list.
 
 Key recipes:
 

@@ -1,0 +1,18 @@
+amends "package://github.com/jdx/hk/releases/download/v1.45.0/hk@1.45.0#/Config.pkl"
+
+hooks {
+  ["pre-commit"] {
+    steps {
+      ["pre-commit"] {
+        check = "./scripts/pre-commit-hook.sh"
+      }
+    }
+  }
+  ["commit-msg"] {
+    steps {
+      ["commit-msg"] {
+        check = "./scripts/commit-msg-hook.sh {{commit_msg_file}}"
+      }
+    }
+  }
+}
