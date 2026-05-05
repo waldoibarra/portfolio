@@ -37,13 +37,13 @@ This is a work in progress, hope you enjoy reading this code as much as I enjoye
 
 ```
 portfolio/
-├── .github/               # CI/CD pipeline
-├── infrastructure/        # Terraform IaC
-├── public/                # Website static files
-├── src/                   # Website components
-├── .mise.toml             # Toolchain version pins
-├── index.html             # Website entry point
-└── justfile               # Local command runner
+├── .github/          # CI/CD pipeline
+├── infrastructure/   # Terraform IaC
+├── public/           # Website static files
+├── src/              # Website components
+├── .mise.toml        # Toolchain version pins
+├── index.html        # Website entry point
+└── justfile          # Local command runner
 ```
 
 ## Local Development
@@ -63,17 +63,17 @@ just start
 Or to see available commands in the justfile, run:
 
 ```sh
-just --list
+just
 ```
 
 ### Other Useful Commands
 
 ```sh
-just lint          # ESLint + Stylelint
-just lint-tf       # TFLint
-just build         # tsc + vite build
-just tf-test       # Terraform mock-provider tests
-just check         # Full local check (lint + build + tf-test)
+just lint      # ESLint + Stylelint
+just lint-tf   # TFLint
+just build     # tsc + vite build
+just tf-test   # Terraform mock-provider tests
+just check     # Full local check (lint + build + tf-test)
 ```
 
 ### Infrastructure Changes
