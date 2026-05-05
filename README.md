@@ -42,6 +42,8 @@ This is a work in progress, hope you enjoy reading this code as much as I enjoye
 ```text
 portfolio/
 ├── .github/          # CI/CD pipeline
+├── docs/             # Documentation
+│   └── decisions/    # Architectural Decision Records
 ├── infrastructure/   # Terraform IaC
 ├── public/           # Website static files
 ├── src/              # Website components
@@ -88,6 +90,12 @@ just check     # Full local check (lint all + build + tf-test)
 For working with Terraform and AWS infrastructure locally, see [docs/infrastructure.md](docs/infrastructure.md).
 
 For CI/CD pipeline details and trigger rules, see [docs/ci-cd-pipeline.md](docs/ci-cd-pipeline.md).
+
+## Architectural Decisions
+
+Architectural Decision Records (ADRs) document the "why" behind structural, technological, and
+process choices. They live in [docs/decisions/](docs/decisions/) — see
+[docs/decisions/README.md](docs/decisions/README.md) for the index and writing guide.
 
 ## Current Status
 

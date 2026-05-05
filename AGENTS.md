@@ -118,6 +118,10 @@ portfolio/
 │   ├── website.yml           # Source build + deploy pipeline
 │   └── infrastructure.yml    # Terraform validate + test + apply pipeline
 ├── docs/
+│   ├── decisions/            # Architectural Decision Records
+│   │   ├── README.md         # ADR index and writing guide
+│   │   ├── AGENTS.md         # ADR maintenance rules (auto-injected)
+│   │   └── templates/        # Minimal and full ADR templates
 │   ├── cicd-improvements-plan.md  # Living CI/CD improvement plan
 │   ├── ci-cd-pipeline.md          # Pipeline documentation
 │   └── infrastructure.md          # Terraform/Mise workflow docs
@@ -183,6 +187,12 @@ portfolio/
 - **`.env.example` only needs one variable: `TF_TOKEN_app_terraform_io`.** AWS credentials come
   from `~/.aws/credentials` (local) or GitHub Secrets env vars (CI). `domain_name` and
   `application` have defaults in `vars.tf`. Route53 hosted zone is looked up via data source.
+
+## Architectural Decision Records
+
+Read `docs/decisions/README.md` when proposing, evaluating, or superseding an architectural decision.
+Read an existing ADR file when the change you're about to make touches a past decision and you need
+to understand the reasoning or constraints behind it.
 
 ## SDD Preferences
 
