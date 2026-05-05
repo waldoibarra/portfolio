@@ -15,6 +15,7 @@ the project is the way it is.
 | ADR-0005 | [Domain-Split CI/CD Workflows with Allowlist Paths](0005-domain-split-cicd-workflows.md) | accepted |
 | ADR-0006 | [Trunk-Based Development for Solo and AI Workflow](0006-trunk-based-development.md) | accepted |
 | ADR-0007 | [Justfile as the Single Command Interface](0007-justfile-as-command-interface.md) | accepted |
+| ADR-0008 | [AI-Assisted Development as a First-Class Concern](0008-ai-assisted-development-as-first-class-concern.md) | proposed |
 
 ## What is an ADR?
 

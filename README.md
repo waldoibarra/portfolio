@@ -11,6 +11,7 @@ an ADR; every command is a `just` recipe; every commit goes straight to `trunk`.
 ## Highlights
 
 - **AI-first engineering** — AI agents are first-class collaborators in this codebase. See
+  [ADR-0008](docs/decisions/0008-ai-assisted-development-as-first-class-concern.md) and
   [AGENTS.md](AGENTS.md).
 - **Trunk-based development** — Direct commits to `trunk`. No branches, no PRs.
 - **Terraform IaC on AWS** — S3, CloudFront, ACM, and Route53, no third-party modules.

@@ -1,6 +1,8 @@
 ---
 status: accepted
 date: 2026-05-05
+decision-makers: Waldo Ibarra, Claude Opus 4.7
+consulted: Gemini 3 Flash
 ---
 
 # Use Mise for Toolchain Pinning
