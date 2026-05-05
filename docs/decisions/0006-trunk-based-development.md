@@ -1,4 +1,4 @@
-# Trunk-Based Development for Solo and AI Workflow
+# Trunk-Based Development
 
 ## Context and Problem Statement
 
