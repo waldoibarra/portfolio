@@ -52,7 +52,7 @@ jobs:
           restore-keys: |
             npm-${{ runner.os }}-
 
-      - run: npm ci
+      - run: just install
       - run: just lint
       - run: just build
       - run: just s3-sync

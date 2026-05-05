@@ -3,6 +3,11 @@
 default:
     @just --list
 
+# Install Node dependencies (clean, lockfile-respecting)
+[group("Setup")]
+install:
+    npm ci
+
 # Start development server
 [group("Development")]
 start:
@@ -119,7 +124,4 @@ invalidate: (tf-init)
         --id "$INVALIDATION_ID" \
     && echo "Invalidation $INVALIDATION_ID completed."
 
-# Full production deploy: build, sync, invalidate
-[group("Deploy")]
-deploy: (build) (s3-sync) (invalidate)
-    @echo "✓ Deploy complete"
+
