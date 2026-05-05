@@ -1,3 +1,9 @@
+---
+status: accepted
+date: 2026-05-05
+decision-makers: Waldo Ibarra
+---
+
 # Trunk-Based Development
 
 ## Context and Problem Statement

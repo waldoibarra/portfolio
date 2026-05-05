@@ -1,3 +1,10 @@
+---
+status: accepted
+date: 2026-05-05
+decision-makers: Waldo Ibarra
+consulted: Claude Sonnet 4.6
+---
+
 # Justfile as the Single Command Interface
 
 ## Context and Problem Statement
