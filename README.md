@@ -1,103 +1,71 @@
-# Welcome To My Personal Website Code
+# Waldo Ibarra — Personal Portfolio
 
 [![Infrastructure CI/CD](https://github.com/waldoibarra/portfolio/actions/workflows/infrastructure.yml/badge.svg)](https://github.com/waldoibarra/portfolio/actions/workflows/infrastructure.yml)
 [![Website CI/CD](https://github.com/waldoibarra/portfolio/actions/workflows/website.yml/badge.svg)](https://github.com/waldoibarra/portfolio/actions/workflows/website.yml)
 
-This is a work in progress, hope you enjoy reading this code as much as I enjoyed writing it.
+A personal portfolio site at [waldoibarra.com](https://waldoibarra.com) — a single Lit Web
+Component styled with CSS-in-component, built with Vite, and deployed as a static site to AWS
+(S3 + CloudFront + ACM + Route53) via custom Terraform. Every architectural choice is recorded as
+an ADR; every command is a `just` recipe; every commit goes straight to `trunk`.
+
+## Highlights
+
+- **AI-first engineering** — AI agents are first-class collaborators in this codebase. See
+  [AGENTS.md](AGENTS.md).
+- **Trunk-based development** — Direct commits to `trunk`. No branches, no PRs. Pre-commit hooks
+  are the gate. See
+  [ADR-0006](docs/decisions/0006-trunk-based-development.md).
+- **Terraform IaC on AWS** — S3, CloudFront, ACM, and Route53 managed by custom code with no
+  third-party modules. See
+  [ADR-0004](docs/decisions/0004-custom-terraform-code-only.md).
+- **Automated CI/CD with testing gates** — [Git hooks](.husky/),
+  [Terraform tests](infrastructure/tests/), and
+  [CI/CD pipelines](.github/workflows/).
+- **Architectural Decision Records** — Durable reasoning lives in
+  [docs/decisions/](docs/decisions/).
 
 ## Tech Stack
 
-- **Frontend**: [Lit](https://lit.dev/) - Lightweight Web Components library
-- **Language**: [TypeScript](https://www.typescriptlang.org/) with strict mode enabled
-- **Build Tool**: [Vite](https://vitejs.dev/) for development and production builds
-- **Styling**: CSS-in-component with Lit's `css` tagged templates
-- **Infrastructure**: [Terraform](https://developer.hashicorp.com/terraform) with AWS
-  (S3 + CloudFront + Route 53)
-- **CI/CD**: [GitHub Actions](https://github.com/features/actions) with two domain-focused
-  workflows (`website.yml`, `infrastructure.yml`) and [Mise](https://mise.jdx.dev)-managed toolchain
-- **Testing**: `terraform test` with mock providers (`infrastructure/tests/main.tftest.hcl`)
-
-## Key Features
-
-- **Trunk Based Development** as branching model
-- **Web Components architecture** using Lit for reusable, encapsulated UI elements
-- **Infrastructure as Code** with Terraform, including:
-  - Private S3 bucket for static hosting
-  - CloudFront distribution (SSL certificates and caching)
-  - Route 53 A records for DNS management
-- **Justfile** as an entrypoint to simplify repository usage
-- **Mise** for declarative toolchain pinning (Node, Terraform, AWS CLI, TFLint, markdownlint-cli2, just)
-  so any contributor gets the exact same versions
-- **Comprehensive Linting** automatically checked before every commit:
-  - TypeScript (ESLint)
-  - CSS (Stylelint)
-  - Markdown (markdownlint-cli2)
-  - Terraform (TFLint)
-  - Commit messages (Commitlint with [Conventional Commits](https://conventionalcommits.org/))
-- **Hot Module Replacement** enabled on file save
-- **Automated deployments** via GitHub Actions CI/CD pipeline
-
-## Project Structure
-
-```text
-portfolio/
-├── .github/          # CI/CD pipeline
-├── docs/             # Documentation
-│   └── decisions/    # Architectural Decision Records
-├── infrastructure/   # Terraform IaC
-├── public/           # Website static files
-├── src/              # Website components
-├── .mise.toml        # Toolchain version pins
-├── index.html        # Website entry point
-└── justfile          # Local command runner
-```
+| Tool | Version | Role |
+| ---- | ------- | ---- |
+| [Lit](https://lit.dev/) | 3.2.1 | Web Components |
+| [TypeScript](https://www.typescriptlang.org/) | 5.6.3 | Language (strict mode) |
+| [Vite](https://vitejs.dev/) | 5.4.10 | Build and dev server |
+| [Terraform](https://developer.hashicorp.com/terraform) | 1.15.1 | Infrastructure as Code |
+| [GitHub Actions](https://github.com/features/actions) | — | CI/CD |
+| [Mise](https://mise.jdx.dev) | — | Toolchain pinning |
 
 ## Local Development
 
-### Requirements
+1. Install [Mise](https://mise.jdx.dev) (one time).
+2. Clone the repo and provision the toolchain:
 
-The only tool you need to install on your machine is [Mise](https://mise.jdx.dev).
-After cloning, run `mise trust && mise install && npm install` to get the full toolchain plus
-Husky hooks.
+    ```sh
+    mise trust && mise install
+    just install
+    just start
+    ```
 
-### Run Website Locally
+    The dev server runs at [localhost:5173](http://localhost:5173).
 
-To run the website in development mode, run the following command and visit [localhost:5173](http://localhost:5173).
+For deeper Mise and Terraform setup, see [docs/infrastructure.md](docs/infrastructure.md).
 
-```sh
-just start
-```
+## Deployment
 
-Or to see available commands in the justfile, run:
-
-```sh
-just
-```
-
-### Other Useful Commands
-
-```sh
-just lint      # ESLint + Stylelint
-just lint-md   # markdownlint-cli2
-just lint-tf   # TFLint
-just build     # tsc + vite build
-just tf-test   # Terraform mock-provider tests
-just check     # Full local check (lint all + build + tf-test)
-```
-
-### Infrastructure Changes
-
-For working with Terraform and AWS infrastructure locally, see [docs/infrastructure.md](docs/infrastructure.md).
-
-For CI/CD pipeline details and trigger rules, see [docs/ci-cd-pipeline.md](docs/ci-cd-pipeline.md).
+Every push to `trunk` triggers a path-filtered GitHub Actions workflow that lints, tests, builds,
+and deploys. Source changes run through `website.yml`; infrastructure changes through
+`infrastructure.yml`. Full details in [docs/ci-cd-pipeline.md](docs/ci-cd-pipeline.md).
 
 ## Architectural Decisions
 
-Architectural Decision Records (ADRs) document the "why" behind structural, technological, and
-process choices. They live in [docs/decisions/](docs/decisions/) — see
-[docs/decisions/README.md](docs/decisions/README.md) for the index and writing guide.
+Architectural Decision Records document the "why" behind the project's structure, technology
+choices, and process. Start with the index at
+[docs/decisions/README.md](docs/decisions/README.md).
 
-## Current Status
+## Architecture
 
-The website is currently under construction. The main component (`app-element.ts`) displays a placeholder
-page with links to the GitHub project and repository.
+Engineers wanting the contributor map should read [ARCHITECTURE.md](ARCHITECTURE.md).
+
+## License
+
+MIT — see [LICENSE.md](LICENSE.md).
