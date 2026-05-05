@@ -1,3 +1,10 @@
+---
+status: accepted
+date: 2026-05-04
+decision-makers: Waldo Ibarra, Claude Opus 4.7
+consulted: Gemini 3 Flash
+---
+
 # Use Markdown Architectural Decision Records
 
 ## Context and Problem Statement
@@ -25,8 +32,7 @@ this way. Which format and structure should these records follow?
 Chosen option: "MADR 4.0.0", because
 
 - MADR captures both the decision and its reasoning in a structured way without ceremony.
-- The minimal template is short enough that writing an ADR isn't a barrier.
-- The full template scales up when a decision deserves more depth (drivers, per-option tradeoffs,
+- The template scales up when a decision deserves more depth (drivers, per-option tradeoffs,
   confirmation, more information).
 - Nygard's format predates and is largely subsumed by MADR.
 - Y-Statements compress too aggressively for non-trivial decisions.

@@ -36,30 +36,16 @@ An ADR is _not_:
 ## Writing a new ADR
 
 1. Pick the next available number (zero-padded, four digits, monotonic, never reused).
-2. Copy a template from `templates/` to `NNNN-kebab-case-title.md`.
+2. Copy the template from [adr-template.md](adr-template.md) to `NNNN-kebab-case-short-title.md`.
 3. Fill it in.
 4. Add a row to the [ADR Index](#adr-index) above, sorted by number.
 
-### Choosing a template
+## ADR File Names
 
-**Use [`templates/adr-template-minimal.md`](templates/adr-template-minimal.md)** (the default) when:
-
-- The decision has a clear winner among 2–4 alternatives.
-- The reasoning fits in a few bullets per option.
-- There's no need to document drivers, fitness functions, or per-option deep-dive tradeoffs.
-
-**Use [`templates/adr-template.md`](templates/adr-template.md) (full)** when at least one of these
-is true:
-
-- The decision has 5+ real alternatives worth comparing.
-- You need to record explicit _decision drivers_ (qualities, constraints, forces) separately from
-  the options.
-- Each option needs its own pros/cons section because the tradeoffs are non-obvious.
-- You want a _Confirmation_ section describing how the decision will be enforced or verified.
-- You expect to revisit the decision and want a _More Information_ section for links and re-visit
-  triggers.
-
-When in doubt, start with minimal. Upgrading later is a normal edit, not a process violation.
+- Format: `NNNN-kebab-case-short-title.md`
+- `NNNN` is four digits, zero-padded, monotonic, never reused.
+- The kebab-case short title is derived from the ADR's `# Heading` — lowercase, spaces replaced with
+  hyphens, punctuation removed; make sure to use the exact same words from the heading.
 
 ## Status lifecycle
 
@@ -73,8 +59,8 @@ The [ADR Index](#adr-index) `Status` column is the source of truth for an ADR's 
 
 Rejected and superseded ADRs are never deleted. The reasoning often outlives the decision.
 
-## Templates
+## Template
 
-The files under `templates/` are adapted from [MADR 4.0](https://adr.github.io/madr/) and must
-comply with the project's markdownlint rules. Refreshing them from a future MADR release is itself a
-decision and requires a new ADR.
+The files [adr-template.md](adr-template.md) is adapted from [MADR 4.0](https://adr.github.io/madr/)
+and must comply with the project's markdownlint rules. Refreshing them from a future MADR release is
+itself a decision and requires a new ADR.

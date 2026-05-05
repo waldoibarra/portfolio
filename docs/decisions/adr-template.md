@@ -1,10 +1,10 @@
 ---
-# These are optional metadata elements. Feel free to remove any of them.
+# The consulted and informed fields are optional, feel free to remove them if not needed.
 status: "{proposed | rejected | accepted | deprecated | … | superseded by ADR-0123}"
 date: {YYYY-MM-DD when the decision was last updated}
-decision-makers: {list everyone involved in the decision}
+decision-makers: {list everyone involved in the decision, humans and LLMs}
 consulted: {list everyone whose opinions are sought (typically subject-matter
-  experts); and with whom there is a two-way communication}
+  experts or LLMs); and with whom there is a two-way communication}
 informed: {list everyone who is kept up-to-date on progress; and with whom there is
   a one-way communication}
 ---

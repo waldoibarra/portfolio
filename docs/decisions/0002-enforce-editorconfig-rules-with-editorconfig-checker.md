@@ -1,3 +1,10 @@
+---
+status: accepted
+date: 2026-05-04
+decision-makers: Waldo Ibarra, Claude Opus 4.7
+consulted: Gemini 3 Flash
+---
+
 # Enforce Editorconfig Rules with editorconfig-checker
 
 ## Context and Problem Statement
