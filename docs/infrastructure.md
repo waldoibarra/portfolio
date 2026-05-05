@@ -1,16 +1,16 @@
 # Working With Infrastructure (Terraform)
 
-The Terraform configuration lives under `infrastructure/`. Toolchain (Terraform, AWS CLI,
-TFLint) is managed by [Mise](https://mise.jdx.dev) — see `.mise.toml` at the repo root for
-pinned versions. You don't need anything else installed.
+The Terraform configuration lives under `infrastructure/`. Toolchain (Terraform, AWS CLI, TFLint)
+is managed by [Mise](https://mise.jdx.dev) — see `.mise.toml` at the repo root for pinned versions.
+You don't need anything else installed.
 
 ## Architecture
 
-The infrastructure is managed entirely by custom Terraform code (no third-party modules).
-Resources are organized by concern across separate files:
+The infrastructure is managed entirely by custom Terraform code (no third-party modules). Resources
+are organized by concern across separate files:
 
 | File | Purpose |
-|------|---------|
+| ---- | ------- |
 | `s3.tf` | S3 bucket, public access block, encryption, ownership controls, OAC bucket policy |
 | `acm.tf` | ACM certificate (us-east-1), DNS validation records, certificate validation |
 | `cloudfront.tf` | Origin Access Control (OAC), CloudFront distribution, tag locals |
@@ -24,10 +24,13 @@ Resources are organized by concern across separate files:
 ### Key design decisions
 
 - **OAC instead of OAI** — Origin Access Control is the modern approach for CloudFront → S3 access
-- **Route53 data source** — The hosted zone is looked up by domain name (`data.aws_route53_zone`), not passed as a variable
+- **Route53 data source** — The hosted zone is looked up by domain name (`data.aws_route53_zone`),
+  not passed as a variable
 - **Deterministic bucket name** — `waldoibarra-com-site` (not a random prefix)
-- **Security hardening** — Public access block, AES256 encryption, BucketOwnerEnforced, TLSv1.2_2021, GET/HEAD/OPTIONS only
-- **5-tag strategy** — All taggable resources carry `Name`, `Project`, `Environment`, `ManagedBy`, `Owner`
+- **Security hardening** — Public access block, AES256 encryption, BucketOwnerEnforced,
+  TLSv1.2_2021, GET/HEAD/OPTIONS only
+- **5-tag strategy** — All taggable resources carry `Name`, `Project`, `Environment`, `ManagedBy`,
+  `Owner`
 
 ## Prerequisites
 
@@ -48,16 +51,16 @@ Resources are organized by concern across separate files:
    cp .env.example .env
    ```
 
-   See the comments in `.env.example` for what each variable is and where to get it.
-   The only required value is `TF_TOKEN_app_terraform_io` (Terraform Cloud API token).
-   AWS credentials come from `~/.aws/credentials` or environment variables.
-   Route53 hosted zone is looked up automatically by domain name — no `hosted_zone_id` variable needed.
+   See the comments in `.env.example` for what each variable is and where to get it. The only
+   required value is `TF_TOKEN_app_terraform_io` (Terraform Cloud API token). AWS credentials come
+   from `~/.aws/credentials` or environment variables. Route53 hosted zone is looked up
+   automatically by domain name — no `hosted_zone_id` variable needed.
 
 4. The Terraform Cloud remote backend is the `waldoibarra-com` workspace in the `waldo-io`
    organization: <https://app.terraform.io/app/waldo-io/workspaces/waldoibarra-com>
 
-   Generate a personal API token at <https://app.terraform.io/app/settings/tokens> and put
-   it in `TF_TOKEN_app_terraform_io`.
+   Generate a personal API token at <https://app.terraform.io/app/settings/tokens> and put it in
+   `TF_TOKEN_app_terraform_io`.
 
 ## Running Terraform Locally
 
@@ -85,8 +88,8 @@ just tf-output -raw s3_bucket_id
 
 ## Running AWS CLI
 
-The AWS CLI v2 is installed by Mise alongside Terraform. AWS credentials are read directly
-from `~/.aws/credentials` or environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`):
+The AWS CLI v2 is installed by Mise alongside Terraform. AWS credentials are read directly from
+`~/.aws/credentials` or environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`):
 
 ```sh
 aws sts get-caller-identity
@@ -104,11 +107,10 @@ just lint-tf
 
 ## Terraform Tests
 
-The project includes native Terraform tests under `infrastructure/tests/main.tftest.hcl`.
-These run plan-mode assertions validating bucket name, OAC configuration, TLS version,
-allowed methods, and tag presence. In CI, these tests run automatically via
-`infrastructure.yml` as a gate before `terraform apply` — if tests fail, the plan
-is never applied.
+The project includes native Terraform tests under `infrastructure/tests/main.tftest.hcl`. These run
+plan-mode assertions validating bucket name, OAC configuration, TLS version, allowed methods, and
+tag presence. In CI, these tests run automatically via `infrastructure.yml` as a gate before
+`terraform apply` — if tests fail, the plan is never applied.
 
 ```sh
 just tf-test

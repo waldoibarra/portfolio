@@ -25,13 +25,18 @@ lint-fix:
 lint-tf:
     tflint --chdir infrastructure
 
-# Run all linting (TypeScript, CSS, Terraform)
+# Check Markdown for problems
 [group("Linting")]
-lint-all: (lint) (lint-tf)
+lint-md:
+    markdownlint-cli2 "**/*.md"
+
+# Run all linting (TypeScript, CSS, Markdown, Terraform)
+[group("Linting")]
+lint-all: (lint) (lint-md) (lint-tf)
 
 # Full local check: lint all + build + Terraform tests
 [group("Linting")]
-check: (lint) (lint-tf) (build) (tf-init) (tf-test)
+check: (lint) (lint-md) (lint-tf) (build) (tf-init) (tf-test)
 
 # Lint commit message
 [group("Linting")]
