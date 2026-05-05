@@ -31,6 +31,10 @@ are organized by concern across separate files:
   TLSv1.2_2021, GET/HEAD/OPTIONS only
 - **5-tag strategy** — All taggable resources carry `Name`, `Project`, `Environment`, `ManagedBy`,
   `Owner`
+- **Exact version pinning** — `infrastructure/versions.tf` `required_version` must match the
+  `terraform` value in `.mise.toml` exactly (e.g., `= 1.15.1`, not a range). A range in
+  `versions.tf` defeats Mise's deterministic pinning — if someone bypasses Mise, a range would
+  silently accept a different version.
 
 ## Prerequisites
 
@@ -115,3 +119,11 @@ tag presence. In CI, these tests run automatically via `infrastructure.yml` as a
 ```sh
 just tf-test
 ```
+
+### Writing new tests
+
+When adding new resources that use `for_each` (e.g., `aws_route53_record.cert_validation`),
+computed attributes like `domain_validation_options` cannot be evaluated at plan time. Use
+`override_during = plan` at the file level and provide stable defaults via `mock_resource` for
+every computed field that the test references. See the comment block in
+`infrastructure/tests/main.tftest.hcl` for the concrete pattern.

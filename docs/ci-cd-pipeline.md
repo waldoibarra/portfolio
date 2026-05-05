@@ -40,7 +40,7 @@ Steps (all via `just` recipes):
 1. Checkout
 2. Set up toolchain (mise-action, all tools from cache)
 3. Cache npm dependencies (`actions/cache@v5`, keyed on `package-lock.json`)
-4. `npm ci`
+4. `just install` (wraps `npm ci`)
 5. `just lint` — ESLint + Stylelint (GATE: stops deployment if lint fails)
 6. `just build` — `tsc -b && vite build`
 7. `just tf-init` — init Terraform to read outputs
@@ -112,6 +112,29 @@ infrastructure triggers both pipelines in parallel.
 3. **Infrastructure push** — commit a change to `infrastructure/`. Only `infrastructure.yml` should
     appear.
 
+### Caveat: workflow YAML edits self-trigger
+
+Each workflow's `paths:` list includes its own YAML file (e.g.,
+`.github/workflows/website.yml` is in `website.yml`'s `paths`), so editing the workflow itself
+always triggers the pipeline — regardless of any other `paths` filtering. This is intentional: a
+workflow edit must be tested by running the workflow.
+
+## Verifying a Workflow Run
+
+The `gh` CLI is pinned in `.mise.toml` and available after `mise install`. It is the primary tool
+for checking whether a push triggered the right workflow and what happened during the run.
+
+| Command | Purpose |
+| ------- | ------- |
+| `gh run list --limit N` | List recent workflow runs (check if a push triggered or skipped the pipeline) |
+| `gh run watch <ID> --exit-status` | Watch a workflow run until it completes (blocks, shows step progress) |
+| `gh run list --limit N --json ... --jq ...` | Query runs by commit message, status, branch, etc. |
+| `gh run view <ID>` | View details of a specific run |
+
+After pushing to trunk, use `gh run list --limit 5` to verify whether the pipeline triggered
+(source change) or skipped (docs-only change). Use `gh run watch <ID> --exit-status` to monitor a
+specific run to completion.
+
 ## Commands (Justfile)
 
 All CI steps call `just` recipes. See [justfile](../justfile) for the full list.
@@ -132,7 +155,6 @@ Key recipes:
 | `just tf-apply-auto` | Apply saved plan (CI) |
 | `just s3-sync` | Upload `dist/` to S3 |
 | `just invalidate` | CloudFront cache invalidation |
-| `just deploy` | Full pipeline: build + sync + invalidate |
 
 ## History
 
