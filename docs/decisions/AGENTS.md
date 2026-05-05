@@ -30,6 +30,20 @@ When superseding ADR-X with ADR-Y:
 - Reference ADR-X in ADR-Y's _Context and Problem Statement_ so readers can trace the lineage.
 - Never delete superseded or rejected ADRs. Their reasoning is part of the project's history.
 
+## Frontmatter — `decision-makers`
+
+When using the full template, list every human and LLM that participated in shaping the decision
+in the `decision-makers` field. LLMs are listed by model name (e.g., `Claude Opus 4.7`). This is
+intentional: AI-first means recording AI participation as first-class, not as tool use. See
+[ADR-0008](0008-ai-assisted-development-as-first-class-concern.md) for the framing.
+
+- Humans go in `consulted` only when they were external sources of input (e.g., a colleague's
+  review). The driver of the decision goes in `decision-makers`.
+- LLMs go in `consulted` only when used purely to look up facts. LLMs that shaped reasoning go
+  in `decision-makers`.
+
+The minimal template has no frontmatter and is unaffected by this rule.
+
 ## Templates
 
 - Files under `templates/` are adapted from MADR 4.0 and must comply with the project's

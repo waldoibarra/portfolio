@@ -62,6 +62,26 @@ Three locations: (1) GitHub Actions secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_AC
 come from `~/.aws/credentials`). (3) Terraform Cloud — workspace `waldoibarra-com` in org
 `waldo-io` holds remote state; the API token is the only Terraform Cloud secret.
 
+### AI-Assisted Development
+
+AI agents are first-class collaborators on this project. Several architectural elements are
+shaped by that stance:
+
+- `AGENTS.md` (root and `docs/decisions/`) routes agents to the right files for the task at hand
+- `justfile` is the single command interface — agents that try `npm run X` fail loudly rather
+  than silently doing the wrong thing
+- Pre-commit hook (`just check`) catches lint, build, and Terraform test regressions before
+  `trunk`; agents commit directly without PR review
+- `editorconfig-checker` enforces formatting that LLM diffs frequently violate (trailing
+  whitespace, missing final newlines, indentation drift)
+- The Engram persistent memory protocol (configured in the agent runtime) gives agents
+  cross-session continuity; the root `AGENTS.md` mandates its use
+- ADR `decision-makers` frontmatter records LLM participation alongside humans, making AI
+  contribution to architectural decisions auditable
+
+See [ADR-0008](docs/decisions/0008-ai-assisted-development-as-first-class-concern.md) for the
+framing. The stance is currently `proposed` — the conventions are still being refined.
+
 ### Documentation roles
 
 Four files, four audiences: `README.md` is the showcase (should I care?), this `ARCHITECTURE.md`
