@@ -16,8 +16,8 @@ Single-page Lit web component with TypeScript, built with Vite.
 - **CI/CD:** GitHub Actions — two workflows (`website.yml` for source changes, `infrastructure.yml`
   for Terraform changes)
 - **Local dev:** Mise for declarative toolchain pinning (Node, Terraform, AWS CLI, TFLint, just)
-- **Linting:** ESLint, Stylelint, TFLint, markdownlint-cli2, commitlint — all enforced via Husky
-  pre-commit hook
+- **Linting:** ESLint, Stylelint, TFLint, markdownlint-cli2, editorconfig-checker, commitlint — all
+  enforced via Husky pre-commit hook
 
 ## Commands
 
@@ -30,8 +30,10 @@ Single-page Lit web component with TypeScript, built with Vite.
 | `just lint-fix` | Auto-fix ESLint + Stylelint issues |
 | `just lint-tf` | TFLint on infrastructure/ |
 | `just lint-md` | markdownlint-cli2 check |
-| `just lint-all` | Run all linters (TypeScript, CSS, Markdown, Terraform) |
+| `just lint-ec` | editorconfig-checker |
+| `just lint-all` | Run all linters (TypeScript, CSS, Markdown, Terraform, Editorconfig) |
 | `just build` | TypeScript check + Vite production build |
+| `just tf-validate` | Validate Terraform syntax and type checking |
 | `just tf-test` | Run Terraform tests (mock providers) |
 | `just tf-plan` | Interactive Terraform plan |
 | `just tf-plan-out` | Plan and save to file (for CI) |
@@ -90,7 +92,7 @@ Two workflows replace the old monolithic pipeline:
   config files). Runs `just lint` (gate) → `just build` → `just s3-sync` →
   `just invalidate`.
 - **`infrastructure.yml`** — Triggered by infrastructure changes (`infrastructure/**`,
-  `.mise.toml`). Runs `just lint-tf` (gate) → `just tf-test` (gate) →
+  `.mise.toml`). Runs `just lint-tf` (gate) → `just tf-check` (init + validate + test, gate) →
   `just tf-plan-out` → `just tf-apply-auto`.
 
 Both workflows use `actions/cache@v5` and execute all steps via `just` recipes. Each workflow's

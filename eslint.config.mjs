@@ -3,9 +3,10 @@ import pluginJs from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
 export default [
-  { ignores: ['.gitignore', 'dist/', 'public/demo/'] },
+  { ignores: ['.gitignore', 'dist/'] },
   { files: ['**/*.{js,mjs,cjs,ts}'] },
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
+  { rules: { quotes: ['error', 'single'] } },
 ];

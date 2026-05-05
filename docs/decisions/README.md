@@ -9,6 +9,7 @@ the project is the way it is.
 | --- | --- | --- |
 | ADR-0000 | [Use Markdown Architectural Decision Records](0000-use-markdown-architectural-decision-records.md) | accepted |
 | ADR-0001 | [Use markdownlint-cli2 for Markdown Linting](0001-use-markdownlint-cli2-for-markdown-linting.md) | accepted |
+| ADR-0002 | [Enforce Editorconfig Rules with editorconfig-checker](0002-enforce-editorconfig-rules-with-editorconfig-checker.md) | accepted |
 
 ## What is an ADR?
 

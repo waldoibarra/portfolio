@@ -30,13 +30,18 @@ lint-tf:
 lint-md:
     markdownlint-cli2 "**/*.md"
 
+# Check files against .editorconfig rules
+[group("Linting")]
+lint-ec:
+    ec
+
 # Run all linting (TypeScript, CSS, Markdown, Terraform)
 [group("Linting")]
-lint-all: (lint) (lint-md) (lint-tf)
+lint-all: (lint) (lint-md) (lint-tf) (lint-ec)
 
 # Full local check: lint all + build + Terraform tests
 [group("Linting")]
-check: (lint) (lint-md) (lint-tf) (build) (tf-init) (tf-test)
+check: (lint-all) (build) (tf-check)
 
 # Lint commit message
 [group("Linting")]
@@ -48,6 +53,10 @@ lint-commit *ARGS:
 build:
     npx tsc -b
     npx vite build
+
+# Validate and test Terraform
+[group("Terraform")]
+tf-check: (tf-init) (tf-validate) (tf-test)
 
 # Initialize Terraform
 [group("Terraform")]
