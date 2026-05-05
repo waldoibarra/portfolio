@@ -12,12 +12,8 @@ an ADR; every command is a `just` recipe; every commit goes straight to `trunk`.
 
 - **AI-first engineering** — AI agents are first-class collaborators in this codebase. See
   [AGENTS.md](AGENTS.md).
-- **Trunk-based development** — Direct commits to `trunk`. No branches, no PRs. Pre-commit hooks
-  are the gate. See
-  [ADR-0006](docs/decisions/0006-trunk-based-development.md).
-- **Terraform IaC on AWS** — S3, CloudFront, ACM, and Route53 managed by custom code with no
-  third-party modules. See
-  [ADR-0004](docs/decisions/0004-custom-terraform-code-only.md).
+- **Trunk-based development** — Direct commits to `trunk`. No branches, no PRs.
+- **Terraform IaC on AWS** — S3, CloudFront, ACM, and Route53, no third-party modules.
 - **Automated CI/CD with testing gates** — [Git hooks](.husky/),
   [Terraform tests](infrastructure/tests/), and
   [CI/CD pipelines](.github/workflows/).
