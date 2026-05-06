@@ -14,6 +14,8 @@ on:
       - 'eslint.config.mjs'
       - 'config/.stylelintrc.json'
       - '.mise.toml'
+      - 'scripts/s3-sync.sh'
+      - 'scripts/invalidate.sh'
       - '.github/workflows/website.yml'
   workflow_dispatch:
 
@@ -53,7 +55,10 @@ jobs:
             npm-${{ runner.os }}-
 
       - run: just install-node-deps
-      - run: just lint
+      - run: just lint-ec
+      - run: just lint-sh
+      - run: just lint-ts
+      - run: just lint-css
       - run: just build
       - run: just s3-sync
       - run: just invalidate
