@@ -10,6 +10,7 @@ editorconfig-checker = "3.6.1"
 hk = "1.45.0"
 committed = "1.1.11"
 pkl = "0.31.1"
+shellcheck = "0.10.0"
 
 [env]
 _.file = ".env"

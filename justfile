@@ -30,7 +30,7 @@ start:
 
 # Run all linters
 [group("Linting")]
-lint: (lint-ts) (lint-css) (lint-md) (lint-tf) (lint-ec)
+lint: (lint-ts) (lint-css) (lint-md) (lint-tf) (lint-ec) (lint-sh)
 
 # Check TypeScript for problems
 [group("Linting")]
@@ -66,6 +66,11 @@ lint-tf:
 [group("Linting")]
 lint-ec:
   ec -config config/.editorconfig-checker.json
+
+# Check Shell scripts for problems
+[group("Linting")]
+lint-sh:
+  shellcheck scripts/*.sh
 
 # Lint commit message
 [group("Linting")]
@@ -128,23 +133,12 @@ tf-apply-auto:
 # Upload dist/ to S3
 [group("Deploy")]
 s3-sync: (tf-init)
-  @S3_BUCKET_ID=$(terraform -chdir=infrastructure output -raw s3_bucket_id) \
-  && aws s3 sync ./dist "s3://$S3_BUCKET_ID" --delete
+  @scripts/s3-sync.sh
 
 # Invalidate CloudFront cache
 [group("Deploy")]
 invalidate: (tf-init)
-  @DISTRIBUTION_ID=$(terraform -chdir=infrastructure output -raw cloudfront_distribution_id) \
-  && INVALIDATION_ID=$(aws cloudfront create-invalidation \
-    --distribution-id "$DISTRIBUTION_ID" \
-    --paths "/*" \
-    --query 'Invalidation.Id' \
-    --output text) \
-  && echo "Created invalidation: $INVALIDATION_ID" \
-  && aws cloudfront wait invalidation-completed \
-    --distribution-id "$DISTRIBUTION_ID" \
-    --id "$INVALIDATION_ID" \
-  && echo "Invalidation $INVALIDATION_ID completed."
+  @scripts/invalidate.sh
 
 # Full local check: lint + build + tests
 [group("Debug")]
