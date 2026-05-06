@@ -30,7 +30,8 @@ Chosen option: "markdownlint-cli2", because
 
 - It is actively maintained by the same author as the `markdownlint` library, while
   `markdownlint-cli` is in maintenance mode.
-- Configuration is file-based (`.markdownlint-cli2.yaml`), supporting YAML comments — essential for
+- Configuration is file-based (`config/.markdownlint-cli2.yaml`), supporting YAML comments —
+  essential for
   explaining _why_ specific rules are configured (e.g., line-length rationale, template ignores).
 - Glob patterns and ignore rules live in the config file, making the lint scope self-documenting —
   no separate `.markdownlintignore` needed.
