@@ -100,7 +100,8 @@ native step filtering replaces what would otherwise be hand-rolled bash.
 - `hk = "1.45.0"` is present in `.mise.toml` `[tools]`
 - `hk.pkl` exists at the project root with one step per `lint-*` recipe plus `build` and
   `tf-check`, each with an appropriate `glob`
-- No `scripts/` hook directory — dispatch is declarative
+- No `scripts/` hook directory — dispatch is declarative (deploy scripts live in `scripts/`
+  but are not hooks)
 - `just install` includes `hk install`
 - `ARCHITECTURE.md` references `hk` instead of `Husky`
 - `just check` still works as the full-suite command; its composition is unchanged
