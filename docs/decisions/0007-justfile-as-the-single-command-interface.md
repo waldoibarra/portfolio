@@ -38,7 +38,7 @@ editorconfig) sit alongside Node tasks without forcing them into `package.json`.
 - Good, because grouped, self-documenting (`just` with no args lists everything)
 - Good, because non-Node tasks (Terraform, AWS, markdownlint, editorconfig-checker) live alongside
   Node tasks naturally
-- Good, because recipe composition (`check: (lint-all) (build) (tf-check)`) enables reusable
+- Good, because recipe composition (`check: (lint) (build) (tf-check)`) enables reusable
   building blocks
 - Bad, because contributors must have `just` installed (mitigated: it's pinned in `.mise.toml`)
 - Bad, because `just` is less ubiquitous than `make`; documented in `README.md` quickstart

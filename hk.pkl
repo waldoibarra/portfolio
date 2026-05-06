@@ -3,15 +3,50 @@ amends "package://github.com/jdx/hk/releases/download/v1.45.0/hk@1.45.0#/Config.
 hooks {
   ["pre-commit"] {
     steps {
-      ["pre-commit"] {
-        check = "./scripts/pre-commit-hook.sh"
+      ["lint-ts"] {
+        glob = List("**/*.ts", "**/*.tsx", "**/*.js", "**/*.mjs")
+        check = "just lint-ts"
+      }
+      ["lint-css"] {
+        glob = List("**/*.css")
+        check = "just lint-css"
+      }
+      ["lint-md"] {
+        glob = List("**/*.md")
+        check = "just lint-md"
+      }
+      ["lint-tf"] {
+        glob = List("infrastructure/**")
+        check = "just lint-tf"
+      }
+      ["lint-ec"] {
+        check = "just lint-ec"
+      }
+      ["build"] {
+        glob = List(
+          "**/*.ts",
+          "**/*.tsx",
+          "**/*.js",
+          "**/*.mjs",
+          "**/*.css",
+          "**/*.html",
+          "vite.config.ts",
+          "tsconfig.json",
+          "package.json",
+          "package-lock.json"
+        )
+        check = "just build"
+      }
+      ["tf-check"] {
+        glob = List("infrastructure/**")
+        check = "just tf-check"
       }
     }
   }
   ["commit-msg"] {
     steps {
-      ["commit-msg"] {
-        check = "./scripts/commit-msg-hook.sh {{commit_msg_file}}"
+      ["lint-commit"] {
+        check = "just lint-commit {{commit_msg_file}}"
       }
     }
   }

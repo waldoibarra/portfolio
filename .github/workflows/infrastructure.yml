@@ -43,5 +43,5 @@ jobs:
 
       - run: just lint-tf
       - run: just tf-check
-      - run: just tf-plan-out
+      - run: just tf-plan-auto
       - run: just tf-apply-auto

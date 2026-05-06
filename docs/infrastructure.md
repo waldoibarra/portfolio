@@ -85,9 +85,6 @@ just tf-plan
 
 # Apply the previewed plan.
 just tf-apply
-
-# Read an output (e.g. the S3 bucket name).
-just tf-output -raw s3_bucket_id
 ```
 
 ## Running AWS CLI
