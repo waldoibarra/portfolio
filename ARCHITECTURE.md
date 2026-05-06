@@ -20,7 +20,7 @@ CI checks are identical.
 | Toolchain (Mise) | Pins versions of every tool the project uses | `.mise.toml` |
 | Command surface (justfile) | Single way to invoke any task locally, in CI, or from hooks | `justfile` |
 | CI (two GitHub Actions workflows) | Runs CI gates and CD for each domain | `.github/workflows/` |
-| Pre-commit (hk + committed) | Runs `just check` + commit-message lint before every commit | `scripts/` + `hk.pkl` |
+| Pre-commit (hk + committed) | Dispatches relevant `just lint-*` / `build` / `tf-check` recipes based on staged files; runs commit-message lint | `hk.pkl` |
 
 ## Code Map
 
@@ -38,10 +38,9 @@ CI checks are identical.
   ADRs (those live in `docs/decisions/`) or routing instructions (those live in `AGENTS.md`).
 - `docs/decisions/` — Owns: ADRs (numbered, MADR-format), the ADR index, and ADR templates.
   Does NOT own: how-to guides — those belong in `docs/`.
-- `scripts/` — Owns: `pre-commit-hook.sh` (calls `just check`) and
-  `commit-msg-hook.sh` (calls `just lint-commit`). Does NOT own: any logic — both hooks
-  delegate to `just`.
-- `hk.pkl` — Owns: the mapping from Git hook events to `scripts/`. Does NOT own: any logic.
+- `hk.pkl` — Owns: hook→step dispatch. Each step declares a `glob` and a `check` command that
+  calls a `just` recipe. hk skips steps whose globs do not match staged files and runs the
+  survivors in parallel. Does NOT own: tool invocation logic — that lives in the `justfile`.
 - Root config files (`.mise.toml`, `justfile`, `vite.config.ts`, `tsconfig.json`,
   `eslint.config.mjs`, `.stylelintrc.json`, `config/committed.toml`, `.editorconfig`,
   `.markdownlint-cli2.yaml`) — Own: project-wide tool configuration. Each is the single source
@@ -51,10 +50,11 @@ CI checks are identical.
 
 ### Delivery flow
 
-A developer commits on `trunk`. hk runs `just check` (lint-all + build + tf-check) and
-committed. On push, GitHub Actions runs the path-filtered workflow for the changed domain. CI
-gates (lint, test) execute via `just` recipes. CD steps (`s3-sync` + `invalidate`, or
-`tf-plan-out` + `tf-apply-auto`) run only after CI passes. No PRs, no branches.
+A developer commits on `trunk`. hk dispatches the `pre-commit` steps relevant to staged files
+(running `lint-*`, `build`, and `tf-check` recipes in parallel) and committed validates the
+commit message. On push, GitHub Actions runs the path-filtered workflow for the changed domain.
+CI gates (lint, test) execute via `just` recipes. CD steps (`s3-sync` + `invalidate`, or
+`tf-plan-auto` + `tf-apply-auto`) run only after CI passes. No PRs, no branches.
 
 ### Secrets
 
@@ -71,8 +71,8 @@ shaped by that stance:
 
 - `AGENTS.md` (root and `docs/decisions/`) routes agents to the right files for the task at hand
 - `justfile` is the single command interface
-- Pre-commit hook (`just check`) catches lint, build, and Terraform test regressions before
-  `trunk`; agents commit directly without PR review
+- Pre-commit hook (hk dispatching `just lint-*` / `build` / `tf-check`) catches lint, build,
+  and Terraform test regressions before `trunk`; agents commit directly without PR review
 - `editorconfig-checker` enforces formatting that LLM diffs frequently violate (trailing
   whitespace, missing final newlines, indentation drift)
 - The Engram persistent memory protocol (configured in the agent runtime) gives agents

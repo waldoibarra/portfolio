@@ -16,7 +16,7 @@ the project is the way it is.
 | ADR-0006 | [Trunk-Based Development](0006-trunk-based-development.md) | accepted |
 | ADR-0007 | [Justfile as the Single Command Interface](0007-justfile-as-the-single-command-interface.md) | accepted |
 | ADR-0008 | [AI-Assisted Development as a First-Class Concern](0008-ai-assisted-development-as-first-class-concern.md) | proposed |
-| ADR-0009 | [Use hk for Git Hook Management](0009-use-hk-for-git-hook-management.md) | proposed |
+| ADR-0009 | [Use hk for Git Hook Management](0009-use-hk-for-git-hook-management.md) | accepted |
 
 ## What is an ADR?
 

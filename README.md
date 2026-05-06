@@ -15,7 +15,7 @@ an ADR; every command is a `just` recipe; every commit goes straight to `trunk`.
   [AGENTS.md](AGENTS.md).
 - **Trunk-based development** — Direct commits to `trunk`. No branches, no PRs.
 - **Terraform IaC on AWS** — S3, CloudFront, ACM, and Route53, no third-party modules.
-- **Automated CI/CD with testing gates** — [Git hooks](scripts/),
+- **Automated CI/CD with testing gates** — [Git hooks](hk.pkl),
   [Terraform tests](infrastructure/tests/), and
   [CI/CD pipelines](.github/workflows/).
 - **Architectural Decision Records** — Durable reasoning lives in
@@ -38,7 +38,7 @@ an ADR; every command is a `just` recipe; every commit goes straight to `trunk`.
 2. Clone the repo and provision the toolchain:
 
     ```sh
-    just init
+    just install
     just start
     ```
 

@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-set -e
-
-echo "Running full check: lint, build, test."
-just check
-
-echo "All good. ❤️"

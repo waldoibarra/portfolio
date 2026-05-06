@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 date: 2026-05-05
 decision-makers: Waldo Ibarra, DeepSeek v4 Pro
 consulted: Claude Sonnet 4.6
@@ -9,11 +9,16 @@ consulted: Claude Sonnet 4.6
 
 ## Context and Problem Statement
 
-The project currently uses Husky 8 to manage two Git hooks: `pre-commit` (runs `just check`) and
+The project previously used Husky 8 to manage two Git hooks: `pre-commit` (runs `just check`) and
 `commit-msg` (runs `just lint-commit`). Husky is an npm dependency — hooks only work after
 `npm ci`, and `"prepare": "husky"` must be a `package.json` script. This makes hook activation
 coupled to the Node lifecycle, even though the hooks themselves delegate to `just` and execute
 non-Node tools (Terraform, markdownlint-cli2, editorconfig-checker, AWS CLI).
+
+The previous `pre-commit` hook also ran `just check` unconditionally — a full
+lint-all + build + Terraform test suite on every commit, regardless of what changed. A developer
+fixing a typo in `README.md` paid the cost of `terraform validate` + `terraform test`. The hook
+should be smart: detect which files changed and run only the relevant checks.
 
 The project already pins every tool via Mise ([ADR-0003](0003-use-mise-for-toolchain-pinning.md)).
 The hooks manager should follow the same pattern — pinned by Mise, not by npm.
@@ -26,10 +31,11 @@ The hooks manager should follow the same pattern — pinned by Mise, not by npm.
   lifecycle scripts
 - **Local-only** — hooks are a developer guardrail on `trunk`; they are not a CI concern (CI runs
   the same checks via `just`, independently)
-- **Simplicity** — the hooks configuration file must be trivial to read and modify; all logic
-  lives in scripts
-- **Separation of concerns** — git-aware logic (what changed?) must live separately from tool
-  invocation logic (how do I run eslint?)
+- **Smart dispatch** — `pre-commit` must run only the lint/test/build targets relevant to staged
+  changes, not the full suite every time
+- **Simplicity** — hook dispatch should be declarative, not imperative shell logic
+- **Single command interface** — the `justfile` ([ADR-0007](0007-justfile-as-the-single-command-interface.md))
+  remains the single way to invoke any tool
 
 ## Considered Options
 
@@ -47,22 +53,22 @@ features, which is the right scope for this project (CI runs `just` recipes dire
 hooks). `hk install` is a one-time activation; hooks are executable shell scripts, not generated
 shims that require a runtime.
 
-Both hooks delegate to `just`: `pre-commit` calls `just check` (full suite), and `commit-msg`
-calls `just lint-commit`. This mirrors the previous Husky arrangement with zero behavioral change.
-Smart file-diff dispatch — where the hook detects staged changes and only runs relevant checks —
-is deferred to a future iteration (see Revisit triggers below).
+Smart dispatch is implemented declaratively in `hk.pkl`. Each `lint-*` and check target in the
+`justfile` is registered as a `Step` with a `glob` pattern. hk inspects staged files, skips any
+step whose `glob` does not match, and runs the survivors in parallel. The dispatch logic is
+hk's responsibility, not the project's — no shell script reimplements `git diff --cached`.
 
 ### Architecture
 
 | Concern | Lives in | Owns |
 | --- | --- | --- |
-| Hook → script mapping | `hk.pkl` | Declares which script runs on which Git hook event |
-| Hook scripts | `scripts/*-hook.sh` | Delegates to `just` recipes |
-| Tool invocation | `justfile` | Knows HOW to run each tool (unchanged) |
+| Hook → step dispatch | `hk.pkl` | Declares each step's `glob` and `check` command; hk skips steps whose globs do not match staged files |
+| Tool invocation | `justfile` | Knows HOW to run each tool — every step's `check` calls a `just` recipe |
 
 The Justfile retains its role as the single command interface
-([ADR-0007](0007-justfile-as-the-single-command-interface.md)). It does not learn git awareness.
-The `scripts/` directory contains the hook scripts that act as thin glue between `hk` and `just`.
+([ADR-0007](0007-justfile-as-the-single-command-interface.md)). hk owns "which checks run for
+this commit"; `just` owns "how each check runs". No intermediate shell layer is needed — hk's
+native step filtering replaces what would otherwise be hand-rolled bash.
 
 ### Consequences
 
@@ -70,26 +76,38 @@ The `scripts/` directory contains the hook scripts that act as thin glue between
   removed from `package.json`
 - Good, because `hk` is pinned in `.mise.toml` alongside every other tool — one source of truth
   for the full toolchain
-- Good, because `hk install` is a simple addition to `just init`, making onboarding a single
-  `mise install && just init` command
+- Good, because `hk install` is a simple addition to `just install`, making onboarding a single
+  `mise install && just install` command
 - Good, because `@commitlint/cli` and `@commitlint/config-conventional` are replaced by
   `committed` (Rust binary), managed via Mise — one more npm dependency eliminated
-- Good, because `scripts/*-hook.sh` → `just` → tool architecture has clear boundaries; each layer
-  has one responsibility
-- Bad, because `scripts/*-hook.sh` introduces shell scripts into the project — a new file
-  category that must be linted and maintained
+- Good, because smart dispatch eliminates irrelevant tool runs; a Markdown-only commit skips
+  TypeScript compilation, Terraform validation, and editorconfig violations on unrelated files
+- Good, because hk runs eligible steps in parallel — `lint-md`, `lint-tf`, `lint-ec`, and
+  `tf-check` execute concurrently, reducing wall-clock time
+- Good, because the dispatch is declarative (`hk.pkl`) — adding a new check is two lines of PKL,
+  not a shell script edit
+- Bad, because each step still calls `just lint-X` which runs the underlying tool against the
+  whole tree, not just staged files. The win comes from skipping the step entirely when no
+  staged file matches its glob. Per-file linting (passing `{{files}}` to the tool directly)
+  would bypass the justfile and is deferred
+- Bad, because smart dispatch can miss transitive effects (e.g., a TypeScript type change that
+  breaks a CSS import). `just check` remains available as the explicit "run everything" command
+  for when full confidence is needed
 
 ### Confirmation
 
 - `husky` is absent from `package.json` `devDependencies` and `"prepare"` script
 - `hk = "1.45.0"` is present in `.mise.toml` `[tools]`
-- `hk.pkl` exists at the project root with `pre-commit` and `commit-msg` hook entries
-- `scripts/pre-commit-hook.sh` and `scripts/commit-msg-hook.sh` exist and are executable
-- `just init` includes `hk install`
+- `hk.pkl` exists at the project root with one step per `lint-*` recipe plus `build` and
+  `tf-check`, each with an appropriate `glob`
+- No `scripts/` hook directory — dispatch is declarative
+- `just install` includes `hk install`
 - `ARCHITECTURE.md` references `hk` instead of `Husky`
 - `just check` still works as the full-suite command; its composition is unchanged
 - `.commitlintrc.json` and `@commitlint/cli` are removed; `just lint-commit` uses `committed`
   with `config/committed.toml`
+- `just debug-pre-commit-hook` runs `hk run pre-commit -v` for inspecting which steps fire and
+  why
 
 ## Pros and Cons of the Options
 
@@ -142,16 +160,17 @@ The `scripts/` directory contains the hook scripts that act as thin glue between
 - [ADR-0003](0003-use-mise-for-toolchain-pinning.md) — the decision that established Mise as the
   toolchain manager
 - [ADR-0007](0007-justfile-as-the-single-command-interface.md) — the Justfile remains the single
-  command interface; `scripts/` hook scripts extend it with hook wiring but do not replace it
+  command interface; every `hk` step's `check` is a `just` recipe invocation
 - [ADR-0008](0008-ai-assisted-development-as-first-class-concern.md) — the pre-commit hook is the
-  gate that PR review would otherwise provide; this ADR does not weaken that role
+  gate that PR review would otherwise provide; smart dispatch makes that gate faster without
+  weakening it
 - **Revisit triggers**:
   - If `hk` becomes unmaintained or if Mise gains built-in hook management that supersedes
     `hk`'s role, re-evaluate against the remaining options
-  - **Smart file-diff dispatch**: the `pre-commit` hook currently runs `just check`
-    unconditionally. When smart dispatch is implemented, the hook should detect staged changes
-    via `git diff --cached --name-only` and only run the relevant `just lint-*` targets. This
-    is deferred, not rejected.
+  - **Per-file linting**: each step currently invokes `just lint-X` which lints the whole tree.
+    If pre-commit time becomes dominated by tools that scale with tree size (eslint over a much
+    larger codebase, for example), revisit whether steps should pass `{{files}}` directly to
+    the tool — accepting the cost of bypassing the justfile for that step
 - **Commit message linting**: `@commitlint/cli` and `@commitlint/config-conventional`
   (both npm) are replaced by [committed](https://github.com/crate-ci/committed) — a Rust-based,
   language-agnostic commit linting tool that enforces conventional commits, subject length
