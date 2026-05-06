@@ -58,7 +58,7 @@ A developer commits on `trunk`. hk dispatches the `pre-commit` steps relevant to
 (running `lint-*`, `build`, and `tf-check` recipes in parallel) and committed validates the
 commit message. On push, GitHub Actions runs the path-filtered workflow for the changed domain.
 CI gates (lint, test) execute via `just` recipes. CD steps (`s3-sync` + `invalidate`, or
-`tf-plan-auto` + `tf-apply-auto`) run only after CI passes. No PRs, no branches.
+`tf-deploy`, or `s3-sync` + `invalidate`) run only after CI passes. No PRs, no branches.
 
 ### Secrets
 

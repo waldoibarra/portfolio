@@ -67,6 +67,7 @@ Triggers on push to `trunk` when infrastructure files change:
 paths:
   - 'infrastructure/**'
   - '.mise.toml'
+  - 'scripts/tf-deploy.sh'
   - '.github/workflows/infrastructure.yml'
 ```
 
@@ -79,8 +80,7 @@ Steps (all via `just` recipes):
 4. `just lint-tf` — TFLint (GATE: stops apply if lint fails)
 5. `just tf-check` — init + validate + test (CI GATE: 8 mock-provider tests covering S3, OAC,
     CloudFront)
-6. `just tf-plan-auto` — `terraform plan -out=tfplan`
-7. `just tf-apply-auto` — `terraform apply -auto-approve tfplan`
+6. `just tf-deploy` — `terraform plan -out=tfplan && terraform apply -auto-approve tfplan`
 
 Secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`,
 `TF_TOKEN_app_terraform_io`, `TF_VAR_domain_name`
@@ -157,8 +157,7 @@ Key recipes:
 | `just build` | `tsc -b && vite build` |
 | `just tf-validate` | Validate Terraform syntax and types |
 | `just tf-test` | Run Terraform tests (8 assertions, mock providers) |
-| `just tf-plan-auto` | Plan and save to file (CI) |
-| `just tf-apply-auto` | Apply saved plan (CI) |
+| `just tf-deploy` | Plan and apply infrastructure (CI) |
 | `just s3-sync` | Upload `dist/` to S3 |
 | `just invalidate` | CloudFront cache invalidation |
 

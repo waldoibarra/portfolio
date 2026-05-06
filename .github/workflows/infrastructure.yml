@@ -6,6 +6,7 @@ on:
     paths:
       - 'infrastructure/**'
       - '.mise.toml'
+      - 'scripts/tf-deploy.sh'
       - '.github/workflows/infrastructure.yml'
   workflow_dispatch:
 
@@ -41,7 +42,8 @@ jobs:
           path: ${{ github.workspace }}/.terraform.d/plugin-cache
           key: tf-providers-${{ runner.os }}-${{ hashFiles('infrastructure/.terraform.lock.hcl') }}
 
+      - run: just lint-ec
+      - run: just lint-sh
       - run: just lint-tf
       - run: just tf-check
-      - run: just tf-plan-auto
-      - run: just tf-apply-auto
+      - run: just tf-deploy
