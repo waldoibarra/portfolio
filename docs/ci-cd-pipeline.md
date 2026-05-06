@@ -29,7 +29,7 @@ paths:
   - 'vite.config.ts'
   - 'tsconfig.json'
   - 'eslint.config.mjs'
-  - '.stylelintrc.json'
+  - 'config/.stylelintrc.json'
   - '.mise.toml'
   - '.github/workflows/website.yml'
 ```

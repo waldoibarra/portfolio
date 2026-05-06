@@ -45,17 +45,17 @@ lint-ts-fix:
 # Check CSS for problems
 [group("Linting")]
 lint-css:
-  npx stylelint --ignore-path .gitignore "**/*.css"
+  npx stylelint --config config/.stylelintrc.json --ignore-path .gitignore "**/*.css"
 
 # Auto-fix CSS problems
 [group("Linting")]
 lint-css-fix:
-  npx stylelint --ignore-path .gitignore --fix "**/*.css"
+  npx stylelint --config config/.stylelintrc.json --ignore-path .gitignore --fix "**/*.css"
 
 # Check Markdown for problems
 [group("Linting")]
 lint-md:
-  markdownlint-cli2 "**/*.md"
+  markdownlint-cli2 --config config/.markdownlint-cli2.yaml "**/*.md"
 
 # Check Terraform for problems
 [group("Linting")]
@@ -65,7 +65,7 @@ lint-tf:
 # Check files against .editorconfig rules
 [group("Linting")]
 lint-ec:
-  ec
+  ec -config config/.editorconfig-checker.json
 
 # Lint commit message
 [group("Linting")]

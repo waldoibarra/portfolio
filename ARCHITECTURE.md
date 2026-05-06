@@ -42,8 +42,9 @@ CI checks are identical.
   calls a `just` recipe. hk skips steps whose globs do not match staged files and runs the
   survivors in parallel. Does NOT own: tool invocation logic — that lives in the `justfile`.
 - Root config files (`.mise.toml`, `justfile`, `vite.config.ts`, `tsconfig.json`,
-  `eslint.config.mjs`, `.stylelintrc.json`, `config/committed.toml`, `.editorconfig`,
-  `.markdownlint-cli2.yaml`) — Own: project-wide tool configuration. Each is the single source
+  `eslint.config.mjs`, `config/.stylelintrc.json`, `config/committed.toml`,
+  `.editorconfig`, `config/.markdownlint-cli2.yaml`,
+  `config/.editorconfig-checker.json`) — Own: project-wide tool configuration. Each is the single source
   of truth for its tool.
 
 ## Cross-Cutting Concerns
