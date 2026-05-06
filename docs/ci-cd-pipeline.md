@@ -104,7 +104,7 @@ infrastructure triggers both pipelines in parallel.
 | Change | Triggered |
 | ------ | --------- |
 | `src/**`, `public/**`, `index.html`, `package.json`, etc. | `website.yml` only |
-| `infrastructure/**` | `infrastructure.yml` only |
+| `infrastructure/**`, `scripts/tf-deploy.sh` | `infrastructure.yml` only |
 | Both source AND infrastructure | Both workflows in parallel |
 | `docs/**`, `**.md`, `.gitignore`, `.editorconfig` | Neither (both skip) |
 

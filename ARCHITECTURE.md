@@ -32,9 +32,9 @@ CI checks are identical.
 - `infrastructure/tests/` — Owns: Terraform native tests (`main.tftest.hcl`) using mock
   providers, validating S3, OAC, and CloudFront properties. Does NOT own: integration tests
   against real AWS.
-- `scripts/` — Owns: deploy shell scripts (`s3-sync.sh`, `invalidate.sh`) invoked by `just`
-  recipes. Each script enforces `set -euo pipefail` and passes `shellcheck`. Does NOT own:
-  general-purpose scripts or local developer utilities.
+- `scripts/` — Owns: deploy shell scripts (`s3-sync.sh`, `invalidate.sh`, `tf-deploy.sh`)
+  invoked by `just` recipes. Each script enforces `set -euo pipefail` and passes `shellcheck`.
+  Does NOT own: general-purpose scripts or local developer utilities.
 - `.github/workflows/` — Owns: `website.yml` (source CI+CD) and `infrastructure.yml` (infra
   CI+CD). Does NOT own: any inline shell logic — every step calls a `just` recipe.
 - `docs/` — Owns: long-form guides (`infrastructure.md`, `ci-cd-pipeline.md`). Does NOT own:
@@ -58,7 +58,7 @@ A developer commits on `trunk`. hk dispatches the `pre-commit` steps relevant to
 (running `lint-*`, `build`, and `tf-check` recipes in parallel) and committed validates the
 commit message. On push, GitHub Actions runs the path-filtered workflow for the changed domain.
 CI gates (lint, test) execute via `just` recipes. CD steps (`s3-sync` + `invalidate`, or
-`tf-deploy`, or `s3-sync` + `invalidate`) run only after CI passes. No PRs, no branches.
+`tf-deploy`) run only after CI passes. No PRs, no branches.
 
 ### Secrets
 
