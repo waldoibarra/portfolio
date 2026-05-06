@@ -32,6 +32,9 @@ CI checks are identical.
 - `infrastructure/tests/` — Owns: Terraform native tests (`main.tftest.hcl`) using mock
   providers, validating S3, OAC, and CloudFront properties. Does NOT own: integration tests
   against real AWS.
+- `scripts/` — Owns: deploy shell scripts (`s3-sync.sh`, `invalidate.sh`) invoked by `just`
+  recipes. Each script enforces `set -euo pipefail` and passes `shellcheck`. Does NOT own:
+  general-purpose scripts or local developer utilities.
 - `.github/workflows/` — Owns: `website.yml` (source CI+CD) and `infrastructure.yml` (infra
   CI+CD). Does NOT own: any inline shell logic — every step calls a `just` recipe.
 - `docs/` — Owns: long-form guides (`infrastructure.md`, `ci-cd-pipeline.md`). Does NOT own:

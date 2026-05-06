@@ -40,7 +40,8 @@ Steps (all via `just` recipes):
 2. Set up toolchain (mise-action, all tools from cache)
 3. Cache npm dependencies (`actions/cache@v5`, keyed on `package-lock.json`)
 4. `just install-node-deps` (wraps `npm ci`)
-5. `just lint` — ESLint + Stylelint (GATE: stops deployment if lint fails)
+5. `just lint` — All linters: TypeScript, CSS, Markdown, Terraform, EditorConfig,
+  Shell (GATE: stops deployment if any lint fails)
 6. `just build` — `tsc -b && vite build`
 7. `just tf-init` — init Terraform to read outputs
 8. `just s3-sync` — upload `dist/` to S3
@@ -142,12 +143,13 @@ Key recipes:
 
 | Recipe | Purpose |
 | ------ | ------ |
-| `just lint` | All linters (TypeScript, CSS, Markdown, Terraform, Editorconfig) |
+| `just lint` | All linters (TypeScript, CSS, Markdown, Terraform, EditorConfig, Shell) |
 | `just lint-ts` | ESLint |
 | `just lint-css` | Stylelint |
 | `just lint-tf` | TFLint on infrastructure/ |
 | `just lint-md` | markdownlint-cli2 check |
 | `just lint-ec` | editorconfig-checker |
+| `just lint-sh` | shellcheck on `scripts/*.sh` |
 | `just build` | `tsc -b && vite build` |
 | `just tf-validate` | Validate Terraform syntax and types |
 | `just tf-test` | Run Terraform tests (8 assertions, mock providers) |
