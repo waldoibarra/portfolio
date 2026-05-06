@@ -22,6 +22,10 @@ hooks {
       ["lint-ec"] {
         check = "just lint-ec"
       }
+      ["lint-sh"] {
+        glob = List("scripts/**/*.sh")
+        check = "just lint-sh"
+      }
       ["build"] {
         glob = List(
           "**/*.ts",
