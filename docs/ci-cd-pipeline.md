@@ -31,6 +31,8 @@ paths:
   - 'eslint.config.mjs'
   - 'config/.stylelintrc.json'
   - '.mise.toml'
+  - 'scripts/s3-sync.sh'
+  - 'scripts/invalidate.sh'
   - '.github/workflows/website.yml'
 ```
 
@@ -40,12 +42,14 @@ Steps (all via `just` recipes):
 2. Set up toolchain (mise-action, all tools from cache)
 3. Cache npm dependencies (`actions/cache@v5`, keyed on `package-lock.json`)
 4. `just install-node-deps` (wraps `npm ci`)
-5. `just lint` — All linters: TypeScript, CSS, Markdown, Terraform, EditorConfig,
-  Shell (GATE: stops deployment if any lint fails)
-6. `just build` — `tsc -b && vite build`
-7. `just tf-init` — init Terraform to read outputs
-8. `just s3-sync` — upload `dist/` to S3
-9. `just invalidate` — CloudFront cache invalidation `/*`
+5. `just lint-ec` — editorconfig check (cheapest gate)
+6. `just lint-sh` — shellcheck on deploy scripts
+7. `just lint-ts` — ESLint
+8. `just lint-css` — Stylelint
+9. `just build` — `tsc -b && vite build`
+10. `just tf-init` — init Terraform to read outputs
+11. `just s3-sync` — upload `dist/` to S3
+12. `just invalidate` — CloudFront cache invalidation `/*`
 
 Secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, `TF_TOKEN_app_terraform_io`
 
