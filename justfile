@@ -30,7 +30,12 @@ start:
 
 # Run all linters
 [group("Linting")]
-lint: (lint-ts) (lint-css) (lint-md) (lint-tf) (lint-ec) (lint-sh)
+lint: (lint-ec) (lint-ts) (lint-css) (lint-md) (lint-tf) (lint-sh)
+
+# Check files against .editorconfig rules
+[group("Linting")]
+lint-ec:
+  ec -config config/.editorconfig-checker.json
 
 # Check TypeScript for problems
 [group("Linting")]
@@ -61,11 +66,6 @@ lint-md:
 [group("Linting")]
 lint-tf:
   tflint --chdir infrastructure
-
-# Check files against .editorconfig rules
-[group("Linting")]
-lint-ec:
-  ec -config config/.editorconfig-checker.json
 
 # Check Shell scripts for problems
 [group("Linting")]
