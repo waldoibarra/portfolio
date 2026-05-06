@@ -115,20 +115,15 @@ tf-test:
 tf-plan:
   terraform -chdir=infrastructure plan
 
-# Plan and save to file (non-interactive)
-[group("Terraform")]
-tf-plan-auto:
-  terraform -chdir=infrastructure plan -out=tfplan
-
 # Apply infrastructure changes (interactive confirmation)
 [group("Terraform")]
 tf-apply:
   terraform -chdir=infrastructure apply
 
-# Apply saved plan file (non-interactive)
+# Plan and apply infrastructure (non-interactive, CI)
 [group("Terraform")]
-tf-apply-auto:
-  terraform -chdir=infrastructure apply -auto-approve tfplan
+tf-deploy:
+  @scripts/tf-deploy.sh
 
 # Upload dist/ to S3
 [group("Deploy")]
