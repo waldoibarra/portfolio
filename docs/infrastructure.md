@@ -108,10 +108,11 @@ just lint-tf
 
 ## Terraform Tests
 
-The project includes native Terraform tests under `infrastructure/tests/main.tftest.hcl`. These run
-plan-mode assertions validating bucket name, OAC configuration, TLS version, allowed methods, and
-tag presence. In CI, these tests run automatically via `infrastructure.yml` as a gate before
-`terraform apply` — if tests fail, the plan is never applied.
+The project includes native Terraform tests under `infrastructure/tests/main.tftest.hcl`. Most
+assertions run in plan mode (bucket name, OAC, SSE, ownership controls, tags); the CloudFront block
+uses apply mode because it references computed attributes (OAC ID, ACM cert ARN) known only after
+apply. Together: 27 assertions across 8 run blocks. In CI, these run via `infrastructure.yml` as a
+gate before `terraform apply` — if tests fail, the plan is never applied.
 
 ```sh
 just tf-test

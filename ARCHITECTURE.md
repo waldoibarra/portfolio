@@ -62,10 +62,12 @@ CI gates (lint, test) execute via `just` recipes. CD steps (`s3-sync` + `invalid
 
 ### Secrets
 
-Three locations: (1) GitHub Actions secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`,
-`TF_TOKEN_app_terraform_io`, `TF_VAR_domain_name`) — auto-masked by the runner. (2) Local `.env`
-— loaded by Mise via `_.file = ".env"`; only `TF_TOKEN_app_terraform_io` is required (AWS creds
-come from `~/.aws/credentials`). (3) Terraform Cloud — workspace `waldoibarra-com` in org
+Three locations: (1) GitHub Actions secrets — split across the two workflows.
+`website.yml` needs `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `TF_TOKEN_app_terraform_io`;
+`infrastructure.yml` adds `TF_VAR_domain_name` (set to `waldoibarra.com`). Both hardcode
+`AWS_DEFAULT_REGION: us-east-1` as an env var, not a secret; auto-masked by the runner. (2) Local
+`.env` — loaded by Mise via `_.file = ".env"`; only `TF_TOKEN_app_terraform_io` is required (AWS
+creds come from `~/.aws/credentials`). (3) Terraform Cloud — workspace `waldoibarra-com` in org
 `waldo-io` holds remote state; the API token is the only Terraform Cloud secret.
 
 ### AI-Assisted Development
