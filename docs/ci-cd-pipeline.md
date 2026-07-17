@@ -47,11 +47,12 @@ Steps (all via `just` recipes):
 7. `just lint-ts` — ESLint
 8. `just lint-css` — Stylelint
 9. `just build` — `tsc -b && vite build`
-10. `just tf-init` — init Terraform to read outputs
-11. `just s3-sync` — upload `dist/` to S3
-12. `just invalidate` — CloudFront cache invalidation `/*`
+10. `just s3-sync` — upload `dist/` to S3 (pulls in `tf-init` as a justfile dependency to
+    read Terraform outputs: bucket ID, distribution ID)
+11. `just invalidate` — CloudFront cache invalidation `/*`
 
-Secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, `TF_TOKEN_app_terraform_io`
+Secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `TF_TOKEN_app_terraform_io`.
+`AWS_DEFAULT_REGION` is hardcoded to `us-east-1`, not a secret.
 
 Concurrency: group `website`, `cancel-in-progress: false`
 
@@ -77,13 +78,16 @@ Steps (all via `just` recipes):
 2. Set up toolchain (mise-action, all tools from cache)
 3. Cache Terraform providers (`actions/cache@v5`, key on `infrastructure/.terraform.lock.hcl` hash,
     env `TF_PLUGIN_CACHE_DIR`)
-4. `just lint-tf` — TFLint (GATE: stops apply if lint fails)
-5. `just tf-check` — init + validate + test (CI GATE: 8 mock-provider tests covering S3, OAC,
-    CloudFront)
-6. `just tf-deploy` — `terraform plan -out=tfplan && terraform apply -auto-approve tfplan`
+4. `just lint-ec` — editorconfig check
+5. `just lint-sh` — shellcheck on deploy scripts
+6. `just lint-tf` — TFLint (GATE: stops apply if lint fails)
+7. `just tf-check` — init + validate + test (CI GATE: 27 assertions across 8 mock-provider
+    run blocks covering S3, OAC, CloudFront)
+8. `just tf-deploy` — `terraform plan -out=tfplan && terraform apply -auto-approve tfplan`
 
-Secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`,
-`TF_TOKEN_app_terraform_io`, `TF_VAR_domain_name`
+Secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `TF_TOKEN_app_terraform_io`,
+`TF_VAR_domain_name` (set to `waldoibarra.com`). `AWS_DEFAULT_REGION` is hardcoded to `us-east-1`,
+not a secret.
 
 Concurrency: group `infrastructure`, `cancel-in-progress: false`
 
@@ -156,7 +160,7 @@ Key recipes:
 | `just lint-sh` | shellcheck on `scripts/*.sh` |
 | `just build` | `tsc -b && vite build` |
 | `just tf-validate` | Validate Terraform syntax and types |
-| `just tf-test` | Run Terraform tests (8 assertions, mock providers) |
+| `just tf-test` | Run Terraform tests (27 assertions across 8 run blocks, mock providers) |
 | `just tf-deploy` | Plan and apply infrastructure (CI) |
 | `just s3-sync` | Upload `dist/` to S3 |
 | `just invalidate` | CloudFront cache invalidation |
