@@ -32,6 +32,32 @@ an ADR; every command is a `just` recipe; every commit goes straight to `trunk`.
 | [GitHub Actions](https://github.com/features/actions) | — | CI/CD |
 | [Mise](https://mise.jdx.dev) | — | Toolchain pinning |
 
+## Project Structure
+
+```text
+portfolio/
+├── .github/workflows/ — CI/CD: website.yml + infrastructure.yml
+├── config/ — linter configs (eslint, stylelint, markdownlint, committed, ec)
+├── docs/ — long-form guides + decisions/ (ADRs)
+├── infrastructure/ — custom Terraform (S3, CloudFront, ACM, Route53) + tests/
+├── public/ — static assets (favicon, resume)
+├── scripts/ — deploy scripts: s3-sync.sh, invalidate.sh, tf-deploy.sh
+├── src/ — Lit Web Component (app-element.ts) + global CSS
+├── .mise.toml — pinned toolchain (Node, Terraform, AWS CLI, gh, just, ...)
+├── hk.pkl — pre-commit hooks (dispatches just recipes by staged file)
+├── justfile — the single command interface for every task
+└── index.html — app entrypoint
+```
+
+## Quality & Tooling
+
+The toolchain is pinned by [Mise](https://mise.jdx.dev) and every task is a
+[`just`](https://just.systems) recipe, so local, pre-commit, and CI paths run the same commands.
+Quality gates run on every commit: ESLint and Stylelint on source, markdownlint-cli2 and
+editorconfig-checker on docs and config, TFLint and native Terraform tests on infrastructure, and
+shellcheck on scripts. [hk](https://github.com/jdx/hk) dispatches the relevant recipes by staged
+file; [committed](https://github.com/crate-ci/committed) enforces Conventional Commits.
+
 ## Local Development
 
 1. Install [Mise](https://mise.jdx.dev) (one time).
