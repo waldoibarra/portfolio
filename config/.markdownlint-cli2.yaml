@@ -4,6 +4,7 @@ gitignore: true
 ignores:
   - CLAUDE.md
   - LICENSE.md
+  - .atl/**
 config:
   default: true
   # Italics uses underscores.
