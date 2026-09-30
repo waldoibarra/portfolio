@@ -25,20 +25,19 @@ and CD (deploy/apply) end-to-end for its domain.
 ## Decision Outcome
 
 Chosen option: "Two domain-split workflows with `paths` allowlist", because explicit ownership per
-domain eliminates the risk of silently skipping work when a new path is added (denylists fail open;
-allowlists fail closed), enables parallel execution when both domains change, and simplifies
-concurrency groups per domain.
+domain enables parallel execution when both domains change and simplifies concurrency groups.
+Allowlists require maintenance: a new path that matches no pattern does not trigger a workflow.
 
 ### Consequences
 
 - Good, because explicit ownership: `website.yml` owns source, `infrastructure.yml` owns Terraform
 - Good, because parallel execution when a single commit touches both domains
-- Good, because adding a new file/config does not silently bypass CI; the workflow simply doesn't
-  trigger and the omission is visible (no green check)
+- Bad, because a new file/config outside the allowlists silently bypasses CI unless its path is
+  added; an absent workflow run is not evidence that checks passed
 - Good, because concurrency groups (`group: website`, `group: infrastructure`) are scoped per domain
   so a long Terraform apply never blocks a website deploy
 - Bad, because workflow YAML changes must be added to that workflow's own `paths:` list; the YAML
-  file itself is in its allowlist so a YAML edit re-triggers (see `docs/ci-cd-pipeline.md` for the
-  operational caveat)
+  file itself is in its allowlist so a YAML edit re-triggers (see the
+  [delivery model](/docs/explanation/delivery.md) for the operational caveat)
 - Bad, because shared concerns (e.g., a future security scan over both source and infra) must be
   duplicated or factored into a third workflow

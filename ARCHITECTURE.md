@@ -1,186 +1,64 @@
 # Architecture
 
-## Bird's-Eye View
+Read this map before changing application code or infrastructure. For task instructions, start
+with the [documentation index](/docs/README.md).
 
-`waldoibarra.com` is a static portfolio site. Browsers fetch HTML/JS/CSS from CloudFront, which
-serves objects from a private S3 bucket via Origin Access Control. The site is a single Lit Web
-Component built with Vite from TypeScript sources. AWS resources (S3, CloudFront, ACM, Route53)
-are managed by custom Terraform code in `infrastructure/`. GitHub Actions runs two domain-split
-workflows — one for source, one for infrastructure — each gated by lint and test before deploying.
-The local toolchain (Node, Terraform, AWS CLI, TFLint, just, markdownlint-cli2, editorconfig-checker,
-gh, hk, committed, pkl) is pinned by Mise. hk enforces `just check` on every commit so local and
-CI checks are identical.
+`waldoibarra.com` is a static portfolio site. A single Lit Web Component renders the frontend,
+Vite builds the TypeScript sources, and CloudFront serves the output from a private S3 bucket
+through Origin Access Control (OAC). Custom Terraform owns the AWS resources.
 
-## Component Map
+## System boundaries
 
-| Component | Responsibility | Lives in |
-| --------- | -------------- | -------- |
-| Frontend (Lit, Vite, TypeScript) | Renders the site | `src/`, `index.html`, `public/` |
-| Infrastructure (custom Terraform) | Owns AWS resources (S3, CloudFront, ACM, Route53) | `infrastructure/` |
-| Toolchain (Mise) | Pins versions of every tool the project uses | `.mise.toml` |
-| Command surface (justfile) | Runs project tasks and opens the design; OpenPencil CLI is used directly | `justfile` |
-| CI (two GitHub Actions workflows) | Runs CI gates and CD for each domain | `.github/workflows/` |
-| Pre-commit (hk + committed) | Dispatches relevant `just lint-*` / `build` / `tf-check` recipes based on staged files; runs commit-message lint | `hk.pkl` |
+| Area | Owns | Does not own |
+| --- | --- | --- |
+| [`src/`](/src/), [`index.html`](/index.html), [`public/`](/public/) | Lit component, global CSS, static assets, and Vite type declarations | Infrastructure or deployment |
+| [`infrastructure/`](/infrastructure/) | S3, CloudFront, ACM, Route53, provider pins, and Terraform Cloud backend configuration | Artifact uploads, which run through `just s3-sync` |
+| [`infrastructure/tests/`](/infrastructure/tests/) | Native Terraform tests with mock providers | Integration tests against real AWS |
+| [`scripts/`](/scripts/) | Deploy scripts invoked by `just`; each uses `set -euo pipefail` | General-purpose local utilities |
+| [`.github/workflows/`](/.github/workflows/) | Separate website and infrastructure CI/CD workflows | Inline shell logic; project tasks call recipes |
+| [`docs/designs/`](/docs/designs/) | Editable design source and the README's generated preview | Production frontend implementation |
 
-## Code Map
+There are no source tests yet. The infrastructure tests cover S3, OAC, and CloudFront properties.
+Read [Infrastructure reference](/docs/reference/infrastructure.md) for resources, security
+settings, inputs, outputs, and environment requirements.
 
-- `src/` — Owns: the Lit Web Component, global CSS, Vite type declarations. Does NOT own: build
-  configuration (lives at root), tests (none yet for source).
-- `infrastructure/` — Owns: every AWS resource as custom Terraform code, provider/version pins,
-  Terraform Cloud backend config. Does NOT own: artifact upload (that's a CI step,
-  `just s3-sync`), random naming (bucket name is deterministic).
-- `infrastructure/tests/` — Owns: Terraform native tests (`main.tftest.hcl`) using mock
-  providers, validating S3, OAC, and CloudFront properties. Does NOT own: integration tests
-  against real AWS.
-- `scripts/` — Owns: deploy shell scripts (`s3-sync.sh`, `invalidate.sh`, `tf-deploy.sh`)
-  invoked by `just` recipes. Each script enforces `set -euo pipefail` and passes `shellcheck`.
-  Does NOT own: general-purpose scripts or local developer utilities.
-- `.github/workflows/` — Owns: `website.yml` (source CI+CD) and `infrastructure.yml` (infra
-  CI+CD). Does NOT own: any inline shell logic — every step calls a `just` recipe.
-- `docs/` — Owns: long-form guides (`infrastructure.md`, `ci-cd-pipeline.md`) and design
-  sources (`docs/designs/`). Does NOT own: ADRs (those live in `docs/decisions/`) or routing
-  instructions (those live in `AGENTS.md`).
-- `docs/decisions/` — Owns: ADRs (numbered, MADR-format), the ADR index, and ADR templates.
-  Does NOT own: how-to guides — those belong in `docs/`.
-- `hk.pkl` — Owns: hook→step dispatch. Each step declares a `glob` and a `check` command that
-  calls a `just` recipe. hk skips steps whose globs do not match staged files and runs the
-  survivors in parallel. Does NOT own: tool invocation logic — that lives in the `justfile`.
-- Root config files (`.mise.toml`, `justfile`, `vite.config.ts`, `tsconfig.json`,
-  `eslint.config.mjs`, `config/.stylelintrc.json`, `config/committed.toml`,
-  `.editorconfig`, `config/.markdownlint-cli2.yaml`,
-  `config/.editorconfig-checker.json`) — Own: project-wide tool configuration. Each is the single source
-  of truth for its tool.
+## Toolchain and delivery
 
-## Cross-Cutting Concerns
+[`.mise.toml`](/.mise.toml) manages project tools. The [justfile](/justfile) is the command
+interface, and [`hk.pkl`](/hk.pkl) selects pre-commit checks by staged paths. Tool-specific
+configuration remains in the root configuration files and [`config/`](/config/).
 
-### Delivery flow
+Development uses direct commits to `trunk`, without branches or PRs. On push, GitHub Actions
+selects workflows by changed paths and deploys after each workflow's checks pass. Read the
+[delivery model](/docs/explanation/delivery.md) for filtering, gates, and deployment dependencies.
 
-A developer commits on `trunk`. hk dispatches the `pre-commit` steps relevant to staged files
-(running `lint-*`, `build`, and `tf-check` recipes in parallel) and committed validates the
-commit message. On push, GitHub Actions runs the path-filtered workflow for the changed domain.
-CI gates (lint, test) execute via `just` recipes. CD steps (`s3-sync` + `invalidate`, or
-`tf-deploy`) run only after CI passes. No PRs, no branches.
+## Design and implementation
 
-### Secrets
+[`landing.fig`](/docs/designs/landing.fig) records visual intent; `src/` owns the production
+implementation. Import and export are a handoff, not automatic bidirectional synchronization.
+OpenPencil is a workstation tool and is not required by the website build or CI.
 
-Three locations: (1) GitHub Actions secrets — split across the two workflows.
-`website.yml` needs `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `TF_TOKEN_app_terraform_io`;
-`infrastructure.yml` adds `TF_VAR_domain_name` (set to `waldoibarra.com`). Both hardcode
-`AWS_DEFAULT_REGION: us-east-1` as an env var, not a secret; auto-masked by the runner. (2) Local
-`.env` — loaded by Mise via `_.file = ".env"`; only `TF_TOKEN_app_terraform_io` is required (AWS
-creds come from `~/.aws/credentials`). (3) Terraform Cloud — workspace `waldoibarra-com` in org
-`waldo-io` holds remote state; the API token is the only Terraform Cloud secret.
+Read [Edit the landing design](/docs/how-to/edit-landing-design.md) before changing the document,
+and [Implement the landing design](/docs/how-to/implement-landing-design.md) before translating
+it into Lit. Tool ownership and known export limitations live in the
+[OpenPencil reference](/docs/reference/openpencil.md).
 
-### AI-Assisted Development
+## AI-assisted development
 
-AI agents are first-class collaborators on this project. Several architectural elements are
-shaped by that stance:
+The project treats agents as collaborators: instruction files route tasks, recipes provide a
+shared command interface, and Git hooks catch relevant regressions before commits reach
+`trunk`. EditorConfig checks also catch formatting drift in generated changes.
 
-- `AGENTS.md` (root and `docs/decisions/`) routes agents to the right files for the task at hand
-- `justfile` is the single command interface
-- Pre-commit hook (hk dispatching `just lint-*` / `build` / `tf-check`) catches lint, build,
-  and Terraform test regressions before `trunk`; agents commit directly without PR review
-- `editorconfig-checker` enforces formatting that LLM diffs frequently violate (trailing
-  whitespace, missing final newlines, indentation drift)
-- The Engram persistent memory protocol (configured in the agent runtime) gives agents
-  cross-session continuity; the root `AGENTS.md` mandates its use
-- ADR `decision-makers` frontmatter records LLM participation alongside humans, making AI
-  contribution to architectural decisions auditable
+The agent runtime configures Engram for cross-session memory. ADR `decision-makers` metadata
+records human and model participation in architectural decisions.
+[ADR-0008](/docs/decisions/0008-ai-assisted-development-as-first-class-concern.md) describes this
+approach; its status remains `proposed` in the [decision index](/docs/decisions/README.md).
 
-See [ADR-0008](docs/decisions/0008-ai-assisted-development-as-first-class-concern.md) for the
-framing. The stance is currently `proposed` — the conventions are still being refined.
+## Documentation boundaries
 
-### Design workflow
-
-The editable landing source is `docs/designs/landing.fig`. OpenPencil is a workstation tool:
-Homebrew owns the desktop app; the global Mise config in `$HOME/.dotfiles/` owns
-`@open-pencil/cli` and `@open-pencil/mcp` (both pinned to 0.15.1), plus Node and Bun.
-The MCP package supplies the desktop app's automation server; it is separate from the CLI.
-Design tools are not required by the website build or CI.
-
-Use `just open-design` to launch `docs/designs/landing.fig` in the macOS app. The recipe
-targets the installed bundle identifier, `net.dannote.open-pencil`, rather than relying on
-the `.fig` file association. OpenPencil 0.15.1 has no CLI `open` subcommand.
-
-Run the globally managed `openpencil` directly from the repository root:
-
-```sh
-openpencil info docs/designs/landing.fig --json
-openpencil tree docs/designs/landing.fig
-openpencil export docs/designs/landing.fig -o /tmp/landing.png --font-policy strict
-openpencil eval docs/designs/landing.fig -c 'return figma.currentPage.name'
-openpencil lint docs/designs/landing.fig --json
-```
-
-#### Improve the design
-
-1. Inspect a strict-font PNG and the node tree before changing the document.
-2. Organize sections into nested frames with auto-layout, use components for repeated
-    controls/cards, and bind shared colors and typography to variables. Add a mobile
-    composition rather than scaling down the desktop canvas.
-3. Edit visually in OpenPencil or script changes with `openpencil eval`. Use
-    `--output /tmp/landing-edited.fig` to review a candidate; `--write` overwrites the input.
-4. Reopen the saved candidate, render it, and review it before replacing the source.
-    Treat lint findings as leads, not a substitute for visual and accessibility checks.
-
-The flat landing document triggers misleading contrast lint errors: the two dark CTA
-labels sit over cyan sibling rectangles with 12:1 fill-color contrast. Lint reports
-1.03:1, matching contrast against the dark parent frame instead. Verify the actual
-composited background before changing colors in response to lint.
-
-Use one writer at a time: save and close the desktop document before overwriting it
-headlessly, then reopen it. Omit the file argument only for live desktop operations through
-local MCP. Check `openpencil documents --json` first and pass `--document-id` when multiple
-documents are open. Restart the app after the first MCP install if discovery is missing;
-do not assume live edits have been saved to disk.
-
-#### Implement in Lit
-
-The `.fig` records visual intent; `src/` owns the production implementation. Import/export
-is a handoff, not automatic bidirectional synchronization.
-
-1. Inspect colors, typography, spacing, variables, and assets with `openpencil analyze`,
-    `variables`, and `export`. Choose shared CSS custom properties from the approved design.
-2. Implement semantic sections, headings, links, and buttons in Lit, with responsive
-    Grid/Flexbox, real destinations, keyboard focus, and interaction states. Do not copy
-    canvas coordinates into the page layout or introduce React/Tailwind just for an export.
-3. Run `just start`; compare browser screenshots with design renders at desktop and mobile
-    sizes. Exercise links and keyboard navigation, then run the relevant project checks.
-4. Review changes in visual intent in the design as well; importing HTML creates editable
-    layers but does not maintain a live mapping to Lit components.
-
-An HTML/CSS handoff can help inspect generated assets:
-
-```sh
-openpencil export docs/designs/landing.fig -f html --html standalone \
-  --css inline --assets external --fonts assets -o /tmp/landing.html
-```
-
-The 0.15.1 export of this design was inspected in a browser: all 86 nodes were absolutely
-positioned, there were no headings or interactive controls, and a 390 px viewport still
-had 1440 px of content. External font URLs repeated the asset directory, and the portrait
-lost its circular clipping. Use the strict-font PNG as the visual reference; treat HTML
-export as inspectable handoff material, not production-ready or pixel-faithful output.
-
-See the upstream [CLI scripting guide](https://openpencil.dev/programmable/cli/scripting),
-[export reference](https://openpencil.dev/programmable/cli/exporting), and
-[MCP setup](https://openpencil.dev/programmable/mcp-server).
-
-### Documentation roles
-
-Four files, four audiences: `README.md` is the showcase (should I care?), this `ARCHITECTURE.md`
-is the contributor map (how does it work?), `AGENTS.md` is the agent router (where do I look?),
-`docs/decisions/` is the durable reasoning (why is it like this?). Each has one job; they do not
-overlap.
-
-## Pointers
-
-- [README.md](README.md) — project showcase, tech stack, quickstart, live link
-- [docs/decisions/](docs/decisions/) — Architectural Decision Records (start with the
-  [index](docs/decisions/README.md))
-- [docs/infrastructure.md](docs/infrastructure.md) — Terraform + Mise + AWS workflow
-- [docs/ci-cd-pipeline.md](docs/ci-cd-pipeline.md) — pipeline architecture, path filtering, gh
-  CLI verification
-- [justfile](justfile) — every command the project knows
-- [.mise.toml](.mise.toml) — pinned toolchain
-- [AGENTS.md](AGENTS.md) — agent routing
+- [README](/README.md): what the portfolio is and what its engineering demonstrates.
+- [Documentation index](/docs/README.md): task guides, reference, and explanations organized
+  by reader need. Each topic has one home; other pages link to it.
+- This architecture map: current components and ownership boundaries.
+- [Agent router](/AGENTS.md): which document to read before a task.
+- [Decision records](/docs/decisions/README.md): durable reasoning, alternatives, and status.

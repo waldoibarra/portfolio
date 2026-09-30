@@ -10,9 +10,9 @@ the project is the way it is.
 | ADR-0000 | [Use Markdown Architectural Decision Records](0000-use-markdown-architectural-decision-records.md) | accepted |
 | ADR-0001 | [Use markdownlint-cli2 for Markdown Linting](0001-use-markdownlint-cli2-for-markdown-linting.md) | accepted |
 | ADR-0002 | [Enforce Editorconfig Rules with editorconfig-checker](0002-enforce-editorconfig-rules-with-editorconfig-checker.md) | accepted |
-| ADR-0003 | [Use Mise for Toolchain Pinning](0003-use-mise-for-toolchain-pinning.md) | accepted |
+| ADR-0003 | [Use Mise for Toolchain Pinning](/docs/decisions/0003-use-mise-for-toolchain-pinning.md) | accepted |
 | ADR-0004 | [Custom Terraform Code Only, No Third-Party Modules](0004-custom-terraform-code-only-no-third-party-modules.md) | accepted |
-| ADR-0005 | [Domain-Split CI/CD Workflows](0005-domain-split-cicd-workflows.md) | accepted |
+| ADR-0005 | [Domain-Split CI/CD Workflows](/docs/decisions/0005-domain-split-cicd-workflows.md) | accepted |
 | ADR-0006 | [Trunk-Based Development](0006-trunk-based-development.md) | accepted |
 | ADR-0007 | [Justfile as the Single Command Interface](0007-justfile-as-the-single-command-interface.md) | accepted |
 | ADR-0008 | [AI-Assisted Development as a First-Class Concern](0008-ai-assisted-development-as-first-class-concern.md) | proposed |
