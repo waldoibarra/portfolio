@@ -49,14 +49,14 @@ has faster shell activation, and includes built-in env file integration.
 - Bad, because backend resolution (aqua/ubi/asdf) sometimes requires `mise registry show <tool>` to
   verify the canonical identifier when adding a new tool
 - Bad, because contributors must install Mise once before they can use the project; documented in
-  `README.md` and `docs/infrastructure.md`
+  [Run locally](/docs/how-to/run-locally.md)
 
 ### Confirmation
 
 `.mise.toml` is the source of truth; `mise install` provisions the toolchain locally and
 `jdx/mise-action@v4` does the same in CI. Drift between local and CI is impossible because both read
 the same file. `infrastructure/versions.tf` `required_version` exact pin must match the `terraform`
-value in `.mise.toml` (operational note in `docs/infrastructure.md`).
+value in `.mise.toml` (see [infrastructure reference](/docs/reference/infrastructure.md)).
 
 ## Pros and Cons of the Options
 
