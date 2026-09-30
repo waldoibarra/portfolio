@@ -21,6 +21,14 @@ an ADR; every command is a `just` recipe; every commit goes straight to `trunk`.
 - **Architectural Decision Records** — Durable reasoning lives in
   [docs/decisions/](docs/decisions/).
 
+## Website Design Concept
+
+The current direction is the OpenPencil document
+[landing.fig](/docs/designs/landing.fig). Open it with
+`just open-design`. Use `openpencil` directly for inspection, rendering, and scripted edits.
+Read the [design workflow](/ARCHITECTURE.md#design-workflow) before editing or implementing it.
+The live Lit site is unchanged.
+
 ## Tech Stack
 
 | Tool | Version | Role |
@@ -38,7 +46,7 @@ an ADR; every command is a `just` recipe; every commit goes straight to `trunk`.
 portfolio/
 ├── .github/workflows/ — CI/CD: website.yml + infrastructure.yml
 ├── config/ — linter configs (eslint, stylelint, markdownlint, committed, ec)
-├── docs/ — long-form guides + decisions/ (ADRs)
+├── docs/ — long-form guides, decisions/ (ADRs), designs/ (OpenPencil)
 ├── infrastructure/ — custom Terraform (S3, CloudFront, ACM, Route53) + tests/
 ├── public/ — static assets (favicon, resume)
 ├── scripts/ — deploy scripts: s3-sync.sh, invalidate.sh, tf-deploy.sh

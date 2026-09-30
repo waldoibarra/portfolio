@@ -13,7 +13,8 @@ Read the right file before you start. Each row pairs a task with its source of t
 | Changing CI/CD, workflows, or path filters | [docs/ci-cd-pipeline.md](docs/ci-cd-pipeline.md) |
 | Recording or revising an architectural decision | [docs/decisions/README.md](docs/decisions/README.md) and [docs/decisions/AGENTS.md](docs/decisions/AGENTS.md) |
 | Writing a commit message | [config/committed.toml](config/committed.toml) (Conventional Commits) |
-| Running any task or adding a command | [justfile](justfile) — the single command interface |
+| Running project tasks or adding a recipe | [justfile](/justfile) |
+| Changing or implementing the OpenPencil design | [Design workflow](/ARCHITECTURE.md#design-workflow); source [landing.fig](/docs/designs/landing.fig) |
 | Changing the pre-commit / commit-msg hooks | [hk.pkl](hk.pkl) |
 | Pinning a tool version | [.mise.toml](.mise.toml) (mirror the Terraform pin in `infrastructure/versions.tf`) |
 
@@ -21,6 +22,7 @@ Read the right file before you start. Each row pairs a task with its source of t
 
 - **Commands are `just` recipes.** Never call `npm`/`tsc`/`terraform`/`eslint` directly — invoke them
   through the justfile so local, hook, and CI paths stay identical.
+  Workstation design commands use `openpencil` directly; `just open-design` launches the GUI.
 - **One job per doc.** ARCHITECTURE.md = how it works; AGENTS.md = where to look; README.md = the
   showcase; `docs/decisions/` = the durable _why_. Do not duplicate across them.
 - **Docs change with code.** If a change alters documented behavior, update the doc in the same
