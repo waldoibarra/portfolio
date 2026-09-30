@@ -143,3 +143,9 @@ check: (lint) (build) (tf-check)
 [group("Debug")]
 debug-pre-commit-hook:
   hk run pre-commit -v
+
+# Open the landing design in OpenPencil
+[group("Design")]
+[working-directory: 'docs/designs']
+open-design:
+  open -b net.dannote.open-pencil landing.fig

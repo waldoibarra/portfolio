@@ -18,7 +18,7 @@ CI checks are identical.
 | Frontend (Lit, Vite, TypeScript) | Renders the site | `src/`, `index.html`, `public/` |
 | Infrastructure (custom Terraform) | Owns AWS resources (S3, CloudFront, ACM, Route53) | `infrastructure/` |
 | Toolchain (Mise) | Pins versions of every tool the project uses | `.mise.toml` |
-| Command surface (justfile) | Single way to invoke any task locally, in CI, or from hooks | `justfile` |
+| Command surface (justfile) | Runs project tasks and opens the design; OpenPencil CLI is used directly | `justfile` |
 | CI (two GitHub Actions workflows) | Runs CI gates and CD for each domain | `.github/workflows/` |
 | Pre-commit (hk + committed) | Dispatches relevant `just lint-*` / `build` / `tf-check` recipes based on staged files; runs commit-message lint | `hk.pkl` |
 
@@ -37,8 +37,9 @@ CI checks are identical.
   Does NOT own: general-purpose scripts or local developer utilities.
 - `.github/workflows/` — Owns: `website.yml` (source CI+CD) and `infrastructure.yml` (infra
   CI+CD). Does NOT own: any inline shell logic — every step calls a `just` recipe.
-- `docs/` — Owns: long-form guides (`infrastructure.md`, `ci-cd-pipeline.md`). Does NOT own:
-  ADRs (those live in `docs/decisions/`) or routing instructions (those live in `AGENTS.md`).
+- `docs/` — Owns: long-form guides (`infrastructure.md`, `ci-cd-pipeline.md`) and design
+  sources (`docs/designs/`). Does NOT own: ADRs (those live in `docs/decisions/`) or routing
+  instructions (those live in `AGENTS.md`).
 - `docs/decisions/` — Owns: ADRs (numbered, MADR-format), the ADR index, and ADR templates.
   Does NOT own: how-to guides — those belong in `docs/`.
 - `hk.pkl` — Owns: hook→step dispatch. Each step declares a `glob` and a `check` command that
@@ -88,6 +89,82 @@ shaped by that stance:
 
 See [ADR-0008](docs/decisions/0008-ai-assisted-development-as-first-class-concern.md) for the
 framing. The stance is currently `proposed` — the conventions are still being refined.
+
+### Design workflow
+
+The editable landing source is `docs/designs/landing.fig`. OpenPencil is a workstation tool:
+Homebrew owns the desktop app; the global Mise config in `$HOME/.dotfiles/` owns
+`@open-pencil/cli` and `@open-pencil/mcp` (both pinned to 0.15.1), plus Node and Bun.
+The MCP package supplies the desktop app's automation server; it is separate from the CLI.
+Design tools are not required by the website build or CI.
+
+Use `just open-design` to launch `docs/designs/landing.fig` in the macOS app. The recipe
+targets the installed bundle identifier, `net.dannote.open-pencil`, rather than relying on
+the `.fig` file association. OpenPencil 0.15.1 has no CLI `open` subcommand.
+
+Run the globally managed `openpencil` directly from the repository root:
+
+```sh
+openpencil info docs/designs/landing.fig --json
+openpencil tree docs/designs/landing.fig
+openpencil export docs/designs/landing.fig -o /tmp/landing.png --font-policy strict
+openpencil eval docs/designs/landing.fig -c 'return figma.currentPage.name'
+openpencil lint docs/designs/landing.fig --json
+```
+
+#### Improve the design
+
+1. Inspect a strict-font PNG and the node tree before changing the document.
+2. Organize sections into nested frames with auto-layout, use components for repeated
+    controls/cards, and bind shared colors and typography to variables. Add a mobile
+    composition rather than scaling down the desktop canvas.
+3. Edit visually in OpenPencil or script changes with `openpencil eval`. Use
+    `--output /tmp/landing-edited.fig` to review a candidate; `--write` overwrites the input.
+4. Reopen the saved candidate, render it, and review it before replacing the source.
+    Treat lint findings as leads, not a substitute for visual and accessibility checks.
+
+The flat landing document triggers misleading contrast lint errors: the two dark CTA
+labels sit over cyan sibling rectangles with 12:1 fill-color contrast. Lint reports
+1.03:1, matching contrast against the dark parent frame instead. Verify the actual
+composited background before changing colors in response to lint.
+
+Use one writer at a time: save and close the desktop document before overwriting it
+headlessly, then reopen it. Omit the file argument only for live desktop operations through
+local MCP. Check `openpencil documents --json` first and pass `--document-id` when multiple
+documents are open. Restart the app after the first MCP install if discovery is missing;
+do not assume live edits have been saved to disk.
+
+#### Implement in Lit
+
+The `.fig` records visual intent; `src/` owns the production implementation. Import/export
+is a handoff, not automatic bidirectional synchronization.
+
+1. Inspect colors, typography, spacing, variables, and assets with `openpencil analyze`,
+    `variables`, and `export`. Choose shared CSS custom properties from the approved design.
+2. Implement semantic sections, headings, links, and buttons in Lit, with responsive
+    Grid/Flexbox, real destinations, keyboard focus, and interaction states. Do not copy
+    canvas coordinates into the page layout or introduce React/Tailwind just for an export.
+3. Run `just start`; compare browser screenshots with design renders at desktop and mobile
+    sizes. Exercise links and keyboard navigation, then run the relevant project checks.
+4. Review changes in visual intent in the design as well; importing HTML creates editable
+    layers but does not maintain a live mapping to Lit components.
+
+An HTML/CSS handoff can help inspect generated assets:
+
+```sh
+openpencil export docs/designs/landing.fig -f html --html standalone \
+  --css inline --assets external --fonts assets -o /tmp/landing.html
+```
+
+The 0.15.1 export of this design was inspected in a browser: all 86 nodes were absolutely
+positioned, there were no headings or interactive controls, and a 390 px viewport still
+had 1440 px of content. External font URLs repeated the asset directory, and the portrait
+lost its circular clipping. Use the strict-font PNG as the visual reference; treat HTML
+export as inspectable handoff material, not production-ready or pixel-faithful output.
+
+See the upstream [CLI scripting guide](https://openpencil.dev/programmable/cli/scripting),
+[export reference](https://openpencil.dev/programmable/cli/exporting), and
+[MCP setup](https://openpencil.dev/programmable/mcp-server).
 
 ### Documentation roles
 
