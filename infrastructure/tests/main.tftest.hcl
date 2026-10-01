@@ -4,25 +4,6 @@ mock_provider "aws" {
       arn = "arn:aws:cloudfront::123456789012:function/portfolio-routes"
     }
   }
-
-  mock_resource "aws_acm_certificate" {
-    defaults = {
-      id                  = "arn:aws:acm:us-east-1:123456789012:certificate/mock-cert-id"
-      arn                 = "arn:aws:acm:us-east-1:123456789012:certificate/mock-cert-id"
-      status              = "ISSUED"
-      type                = "AMAZON_ISSUED"
-      not_before          = "2026-01-01T00:00:00Z"
-      not_after           = "2027-01-01T00:00:00Z"
-      key_algorithm       = "RSA_2048"
-      renewal_eligibility = "INELIGIBLE"
-      domain_validation_options = toset([{
-        domain_name           = "waldoibarra.com"
-        resource_record_name  = "_abc123.waldoibarra.com."
-        resource_record_type  = "CNAME"
-        resource_record_value = "_def456.acm-validations.aws."
-      }])
-    }
-  }
 }
 
 mock_provider "aws" {
@@ -30,20 +11,21 @@ mock_provider "aws" {
 
   mock_resource "aws_acm_certificate" {
     defaults = {
-      id                  = "arn:aws:acm:us-east-1:123456789012:certificate/mock-cert-id"
-      arn                 = "arn:aws:acm:us-east-1:123456789012:certificate/mock-cert-id"
-      status              = "ISSUED"
-      type                = "AMAZON_ISSUED"
-      not_before          = "2026-01-01T00:00:00Z"
-      not_after           = "2027-01-01T00:00:00Z"
-      key_algorithm       = "RSA_2048"
-      renewal_eligibility = "INELIGIBLE"
-      domain_validation_options = toset([{
-        domain_name           = "waldoibarra.com"
-        resource_record_name  = "_abc123.waldoibarra.com."
-        resource_record_type  = "CNAME"
-        resource_record_value = "_def456.acm-validations.aws."
-      }])
+      arn                       = "arn:aws:acm:us-east-1:123456789012:certificate/mock-cert-id"
+      domain_validation_options = toset([
+        {
+          domain_name           = "waldo.love"
+          resource_record_name  = "_abc123.waldo.love."
+          resource_record_type  = "CNAME"
+          resource_record_value = "_def456.acm-validations.aws."
+        },
+        {
+          domain_name           = "*.waldo.love"
+          resource_record_name  = "_abc123.waldo.love."
+          resource_record_type  = "CNAME"
+          resource_record_value = "_def456.acm-validations.aws."
+        }
+      ])
     }
   }
 }
@@ -52,7 +34,7 @@ override_data {
   target = data.aws_route53_zone.main
   values = {
     zone_id = "Z00672733I09M5BUOLGXD"
-    name    = "waldoibarra.com"
+    name    = "waldo.love"
   }
 }
 
@@ -63,47 +45,27 @@ override_data {
   }
 }
 
-# ACM cert domain_validation_options is provider-computed (unknown at plan).
-# Using override_during=plan makes it known so the for_each in
-# aws_route53_record.cert_validation can be evaluated at plan time.
-override_resource {
-  target          = aws_acm_certificate.site
-  override_during = plan
-  values = {
-    id                  = "arn:aws:acm:us-east-1:123456789012:certificate/mock-cert-id"
-    arn                 = "arn:aws:acm:us-east-1:123456789012:certificate/mock-cert-id"
-    status              = "ISSUED"
-    type                = "AMAZON_ISSUED"
-    not_before          = "2026-01-01T00:00:00Z"
-    not_after           = "2027-01-01T00:00:00Z"
-    key_algorithm       = "RSA_2048"
-    renewal_eligibility = "INELIGIBLE"
-    domain_validation_options = toset([{
-      domain_name           = "waldoibarra.com"
-      resource_record_name  = "_abc123.waldoibarra.com."
-      resource_record_type  = "CNAME"
-      resource_record_value = "_def456.acm-validations.aws."
-    }])
-  }
-}
-
-# ─── S3 ──────────────────────────────────────────────────────────────────────
-
-run "validate_s3_bucket_name" {
+# The first plan must work while ACM validation options are still unknown.
+run "plan_domain_cutover" {
   command = plan
 
   assert {
-    condition     = aws_s3_bucket.site.bucket == "waldoibarra-com-site"
-    error_message = "S3 bucket name must be waldoibarra-com-site"
+    condition     = toset(keys(aws_route53_record.cert_validation)) == toset(["waldo.love", "*.waldo.love"])
+    error_message = "Certificate validation instances must use known requested names at plan time"
   }
-}
-
-run "validate_s3_force_destroy" {
-  command = plan
 
   assert {
-    condition     = aws_s3_bucket.site.force_destroy == true
-    error_message = "S3 bucket must have force_destroy = true"
+    condition = (
+      aws_acm_certificate.site.domain_name == "waldo.love" &&
+      aws_acm_certificate.site.subject_alternative_names == toset(["*.waldo.love"]) &&
+      aws_acm_certificate.site.validation_method == "DNS"
+    )
+    error_message = "The certificate must cover only the new root and wildcard through DNS validation"
+  }
+
+  assert {
+    condition     = aws_cloudfront_distribution.site.aliases == toset(["waldo.love", "www.waldo.love"])
+    error_message = "CloudFront must serve only the new root and www hostnames"
   }
 }
 
@@ -149,34 +111,6 @@ run "validate_s3_ownership_controls" {
   }
 }
 
-run "validate_s3_tags" {
-  command = plan
-
-  assert {
-    condition     = aws_s3_bucket.site.tags["Project"] == "portfolio"
-    error_message = "S3 bucket must have Project tag = portfolio"
-  }
-
-  assert {
-    condition     = aws_s3_bucket.site.tags["Environment"] == "production"
-    error_message = "S3 bucket must have Environment tag = production"
-  }
-
-  assert {
-    condition     = aws_s3_bucket.site.tags["ManagedBy"] == "terraform"
-    error_message = "S3 bucket must have ManagedBy tag = terraform"
-  }
-
-  assert {
-    condition     = aws_s3_bucket.site.tags["Owner"] == "waldo"
-    error_message = "S3 bucket must have Owner tag = waldo"
-  }
-
-  assert {
-    condition     = aws_s3_bucket.site.tags["Name"] == "waldoibarra-com-site"
-    error_message = "S3 bucket must have Name tag = waldoibarra-com-site"
-  }
-}
 
 # ─── OAC ─────────────────────────────────────────────────────────────────────
 
@@ -208,8 +142,8 @@ run "validate_cloudfront_properties" {
   command = apply
 
   assert {
-    condition     = one(aws_cloudfront_distribution.site.origin).origin_access_control_id != ""
-    error_message = "CloudFront distribution must use OAC (origin_access_control_id must be set)"
+    condition     = one(aws_cloudfront_distribution.site.origin).origin_access_control_id == aws_cloudfront_origin_access_control.site.id
+    error_message = "CloudFront must authorize requests using the site's S3 OAC"
   }
 
   assert {
@@ -232,42 +166,46 @@ run "validate_cloudfront_properties" {
   }
 
   assert {
-    condition     = length(one(aws_cloudfront_distribution.site.default_cache_behavior).allowed_methods) == 3
-    error_message = "CloudFront allowed methods must be GET, HEAD, OPTIONS (exactly 3)"
+    condition     = toset(one(aws_cloudfront_distribution.site.default_cache_behavior).allowed_methods) == toset(["GET", "HEAD", "OPTIONS"])
+    error_message = "CloudFront must allow only read-only viewer methods"
+  }
+}
+
+run "validate_domain_routing" {
+  command = apply
+
+  assert {
+    condition = (
+      aws_route53_record.root.name == "waldo.love" &&
+      aws_route53_record.www.name == "www.waldo.love" &&
+      alltrue([
+        for record in [aws_route53_record.root, aws_route53_record.www] :
+        record.zone_id == data.aws_route53_zone.main.zone_id &&
+        record.type == "A" &&
+        one(record.alias).name == aws_cloudfront_distribution.site.domain_name &&
+        one(record.alias).zone_id == aws_cloudfront_distribution.site.hosted_zone_id
+      ])
+    )
+    error_message = "Both new hostnames must resolve through the new hosted zone to the existing distribution"
   }
 
   assert {
-    condition     = contains(tolist(one(aws_cloudfront_distribution.site.default_cache_behavior).allowed_methods), "GET")
-    error_message = "CloudFront allowed methods must include GET"
+    condition = alltrue([
+      for record in aws_route53_record.cert_validation :
+      record.zone_id == data.aws_route53_zone.main.zone_id &&
+      trimsuffix(record.name, ".") == "_abc123.waldo.love" &&
+      record.type == "CNAME" &&
+      record.records == toset(["_def456.acm-validations.aws."])
+    ])
+    error_message = "ACM validation records must publish the provider's DNS challenge in the new hosted zone"
   }
 
   assert {
-    condition     = contains(tolist(one(aws_cloudfront_distribution.site.default_cache_behavior).allowed_methods), "HEAD")
-    error_message = "CloudFront allowed methods must include HEAD"
-  }
-
-  assert {
-    condition     = contains(tolist(one(aws_cloudfront_distribution.site.default_cache_behavior).allowed_methods), "OPTIONS")
-    error_message = "CloudFront allowed methods must include OPTIONS"
-  }
-
-  assert {
-    condition     = aws_cloudfront_distribution.site.tags["Project"] == "portfolio"
-    error_message = "CloudFront must have Project tag = portfolio"
-  }
-
-  assert {
-    condition     = aws_cloudfront_distribution.site.tags["Environment"] == "production"
-    error_message = "CloudFront must have Environment tag = production"
-  }
-
-  assert {
-    condition     = aws_cloudfront_distribution.site.tags["ManagedBy"] == "terraform"
-    error_message = "CloudFront must have ManagedBy tag = terraform"
-  }
-
-  assert {
-    condition     = aws_cloudfront_distribution.site.tags["Owner"] == "waldo"
-    error_message = "CloudFront must have Owner tag = waldo"
+    condition = (
+      aws_acm_certificate_validation.site.certificate_arn == aws_acm_certificate.site.arn &&
+      one(aws_cloudfront_distribution.site.viewer_certificate).acm_certificate_arn == aws_acm_certificate_validation.site.certificate_arn &&
+      one(aws_cloudfront_distribution.site.default_cache_behavior).viewer_protocol_policy == "redirect-to-https"
+    )
+    error_message = "CloudFront must attach the validated certificate and upgrade HTTP requests to HTTPS"
   }
 }

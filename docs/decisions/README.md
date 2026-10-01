@@ -3,6 +3,13 @@
 This directory holds the project's Architectural Decision Records (ADRs) — durable records of why
 the project is the way it is.
 
+ADRs preserve historical reasoning, including earlier setup commands, workflow names, and
+recovery assumptions. They are exceptions to current-documentation cleanup, not operational
+instructions. Use the [local setup guide](/docs/how-to/run-locally.md) for `just setup` and
+`just run`, and the [infrastructure guide](/docs/how-to/change-infrastructure.md) for manual
+local plans and CI-only applies. The current domain migration permits downtime and does not
+promise retired-domain routing or recovery.
+
 ## ADR Index
 
 | ADR | Title | Status |

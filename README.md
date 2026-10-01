@@ -5,7 +5,7 @@ automation, and engineering decisions that run it.
 
 ## Live site
 
-[Open the portfolio](https://waldoibarra.com).
+[Open the portfolio](https://waldo.love).
 
 ## Engineering proof
 
@@ -17,6 +17,18 @@ automation, and engineering decisions that run it.
   one ordered GitHub Actions workflow deploys website artifacts and infrastructure together.
 - **Recorded decisions:** architectural decision records preserve alternatives, tradeoffs, and
   decision status.
+
+## Run locally
+
+With Mise activated and `just` available, run:
+
+```sh
+just setup
+just run
+```
+
+Open the URL printed by Vite. See [local setup](docs/how-to/run-locally.md) for first-time
+tool installation. Frontend development needs no AWS credentials.
 
 ## Explore the repository
 

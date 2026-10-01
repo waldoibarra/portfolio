@@ -131,28 +131,28 @@ test-routes:
 tf-plan:
   @bash scripts/tf-plan.sh
 
-# Apply the previously reviewed saved plan (no new plan or confirmation)
+# Apply CI's saved plan (local applies are rejected)
 [group("Terraform")]
 tf-apply:
   @bash scripts/tf-deploy.sh
 
-# Build, check, plan and deploy both domains in a safe sequence
-[group("Deploy")]
-deploy: (build) (lint-tf) (tf-check) (tf-plan) (deploy-reviewed)
+# Reject local deployment before builds, staging, or infrastructure operations
+[private]
+require-ci:
+  @bash scripts/require-ci.sh
 
-# Deploy an already built artifact and reviewed infrastructure/tfplan
+# Build, check, plan and deploy website and infrastructure in CI
 [group("Deploy")]
-deploy-reviewed: (s3-stage) (tf-apply) (s3-sync) (invalidate)
+deploy: (require-ci) (build) (lint-tf) (tf-check) (tf-plan) (deploy-reviewed)
+
+# Deploy CI's built artifact and saved infrastructure/tfplan
+[group("Deploy")]
+deploy-reviewed: (require-ci) (s3-stage) (tf-apply) (s3-sync) (invalidate)
 
 # Snapshot the live artifact and CloudFront config into a new private directory
 [group("Deploy")]
 deploy-backup destination: (tf-init)
   @bash scripts/deploy-backup.sh "{{ destination }}"
-
-# Restore a same-resource snapshot, wait for CloudFront, then clean and invalidate
-[group("Deploy")]
-deploy-rollback backup:
-  @bash scripts/deploy-rollback.sh "{{ backup }}"
 
 # Stage dist/ without deleting objects used by the current distribution
 [group("Deploy")]
@@ -188,3 +188,28 @@ debug-pre-commit-hook:
 [working-directory: 'docs/designs']
 open-design:
   open -b net.dannote.open-pencil landing.fig
+
+# Inspect account, registrations, operations, availability, prices, and zones
+[group("Domains")]
+domain-inspect:
+  @node scripts/domain-operations.mjs inspect
+
+# Purchase the approved one-year registration from a private external JSON payload
+[group("Domains")]
+domain-register contact_file:
+  @node scripts/domain-operations.mjs register "{{ contact_file }}"
+
+# Check registration completion and inspect the new delegation
+[group("Domains")]
+domain-operation operation_id:
+  @node scripts/domain-operations.mjs operation "{{ operation_id }}"
+
+# Disable renewal without deleting the retired registration
+[group("Domains")]
+domain-disable-renewal domain:
+  @node scripts/domain-operations.mjs disable-renewal "{{ domain }}"
+
+# Delete a verified retired public zone only after all dependencies are removed
+[group("Domains")]
+domain-delete-zone zone_id domain:
+  @node scripts/domain-operations.mjs delete-zone "{{ zone_id }}" "{{ domain }}"
