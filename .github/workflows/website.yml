@@ -26,6 +26,7 @@ concurrency:
 jobs:
   build-and-deploy:
     name: Check and deploy website and infrastructure
+    if: github.ref == 'refs/heads/trunk'
     runs-on: ubuntu-latest
     environment: production
     env:
@@ -33,7 +34,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: us-east-1
       TF_TOKEN_app_terraform_io: ${{ secrets.TF_TOKEN_app_terraform_io }}
-      TF_VAR_domain_name: waldoibarra.com
+      TF_VAR_domain_name: waldo.love
 
     steps:
       - uses: actions/checkout@v6

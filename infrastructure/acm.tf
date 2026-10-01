@@ -13,19 +13,19 @@ resource "aws_acm_certificate" "site" {
 }
 
 resource "aws_route53_record" "cert_validation" {
+  # Requested names stay known when ACM replaces the certificate.
   for_each = {
-    for dvo in aws_acm_certificate.site.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      type   = dvo.resource_record_type
-      record = dvo.resource_record_value
-    }
+    for domain in [var.domain_name, "*.${var.domain_name}"] : domain => one([
+      for option in aws_acm_certificate.site.domain_validation_options : option
+      if option.domain_name == domain
+    ])
   }
 
   zone_id         = data.aws_route53_zone.main.zone_id
-  name            = each.value.name
-  type            = each.value.type
+  name            = each.value.resource_record_name
+  type            = each.value.resource_record_type
   ttl             = 60
-  records         = [each.value.record]
+  records         = [each.value.resource_record_value]
   allow_overwrite = true
 }
 

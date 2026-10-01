@@ -11,7 +11,7 @@ function requestFor(uri) {
     uri,
     method: 'GET',
     querystring: { source: { value: 'portfolio' } },
-    headers: { host: { value: 'waldoibarra.com' } },
+    headers: { host: { value: 'waldo.love' } },
     cookies: {},
   };
 }

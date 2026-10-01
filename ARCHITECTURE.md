@@ -3,11 +3,12 @@
 Read this map before changing application code or infrastructure. For task instructions, start
 with the [documentation index](/docs/README.md).
 
-`waldoibarra.com` is a static portfolio site. Semantic HTML and component-scoped native CSS
-implement its single landing page without a frontend runtime framework or page script for its
-content. Vite 8 composes the HTML components during development and production builds.
+`waldo.love` is a static portfolio site, also served at `www.waldo.love`. Semantic HTML and
+component-scoped native CSS implement its single landing page without a frontend runtime framework
+or page script for its content. Vite 8 composes the HTML components during development and builds.
 CloudFront serves the output from a private S3 bucket through Origin Access Control (OAC).
-Custom Terraform owns the AWS resources.
+Custom Terraform owns the website resources. Domain registration and the existing public hosted
+zone are account prerequisites, managed through explicit one-time operations outside Terraform.
 
 ## System boundaries
 
@@ -16,7 +17,7 @@ Custom Terraform owns the AWS resources.
 | [`src/`](/src/), [`public/`](/public/) | Semantic landing-page HTML, component-scoped native CSS, static assets, and Vite type declarations | Infrastructure or deployment |
 | [`infrastructure/`](/infrastructure/) | S3, CloudFront, ACM, Route53, provider pins, and Terraform Cloud backend configuration | Artifact uploads, which run through `just s3-sync` |
 | [`infrastructure/tests/`](/infrastructure/tests/) | Native Terraform tests with mock providers | Integration tests against real AWS |
-| [`scripts/`](/scripts/) | Deploy scripts invoked by `just`; each uses `set -euo pipefail` | General-purpose local utilities |
+| [`scripts/`](/scripts/) | Setup, deployment, and explicit domain-account operations invoked by `just` | Automatic purchases or domain retirement in CI |
 | [`.github/workflows/`](/.github/workflows/) | One coordinated website and infrastructure production workflow | Inline shell logic; project tasks call recipes |
 | [`docs/designs/`](/docs/designs/) | Editable design source and the README's generated preview | Production frontend implementation |
 
@@ -32,11 +33,20 @@ development and build tooling; strict TypeScript checks cover [`vite.config.ts`]
 and future behavior modules. Tool-specific configuration remains in the root configuration files
 and [`config/`](/config/).
 
+Local development starts with `just setup`, then `just run`; it needs no AWS credentials.
+Infrastructure plans are reviewed locally with `AWS_PROFILE=waldo`. Only GitHub Actions applies
+Terraform or deploys production; CI uses its own credentials, not the workstation profile.
+
 Development uses direct commits to `trunk`, without branches or PRs. On matching pushes,
 the production workflow checks and builds both domains, stages website objects, applies
 infrastructure, waits for CloudFront, then removes obsolete objects and invalidates caches.
 Read the [delivery model](/docs/explanation/delivery.md) for filtering, gates, and deployment
 dependencies.
+
+The domain migration permits downtime and removes the previous domain's website routing.
+There is no redirect service or old-site recovery guarantee. Bucket `waldoibarra-com-site`,
+OAC `waldoibarra-com-oac`, and workspace `waldoibarra-com` keep their historical names to
+preserve resource and state identities. These names are not website domains.
 
 ## Design and implementation
 

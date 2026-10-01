@@ -34,8 +34,8 @@ removes any earlier plan first so a failed attempt cannot leave a stale apply ta
 The `production` concurrency group has `cancel-in-progress: false`. One workflow owns the whole
 sequence, rather than relying on a shared lock between independent jobs whose order is unknown.
 GitHub may replace pending runs; it does not promise FIFO deployment order. Each run nevertheless
-ships the artifact and infrastructure from one checkout together. Local deployments must not run
-alongside Actions or another operator: GitHub concurrency does not lock a local shell.
+ships the artifact and infrastructure from one checkout together. Production applies and
+deployment mutations are CI-only; local operators review plans with `AWS_PROFILE=waldo`.
 
 Website-only changes deliberately use this same transaction. Usually the infrastructure plan is
 empty. This conservative choice prevents a website-only push from deleting objects while a prior
@@ -46,15 +46,20 @@ route or layout changes.
 
 Upload, distribution wait, and invalidation scripts read the bucket/distribution identifiers from
 Terraform outputs, requiring Terraform Cloud and AWS access. Existing production deployments
-already have these outputs. A completely new environment needs an initial checked, reviewed
-infrastructure apply before its first artifact can be staged. Follow the
-[infrastructure guide](/docs/how-to/change-infrastructure.md); subsequent deployments use the
-ordered transaction above.
+already have these outputs. The domain migration preserves them; it is not a new environment.
+Domain registration and its public hosted zone are explicit account prerequisites outside
+Terraform. The [infrastructure guide](/docs/how-to/change-infrastructure.md) covers bootstrap
+and retirement operations, which never run automatically in CI.
 
 The workflow uses Mise's tool cache and npm's download cache. Its YAML owns secrets, environment
 settings, and exact lint selection. The [infrastructure reference](/docs/reference/infrastructure.md)
 describes AWS resources, state, and credentials. Mock-provider and route-function tests check
 configuration and rewrite behavior, not live AWS permissions, DNS, or edge propagation.
+
+Local `tf-plan` is a manual preview. CI creates a fresh saved plan using its own credentials and
+current state; it never consumes the workstation's plan file. Registration and delegation must
+be ready before a domain-changing push. Downtime is acceptable, and the previous website
+domain has no coexistence, redirect, or rollback guarantee.
 
 Mise explicitly selects EditorConfig Checker's `ec-<os>-<arch>` archive and normalizes its
 executable to `ec`, so `just lint-ec` uses the same command on Linux and macOS. Autodetection
@@ -79,5 +84,5 @@ GitHub evaluates at most 300 changed files for path filtering. Matching files be
 miss a run; pushes exceeding 1,000 commits or timing out diff generation run without normal path
 filtering. See [GitHub's path-filter documentation](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#git-diff-comparisons).
 
-The [deployment guide](/docs/how-to/verify-deployment.md) provides the reviewed local rollout,
-rollback sequence, and checks for Actions and the live routes.
+The [deployment guide](/docs/how-to/verify-deployment.md) covers Actions results, live routes,
+and recovery through a reviewed corrective change in CI.

@@ -8,15 +8,16 @@ Choose a page by what you need to do or understand. Start with the
 | Task | Guide |
 | --- | --- |
 | Set up a checkout and see the site in a browser | [Run locally](/docs/how-to/run-locally.md) |
-| Preview, test, and apply Terraform changes | [Change infrastructure](/docs/how-to/change-infrastructure.md) |
+| Review a local Terraform plan and deploy through CI | [Change infrastructure](/docs/how-to/change-infrastructure.md) |
 | Check whether a push deployed and inspect failures | [Verify a deployment](/docs/how-to/verify-deployment.md) |
+| Register the website domain or retire unused DNS | [Domain account operations](/docs/how-to/change-infrastructure.md#domain-account-operations) |
 | Edit and review the OpenPencil document | [Edit the landing design](/docs/how-to/edit-landing-design.md) |
 | Translate the design into the production frontend | [Implement the landing design](/docs/how-to/implement-landing-design.md) |
 
 ## Look up a fact
 
 - [Infrastructure reference](/docs/reference/infrastructure.md): AWS resources, Terraform
-  inputs and outputs, environment requirements, and security settings.
+  inputs and outputs, environment requirements, security settings, and cited cost components.
 - [OpenPencil reference](/docs/reference/openpencil.md): workstation tooling, command behavior,
   and known rendering limitations.
 - [justfile](/justfile): project commands and their dependencies.

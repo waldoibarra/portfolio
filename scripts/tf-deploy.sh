@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-# Apply only the saved infrastructure plan that was checked and reviewed.
+# Apply the saved plan only from the production CI deployment.
 set -euo pipefail
 
+bash scripts/require-ci.sh
+
 if [[ ! -s infrastructure/tfplan ]]; then
-  printf 'Missing infrastructure/tfplan; run just tf-plan and review it first.\n' >&2
+  printf 'Missing infrastructure/tfplan; CI must create its plan before applying.\n' >&2
   exit 1
 fi
 
