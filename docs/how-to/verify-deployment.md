@@ -92,10 +92,17 @@ Direct object URLs such as `/resume/index.html` remain accessible through CloudF
 ## Check sharing previews
 
 Inspect the initial HTML response at <https://waldo.love/> without running JavaScript.
+Compare its title, description, author, canonical URL, and Open Graph/Twitter tags with
+[`src/home/metadata.json`](/src/home/metadata.json) at the deployed commit. Vite generates these
+tags during the build; they must be present in the response, not added by runtime JavaScript.
+Use the [field mapping](/docs/reference/homepage-metadata.md#fields-and-generated-tags) to check
+that each generated tag matches its source value, including the title-derived image alt text.
 Confirm the canonical and `og:url` values are `https://waldo.love/`, and the Open Graph
 title, description, and image tags are present alongside the Twitter `summary_large_image` card.
 Open <https://waldo.love/images/social-preview.jpg>; it must return HTTP 200 with
 `Content-Type: image/jpeg` and a 1200 × 630 image, not an HTML fallback.
+Confirm `meta[name="author"]` identifies Waldo and `og:type` remains `website`. This homepage
+has no article publication date; do not invent one to fill an inspector's optional field.
 
 Paste the canonical URL into a new WhatsApp message and check the preview before sending.
 WhatsApp and other sharing services cache previews independently of CloudFront: a completed

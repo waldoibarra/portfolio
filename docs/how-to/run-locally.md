@@ -54,6 +54,22 @@ You need Git and [Mise](https://mise.jdx.dev/getting-started.html), with
     `just preview` serves that directory with the same `/` and `/resume` mappings as development.
     Open both routes at the printed local URL, then stop the server with `Ctrl+C`.
 
+## Edit homepage metadata
+
+1. With `just run` active and the homepage open, edit
+    [`src/home/metadata.json`](/src/home/metadata.json). This is the single source for the title,
+    description, author, canonical URL, and Open Graph/Twitter sharing metadata.
+2. Save the JSON. Vite triggers a full-page browser reload; you do not need to restart the server.
+    Check the page title and the document's initial HTML response for the changed values.
+3. To check the production output, stop development and run `just build`, then `just preview`.
+    The generated tags are in `dist/home/index.html`, not set by runtime JavaScript.
+
+Keep charset, viewport, stylesheet, and favicon declarations in
+[`src/home/index.html`](/src/home/index.html). Read the
+[homepage metadata reference](/docs/reference/homepage-metadata.md) before changing field names
+or the sharing image; JSON edits do not regenerate the image.
+For live sharing checks, see [Verify a deployment](/docs/how-to/verify-deployment.md#check-sharing-previews).
+
 ## Choose the next task
 
 - Read [Implement the landing design](/docs/how-to/implement-landing-design.md) before translating

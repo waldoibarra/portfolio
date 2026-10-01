@@ -14,3 +14,7 @@ max_line_length = off
 
 [infrastructure/tests/main.tftest.hcl]
 max_line_length = off
+
+# JSON strings cannot wrap across lines.
+[src/home/metadata.json]
+max_line_length = off

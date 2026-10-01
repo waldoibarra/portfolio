@@ -3,6 +3,55 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig, normalizePath, type Connect } from 'vite';
 
 const sourceDirectory = fileURLToPath(new URL('./src/', import.meta.url));
+const homeEntry = fileURLToPath(new URL('./src/home/index.html', import.meta.url));
+const homeMetadata = fileURLToPath(new URL('./src/home/metadata.json', import.meta.url));
+
+interface HomeMetadata {
+  title: string;
+  author: string;
+  description: string;
+  url: string;
+  type: string;
+  image: {
+    url: string;
+    width: number;
+    height: number;
+    type: string;
+  };
+  twitterCard: string;
+}
+
+function escapeHtml(value: string | number): string {
+  return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function renderHomeMetadata(): string {
+  const metadata: HomeMetadata = JSON.parse(readFileSync(homeMetadata, 'utf8'));
+  const meta = (attribute: 'name' | 'property', key: string, value: string | number) =>
+    `<meta ${attribute}="${key}" content="${escapeHtml(value)}" />`;
+
+  return [
+    `<title>${escapeHtml(metadata.title)}</title>`,
+    meta('name', 'author', metadata.author),
+    meta('name', 'description', metadata.description),
+    `<link rel="canonical" href="${escapeHtml(metadata.url)}" />`,
+    meta('property', 'og:type', metadata.type),
+    meta('property', 'og:url', metadata.url),
+    meta('property', 'og:title', metadata.title),
+    meta('property', 'og:description', metadata.description),
+    meta('property', 'og:image', metadata.image.url),
+    meta('property', 'og:image:width', metadata.image.width),
+    meta('property', 'og:image:height', metadata.image.height),
+    meta('property', 'og:image:type', metadata.image.type),
+    meta('property', 'og:image:alt', metadata.title),
+    meta('name', 'twitter:card', metadata.twitterCard),
+    meta('name', 'twitter:title', metadata.title),
+    meta('name', 'twitter:description', metadata.description),
+    meta('name', 'twitter:image', metadata.image.url),
+    meta('name', 'twitter:image:alt', metadata.title),
+  ].join('\n    ');
+}
 
 /** Keep development and production preview aligned with CloudFront's public routes. */
 function configureRoutes(server: { middlewares: Connect.Server }) {
@@ -23,12 +72,15 @@ export default defineConfig({
   appType: 'mpa',
   plugins: [{
     name: 'html-components',
-    configureServer: configureRoutes,
+    configureServer(server) {
+      configureRoutes(server);
+      server.watcher.add(homeMetadata);
+    },
     configurePreviewServer: configureRoutes,
     transformIndexHtml: {
       order: 'pre',
-      handler(html) {
-        return html.replace(/<!--\s*include:\s*(.*?)\s*-->/g, (_, path: string) => {
+      handler(html, context) {
+        const expanded = html.replace(/<!--\s*include:\s*(.*?)\s*-->/g, (_, path: string) => {
           if (!/^(?:[a-z0-9-]+\/)*[a-z0-9-]+\.html$/.test(path)) {
             throw new Error(`Invalid source-relative HTML include: ${path}`);
           }
@@ -38,10 +90,14 @@ export default defineConfig({
           }
           return readFileSync(filename, 'utf8').trimEnd();
         });
+        return normalizePath(context.filename) === normalizePath(homeEntry)
+          ? expanded.replace('</head>', `${renderHomeMetadata()}\n  </head>`)
+          : expanded;
       },
     },
     handleHotUpdate({ file, server }) {
-      if (file.startsWith(normalizePath(sourceDirectory)) && file.endsWith('.html')) {
+      if (file === normalizePath(homeMetadata)
+        || (file.startsWith(normalizePath(sourceDirectory)) && file.endsWith('.html'))) {
         server.ws.send({ type: 'full-reload', path: '*' });
         return [];
       }
@@ -50,7 +106,7 @@ export default defineConfig({
   build: {
     rolldownOptions: {
       input: {
-        home: fileURLToPath(new URL('./src/home/index.html', import.meta.url)),
+        home: homeEntry,
       },
     },
     target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14'],

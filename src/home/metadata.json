@@ -1,0 +1,14 @@
+{
+  "title": "Waldo — Software Architect & Applied AI Engineer",
+  "author": "Waldo",
+  "description": "Hands-on software architect and applied AI engineer who builds SaaS platforms, APIs and AI systems.",
+  "url": "https://waldo.love/",
+  "type": "website",
+  "image": {
+    "url": "https://waldo.love/images/social-preview.jpg",
+    "width": 1200,
+    "height": 630,
+    "type": "image/jpeg"
+  },
+  "twitterCard": "summary_large_image"
+}
