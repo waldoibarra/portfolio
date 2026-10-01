@@ -6,11 +6,15 @@ gh = "2.92.0"
 tflint = "0.62.0"
 just = "1.50.0"
 markdownlint-cli2 = "0.22.1"
-editorconfig-checker = { version = "3.6.1", rename_exe = { "ec-*" = "ec" } }
 hk = "1.45.0"
 committed = "1.1.11"
 pkl = "0.31.1"
 shellcheck = "0.10.0"
+
+[tools.editorconfig-checker]
+version = "3.6.1"
+asset_pattern = 'ec-{{ os(macos="darwin") }}-{{ arch(x64="amd64") }}.tar.gz'
+rename_exe = { "ec-*" = "ec" }
 
 [env]
 _.file = ".env"
