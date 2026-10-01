@@ -56,9 +56,10 @@ settings, and exact lint selection. The [infrastructure reference](/docs/referen
 describes AWS resources, state, and credentials. Mock-provider and route-function tests check
 configuration and rewrite behavior, not live AWS permissions, DNS, or edge propagation.
 
-Mise normalizes EditorConfig Checker's platform-suffixed executable to `ec` on installation, so
-`just lint-ec` uses the same command on Linux and macOS. The workflow's cache prefix excludes
-older installations that lacked that executable normalization.
+Mise explicitly selects EditorConfig Checker's `ec-<os>-<arch>` archive and normalizes its
+executable to `ec`, so `just lint-ec` uses the same command on Linux and macOS. Autodetection
+can select the separate `editorconfig-checker` archive, which does not match that rename rule.
+The workflow's cache prefix excludes installations made before explicit asset selection.
 
 ## Shared command interface
 
