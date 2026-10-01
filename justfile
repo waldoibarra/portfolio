@@ -3,9 +3,10 @@
 default:
   @just --list --unsorted
 
-# Install all project dependencies
+# Install the toolchain, Node dependencies, and Git hooks
 [group("Setup")]
-install: (install-tools) (install-node-deps) (install-hooks)
+setup:
+  @bash scripts/setup.sh
 
 # Install tools with Mise
 [group("Setup")]
