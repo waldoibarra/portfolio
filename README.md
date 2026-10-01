@@ -1,4 +1,4 @@
-# Waldo Ibarra · Portfolio
+# Waldo's Portfolio
 
 A live software-architecture portfolio backed by the frontend, AWS infrastructure, delivery
 automation, and engineering decisions that run it.
