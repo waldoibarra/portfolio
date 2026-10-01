@@ -18,8 +18,11 @@ the résumé at `/resume.html` when you implement the site; do not put it in a h
 
 Hero copy that must stay aligned across desktop and mobile:
 
-- Greeting `Hi, I'm` in muted gray, then `Waldo Ibarra` in lilac, with a 6 px gap and no
-  leftover text-box width.
+- Greeting `Hi, I'm` in muted gray, then `Waldo Ibarra` in lilac. Keep each text box at
+  the font's measured width. The name is absolutely positioned at x = 60 inside the
+  greeting row, 4 px into the greeting box's trailing sidebearing, so the visible gap
+  is about one word space. A positive auto-layout gap stacks on that sidebearing and
+  reads as a wide break.
 - Role `Hands-On Software Architect & Applied AI Engineer` in lilac, 24 px on desktop and
   20 px on mobile.
 - Engineering experience at `H-E-B`, `Guros`, `Uniko`, `Spark`, `Paystand` in that order.
@@ -67,7 +70,9 @@ charcoal surfaces, a 24 px dotted field, cyan actions, and lilac secondary accen
 
 The canvas uses a tiled 24 px zinc dot grid (`rgba(161, 161, 170, ~0.22)` at the tile origin)
 as a second fill. Atmosphere stays in the hero: a lilac orb on the left, a cyan orb on the
-right, and a vertical wash from cyan/lilac into the canvas. `color/heroTop` (`#152028`) and
+right, and a vertical wash from cyan/lilac into the canvas. Those fixtures are the first
+children of the hero, behind the portrait and copy. Later siblings paint on top and take
+clicks away from the text. `color/heroTop` (`#152028`) and
 `color/heroMid` (`#241e2e`) record that wash. Gradient stops are literal values because the
 CLI rejects gradient-stop variable bindings. Keep this fixture in the hero. Do not add
 gradients to every card.

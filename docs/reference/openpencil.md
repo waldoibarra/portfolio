@@ -53,6 +53,12 @@ therefore has separate desktop and mobile component masters, with the same label
 
 Saving after `insertChild` can remap node ids. Later scripted edits should find layers by name.
 
+Imported nodes keep their original fig layout and order key. Setting `itemSpacing` or
+reordering with `insertChild` updates the live scene graph, but the `.fig` writer emits
+`source.fig.layout.stackSpacing` and `source.orderKey`. Change those too, or the gap and
+z-order revert when the file is reopened. Yoga also clamps a negative auto-layout gap to
+zero, so a tighter pair has to be positioned absolutely inside the empty sidebearing.
+
 Mixed-color text on one line needs two text layers. Range fills are not exposed on the 0.15.1
 eval API. Size each layer to the glyphs. Extra box width reads as extra space.
 
