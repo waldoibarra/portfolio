@@ -124,7 +124,8 @@ Treat lint findings as leads, not a substitute for visual and accessibility chec
 compositions at native size for text wrapping and overlap. The nested design passes contrast lint;
 the [earlier flat design](/docs/reference/openpencil.md#contrast-lint-observation) produced false positives.
 
-Once the design is approved, [implement it in Lit](/docs/how-to/implement-landing-design.md).
+Once the design is approved, follow [Implement the landing design](/docs/how-to/implement-landing-design.md)
+to update the native implementation.
 
 ## Refresh the README preview
 

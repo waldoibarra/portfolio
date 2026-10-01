@@ -74,7 +74,8 @@ workflow runs it. Hook globs and workflow path filters are separate configuratio
 The workflows use `paths` allowlists. They document which changed files trigger each pipeline,
 but an unlisted new source or configuration path can silently skip both workflows. The absence
 of a run is not a passing check. Changes to shared build or deployment inputs need a review of
-both allowlists; currently `justfile` and `hk.pkl` are not included, while `.mise.toml` is in both.
+both allowlists. The website allowlist includes `justfile`, while `hk.pkl` remains outside both
+workflow filters. `.mise.toml` is in both.
 
 Each workflow includes its own YAML path. Editing that file triggers its push workflow only when
 the branch and other event conditions also match; it does not bypass the `trunk` restriction.

@@ -35,7 +35,8 @@ The current path filters predict these results for pushes to `trunk`:
 | Both website and infrastructure paths | Both workflows |
 | `.mise.toml` | Both workflows |
 | Only one workflow's YAML | That workflow only |
-| Only `justfile`, `hk.pkl`, `.editorconfig`, or `.gitignore` | Neither workflow |
+| Only `justfile` | Website only |
+| Only `hk.pkl`, `.editorconfig`, or `.gitignore` | Neither workflow |
 
 Use the actual `paths` lists in
 [`website.yml`](/.github/workflows/website.yml) and

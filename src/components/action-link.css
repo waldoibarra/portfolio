@@ -1,0 +1,44 @@
+.action-link {
+  display: inline-flex;
+  min-block-size: 3.25rem;
+  min-inline-size: 14.375rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border: 0.125rem solid transparent;
+  border-radius: 0.5rem;
+  background-color: var(--color-accent);
+  color: var(--color-ink);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.5rem;
+  text-align: center;
+  text-decoration: none;
+}
+
+.action-link:visited {
+  color: var(--color-ink);
+}
+
+.action-link:hover {
+  background-color: var(--color-secondary);
+}
+
+.action-link:active {
+  border-color: var(--color-ink);
+  background-color: var(--color-accent);
+  box-shadow: inset 0 0 0 0.125rem var(--color-accent);
+  transform: translateY(0.0625rem);
+}
+
+.action-link:focus-visible {
+  outline: 0.1875rem solid var(--color-secondary);
+  outline-offset: 0.25rem;
+}
+
+@media (width <= 48rem) {
+  .action-link {
+    inline-size: 100%;
+    min-inline-size: 0;
+  }
+}

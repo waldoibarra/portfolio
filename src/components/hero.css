@@ -1,0 +1,180 @@
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: 2rem 3rem;
+}
+
+.hero::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 7.6% 59%,
+      rgb(199 148 250 / 14%) 0,
+      transparent 24rem
+    ),
+    radial-gradient(
+      circle at 84.7% 19%,
+      rgb(62 224 240 / 12%) 0,
+      transparent 28rem
+    ),
+    linear-gradient(
+      to bottom,
+      rgb(32 214 238 / 7%) 0%,
+      rgb(199 148 250 / 8%) 42%,
+      transparent 100%
+    );
+  content: "";
+  pointer-events: none;
+}
+
+.hero-layout {
+  display: grid;
+  grid-template-areas:
+    "portrait greeting"
+    "portrait role"
+    "portrait title"
+    "portrait description"
+    "portrait proof"
+    "portrait action";
+  grid-template-columns: 12.25rem minmax(0, 1fr);
+  gap: 1.5rem 3rem;
+  align-items: start;
+}
+
+.hero-portrait {
+  grid-area: portrait;
+  inline-size: 12.25rem;
+  aspect-ratio: 1;
+  border: 0.125rem solid rgb(0 0 0 / 80%);
+  border-radius: 50%;
+  background-color: var(--color-raised);
+  box-shadow:
+    0 0 1.375rem 0.125rem rgb(32 214 238 / 30%),
+    0 0 2.125rem rgb(199 148 250 / 24%);
+  object-fit: cover;
+}
+
+.hero-greeting {
+  grid-area: greeting;
+  color: var(--color-copy);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.75rem;
+}
+
+.hero-name {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.hero-role {
+  grid-area: role;
+  color: var(--color-accent);
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.hero-title {
+  grid-area: title;
+  color: var(--color-text);
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 4rem;
+}
+
+.hero-description {
+  grid-area: description;
+  color: var(--color-copy);
+  font-size: 1.25rem;
+  max-inline-size: 55ch;
+  line-height: 1.875rem;
+}
+
+.hero-proof {
+  grid-area: proof;
+  color: var(--color-text);
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.hero-layout > .action-link {
+  grid-area: action;
+  justify-self: start;
+}
+
+@media (width <= 48rem) {
+  .hero {
+    padding-block: 1rem 2rem;
+  }
+
+  .hero::before {
+    background:
+      radial-gradient(
+        circle at 2.6% 51.5%,
+        rgb(199 148 250 / 16%) 0,
+        transparent 18rem
+      ),
+      radial-gradient(
+        circle at 69.2% 3.4%,
+        rgb(62 224 240 / 12%) 0,
+        transparent 20rem
+      ),
+      linear-gradient(
+        to bottom,
+        rgb(32 214 238 / 7%) 0%,
+        rgb(199 148 250 / 8%) 42%,
+        transparent 100%
+      );
+  }
+
+  .hero-layout {
+    grid-template-areas:
+      "portrait greeting"
+      "role role"
+      "title title"
+      "description description"
+      "proof proof"
+      "action action";
+    grid-template-columns: 4rem minmax(0, 1fr);
+    gap: 1.25rem 1rem;
+  }
+
+  .hero-portrait {
+    inline-size: 4rem;
+  }
+
+  .hero-greeting {
+    align-self: center;
+    font-size: 1rem;
+    line-height: 1.75rem;
+  }
+
+  .hero-role {
+    font-size: 1.25rem;
+    line-height: 1.875rem;
+  }
+
+  .hero-title {
+    font-size: 2.25rem;
+    letter-spacing: -0.03em;
+    line-height: 2.75rem;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+    line-height: 1.625rem;
+  }
+
+  .hero-proof {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .hero-layout > .action-link {
+    justify-self: stretch;
+  }
+}
