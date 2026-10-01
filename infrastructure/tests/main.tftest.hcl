@@ -1,4 +1,10 @@
 mock_provider "aws" {
+  mock_resource "aws_cloudfront_function" {
+    defaults = {
+      arn = "arn:aws:cloudfront::123456789012:function/portfolio-routes"
+    }
+  }
+
   mock_resource "aws_acm_certificate" {
     defaults = {
       id                  = "arn:aws:acm:us-east-1:123456789012:certificate/mock-cert-id"
@@ -212,8 +218,17 @@ run "validate_cloudfront_properties" {
   }
 
   assert {
-    condition     = aws_cloudfront_distribution.site.default_root_object == "index.html"
-    error_message = "CloudFront default root object must be index.html"
+    condition     = aws_cloudfront_distribution.site.default_root_object == "home/index.html"
+    error_message = "CloudFront default root object must be home/index.html"
+  }
+
+  assert {
+    condition = (
+      aws_cloudfront_function.routes.publish &&
+      one(one(aws_cloudfront_distribution.site.default_cache_behavior).function_association).event_type == "viewer-request" &&
+      one(one(aws_cloudfront_distribution.site.default_cache_behavior).function_association).function_arn == aws_cloudfront_function.routes.arn
+    )
+    error_message = "CloudFront must run the published route function before cache lookup"
   }
 
   assert {

@@ -16,24 +16,21 @@ under [`infrastructure/`](/infrastructure), without third-party modules. See the
 | Input variables | `domain_name` defaults to `waldoibarra.com`; `application` defaults to `portfolio`; defined in [`vars.tf`](/infrastructure/vars.tf) |
 | Terraform outputs | `s3_bucket_id` and `cloudfront_distribution_id`, defined in [`outputs.tf`](/infrastructure/outputs.tf) |
 
-The provider regions are explicit in [`provider.tf`](/infrastructure/provider.tf). Both GitHub
-workflows set `AWS_DEFAULT_REGION` to `us-east-1`; this does not override those Terraform provider
-settings. The infrastructure workflow also sets `TF_VAR_domain_name` to `waldoibarra.com` directly,
-not through a secret.
+The provider regions are explicit in [`provider.tf`](/infrastructure/provider.tf). The production
+workflow sets `AWS_DEFAULT_REGION` to `us-east-1`; this does not override those Terraform provider
+settings. It also sets `TF_VAR_domain_name` to `waldoibarra.com` directly, not through a secret.
 
 [`.env.example`](/.env.example) documents the local Terraform Cloud token. AWS credentials are
-separate and follow the standard credential chain. The workflow `env` sections are the source of
-truth for CI secrets and environment variables:
-[website](/.github/workflows/website.yml) and
-[infrastructure](/.github/workflows/infrastructure.yml). Both jobs target the `production`
-GitHub environment.
+separate and follow the standard credential chain. The
+[production workflow](/.github/workflows/website.yml) owns the CI secrets and environment
+variables and targets the `production` GitHub environment.
 
 ## Resources and security
 
 | Source | Configuration |
 | --- | --- |
 | [`s3.tf`](/infrastructure/s3.tf) | Deterministic bucket name `waldoibarra-com-site`; all four public-access blocks enabled; AES256 server-side encryption; `BucketOwnerEnforced` ownership |
-| [`cloudfront.tf`](/infrastructure/cloudfront.tf) | Origin Access Control (OAC) signs S3 requests with SigV4; distribution serves the root and `www` domains and defaults to `index.html` |
+| [`cloudfront.tf`](/infrastructure/cloudfront.tf) | Origin Access Control (OAC) signs S3 requests with SigV4; distribution serves the root and `www` domains and defaults to `home/index.html`; a published viewer-request Function resolves `/resume` |
 | [`acm.tf`](/infrastructure/acm.tf) | DNS-validated certificate for the root domain and wildcard subdomains, with `create_before_destroy`; validation records come from the certificate's computed options |
 | [`dns.tf`](/infrastructure/dns.tf) | Looks up an existing public hosted zone by domain name; creates root and `www` alias A records pointing to CloudFront |
 
@@ -42,6 +39,25 @@ ARN matches this distribution. CloudFront redirects HTTP to HTTPS, requires `TLS
 allows GET/HEAD/OPTIONS, and caches GET/HEAD. The distribution enables compression and IPv6,
 forwards no query strings or cookies, and has no geographic restriction. DNS currently declares
 A records only. The full cache and distribution settings remain in the resource source.
+
+## Request routing
+
+| Viewer path | S3 object or behavior |
+| --- | --- |
+| `/` | `home/index.html`, through the distribution's default root object |
+| `/resume` | `resume/index.html`, through the viewer-request Function |
+| Assets, direct object paths, and all other paths | Unchanged |
+
+[`routes.js`](/infrastructure/functions/routes.js) rewrites only the exact `/resume` URI.
+It returns the request rather than a redirect and preserves request metadata. `/resume/`,
+`/Resume`, and unknown routes receive no alias or HTML fallback. The existing HTTP-to-HTTPS
+redirect is independent of this route rewrite. S3 remains private behind OAC.
+
+The production deployment stages new objects without deletion, applies infrastructure, waits
+for CloudFront propagation, then syncs with deletion and invalidates cached objects. This keeps
+the previous root object available until the new default root and route function are deployed.
+
+## Tags and destructive changes
 
 The common tag set is `Name`, `Project`, `Environment`, `ManagedBy`, and `Owner`. S3, ACM, and
 CloudFront use those tags, with resource-specific `Name` values. Tag values are defined in the

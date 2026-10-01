@@ -14,7 +14,7 @@ type variables.
 
 The portrait, greeting, and name in the hero carry the identity. There is no top
 navigation bar. In-page headings are how a reader finds Selected work and Services. Keep
-the résumé at `/resume.html` when you implement the site; do not put it in a header.
+the résumé at `/resume` when you implement the site; do not put it in a header.
 
 Hero copy that must stay aligned across desktop and mobile:
 
@@ -32,9 +32,9 @@ Keep the same audience split:
 - Clients: lead with the product outcome, then results and concrete service scopes.
 - CEOs: show delivery results and hands-on engineering leadership.
 - Recruiters: keep the role and technical skills on the page. The résumé is
-  `/resume.html` in the implemented site.
+  `/resume` in the implemented site.
 
-Use the [résumé](/public/resume.html) for historical claims, with Waldo's corrections taking
+Use the [résumé](/public/resume/index.html) for historical claims, with Waldo's corrections taking
 precedence: WGSN used Amazon Personalize for applied ML, not LLMs; the Guros leadership figure
 is 44+ engineers, 8 tech leads, and 3 architects. The résumé has not yet incorporated these
 landing-copy corrections. Retain H-E-B's 90% search response time reduction and Waspe's

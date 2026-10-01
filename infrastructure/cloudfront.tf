@@ -16,10 +16,18 @@ resource "aws_cloudfront_origin_access_control" "site" {
   signing_protocol                  = "sigv4"
 }
 
+resource "aws_cloudfront_function" "routes" {
+  name    = "${var.application}-routes"
+  runtime = "cloudfront-js-2.0"
+  comment = "Resolve the resume URL to its private S3 object"
+  publish = true
+  code    = file("${path.module}/functions/routes.js")
+}
+
 resource "aws_cloudfront_distribution" "site" {
   enabled             = true
   is_ipv6_enabled     = true
-  default_root_object = "index.html"
+  default_root_object = "home/index.html"
   aliases             = [var.domain_name, "www.${var.domain_name}"]
   price_class         = "PriceClass_200"
 
@@ -35,6 +43,11 @@ resource "aws_cloudfront_distribution" "site" {
     allowed_methods        = ["GET", "HEAD", "OPTIONS"]
     cached_methods         = ["GET", "HEAD"]
     compress               = true
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.routes.arn
+    }
 
     forwarded_values {
       query_string = false

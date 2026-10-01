@@ -5,8 +5,9 @@ with the [documentation index](/docs/README.md).
 
 `waldoibarra.com` is a static portfolio site. Semantic HTML and component-scoped native CSS
 implement its single landing page without a frontend runtime framework or page script for its
-content. Vite 8 builds the static files, and CloudFront serves the output from a private S3 bucket
-through Origin Access Control (OAC). Custom Terraform owns the AWS resources.
+content. Vite 8 composes the HTML components during development and production builds.
+CloudFront serves the output from a private S3 bucket through Origin Access Control (OAC).
+Custom Terraform owns the AWS resources.
 
 ## System boundaries
 
@@ -16,7 +17,7 @@ through Origin Access Control (OAC). Custom Terraform owns the AWS resources.
 | [`infrastructure/`](/infrastructure/) | S3, CloudFront, ACM, Route53, provider pins, and Terraform Cloud backend configuration | Artifact uploads, which run through `just s3-sync` |
 | [`infrastructure/tests/`](/infrastructure/tests/) | Native Terraform tests with mock providers | Integration tests against real AWS |
 | [`scripts/`](/scripts/) | Deploy scripts invoked by `just`; each uses `set -euo pipefail` | General-purpose local utilities |
-| [`.github/workflows/`](/.github/workflows/) | Separate website and infrastructure CI/CD workflows | Inline shell logic; project tasks call recipes |
+| [`.github/workflows/`](/.github/workflows/) | One coordinated website and infrastructure production workflow | Inline shell logic; project tasks call recipes |
 | [`docs/designs/`](/docs/designs/) | Editable design source and the README's generated preview | Production frontend implementation |
 
 There are no source tests yet. The infrastructure tests cover S3, OAC, and CloudFront properties.
@@ -31,18 +32,29 @@ development and build tooling; strict TypeScript checks cover [`vite.config.ts`]
 and future behavior modules. Tool-specific configuration remains in the root configuration files
 and [`config/`](/config/).
 
-Development uses direct commits to `trunk`, without branches or PRs. On push, GitHub Actions
-selects workflows by changed paths and deploys after each workflow's checks pass. The website
-workflow's path allowlist includes the [justfile](/justfile); [`hk.pkl`](/hk.pkl) remains outside
-workflow filters. Read the [delivery model](/docs/explanation/delivery.md) for filtering, gates,
-and deployment dependencies.
+Development uses direct commits to `trunk`, without branches or PRs. On matching pushes,
+the production workflow checks and builds both domains, stages website objects, applies
+infrastructure, waits for CloudFront, then removes obsolete objects and invalidates caches.
+Read the [delivery model](/docs/explanation/delivery.md) for filtering, gates, and deployment
+dependencies.
 
 ## Design and implementation
 
-[`landing.fig`](/docs/designs/landing.fig) records visual intent; [`src/index.html`](/src/index.html)
-and [`src/`](/src/) own the native production implementation. Import and export are a handoff, not
-automatic bidirectional synchronization. OpenPencil is a workstation tool and is not required by
-the website build or CI.
+[`landing.fig`](/docs/designs/landing.fig) records visual intent. [`src/home/index.html`](/src/home/index.html)
+owns the document shell and section order. Its private sections, components, and foundations
+live under [`src/home/`](/src/home/); nothing is promoted to `shared/` until another page reuses it.
+[`home.css`](/src/home/home.css) composes the page's styles without changing their cascade order.
+The `html-components` plugin in [`vite.config.ts`](/vite.config.ts) expands source-root-relative
+include comments before Vite processes HTML, without adding wrappers or browser JavaScript.
+
+Page entrypoints live in `src/<page>/index.html`. Vite emits `dist/home/index.html`; the standalone
+[`résumé`](/public/resume/index.html) is copied to `dist/resume/index.html`. Development and preview
+rewrite `/` and `/resume` to those documents. CloudFront uses `home/index.html` as its default
+root object and a viewer-request function for `/resume`. Unknown paths are not homepage fallbacks.
+Future built pages need an entry in `build.rolldownOptions.input` and an explicit public route.
+
+Import and export are a handoff, not automatic bidirectional synchronization. OpenPencil is a
+workstation tool and is not required by the website build or CI.
 
 Read [Edit the landing design](/docs/how-to/edit-landing-design.md) before changing the document,
 and [Implement the landing design](/docs/how-to/implement-landing-design.md) before translating

@@ -14,7 +14,7 @@ automation, and engineering decisions that run it.
 - **Infrastructure in code:** custom Terraform defines the AWS deployment, including a private S3
   origin served through CloudFront Origin Access Control.
 - **Repeatable delivery:** Mise pins the toolchain, `just` provides the command interface, and
-  separate GitHub Actions workflows deliver website and infrastructure changes.
+  one ordered GitHub Actions workflow deploys website artifacts and infrastructure together.
 - **Recorded decisions:** architectural decision records preserve alternatives, tradeoffs, and
   decision status.
 

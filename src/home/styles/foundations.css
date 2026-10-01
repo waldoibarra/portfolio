@@ -1,13 +1,3 @@
-@import url("./components/hero.css");
-@import url("./components/experience.css");
-@import url("./components/selected-work.css");
-@import url("./components/services.css");
-@import url("./components/leadership.css");
-@import url("./components/contact.css");
-@import url("./components/footer.css");
-@import url("./components/action-link.css");
-@import url("./components/result-card.css");
-
 @font-face {
   font-family: "Space Grotesk";
   font-style: normal;

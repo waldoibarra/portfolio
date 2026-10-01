@@ -1,7 +1,8 @@
 # Implement the landing design
 
 Use this guide to translate the approved [landing design](/docs/designs/landing.fig) into the
-production HTML and CSS in [`src/index.html`](/src/index.html) and [`src/`](/src/). See the
+production HTML and CSS in [`src/home/index.html`](/src/home/index.html) and
+[`src/home/`](/src/home/). See the
 [design-to-code relationship](/ARCHITECTURE.md#design-and-implementation) and
 [OpenPencil reference](/docs/reference/openpencil.md) before using exported markup.
 
@@ -31,22 +32,31 @@ the limitations found in this design.
 
 ## Build the page
 
-1. Mark up the page in [`src/index.html`](/src/index.html) with semantic sections, headings,
-  links, and buttons. Keep the content in HTML so the complete page works without JavaScript.
-2. Define global tokens, font faces, resets, and component stylesheet imports in
-  [`src/index.css`](/src/index.css).
-3. Put each component's layout, responsive rules, and interaction states in a stylesheet under
-  [`src/components/`](/src/components/). Use Grid and Flexbox instead of copied canvas
-  coordinates.
+1. Keep metadata, the document shell, and section order in [`src/home/index.html`](/src/home/index.html).
+  Compose sections with comments such as `<!-- include: home/sections/hero/hero.html -->`.
+  Paths resolve from `src/`, not the entry document. Includes are top-level only; use lowercase,
+  hyphen-separated path segments and `.html` files. Invalid or escaping paths fail explicitly.
+2. Define tokens, font faces, resets, and container rules in
+  [`foundations.css`](/src/home/styles/foundations.css). Compose styles in
+  [`home.css`](/src/home/home.css), preserving cascade order.
+3. Colocate each section's markup and CSS under `src/home/sections/<name>/`. Keep section-private
+  patterns there; home-wide patterns belong in `src/home/components/<name>/`.
+  Introduce `shared/` only when another page actually reuses code. Use Grid and Flexbox instead
+  of copied canvas coordinates.
 4. Export and optimize production images and fonts under [`public/`](/public/), then reference
   them with root-relative URLs.
 5. Add real destinations, keyboard focus, and interaction states. The only primary action is
   Message on LinkedIn (`https://www.linkedin.com/in/waldoibarra`). There is no top navigation
-  bar. If you expose the résumé, use `/resume.html`.
+  bar. If you expose the résumé, use `/resume`.
 6. Do not add JavaScript to render static content. If the page gains behavior, implement only
   that behavior in TypeScript and document its public functions and types with JSDoc.
 7. Do not introduce a frontend runtime dependency, React, or Tailwind for exported markup. Vite 8
   remains the build and development tool.
+
+The `html-components` Vite plugin expands these comments in development and production builds.
+Missing component files fail the request or build rather than silently dropping content. Editing
+a component reloads the development page. The generated HTML contains the complete page and works
+without JavaScript; do not open the unprocessed source shell directly.
 
 ## Verify the implementation
 
