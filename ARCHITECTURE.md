@@ -54,8 +54,14 @@ preserve resource and state identities. These names are not website domains.
 owns the document shell and section order. Its private sections, components, and foundations
 live under [`src/home/`](/src/home/); nothing is promoted to `shared/` until another page reuses it.
 [`home.css`](/src/home/home.css) composes the page's styles without changing their cascade order.
-The `html-components` plugin in [`vite.config.ts`](/vite.config.ts) expands source-root-relative
-include comments before Vite processes HTML, without adding wrappers or browser JavaScript.
+The homepage's [`action-link` component](/src/home/components/action-link/) owns the LinkedIn
+action used by the hero and contact sections. Its
+[`linkedin-action.html`](/src/home/components/action-link/linkedin-action.html) defines the label,
+destination, and title once. Reuse within the homepage stays in `home/components/`.
+The `html-components` plugin in [`vite.config.ts`](/vite.config.ts) recursively expands
+source-root-relative include comments before Vite processes HTML, without adding wrappers or
+browser JavaScript. Nested includes also resolve from `src/`; cycles and invalid or escaping
+paths are rejected.
 
 [`src/home/metadata.json`](/src/home/metadata.json) owns the homepage's title, description, author,
 canonical URL, and sharing metadata. Vite generates the tags in the initial HTML for development

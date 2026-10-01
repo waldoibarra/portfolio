@@ -32,31 +32,44 @@ the limitations found in this design.
 
 ## Build the page
 
-1. Keep metadata, the document shell, and section order in [`src/home/index.html`](/src/home/index.html).
+1. Keep the document shell and section order in [`src/home/index.html`](/src/home/index.html).
+  Edit generated head values through [homepage metadata](/docs/reference/homepage-metadata.md).
   Compose sections with comments such as `<!-- include: home/sections/hero/hero.html -->`.
-  Paths resolve from `src/`, not the entry document. Includes are top-level only; use lowercase,
-  hyphen-separated path segments and `.html` files. Invalid or escaping paths fail explicitly.
+  Paths resolve from `src/`, including nested includes, not from the including document.
+  Use lowercase, hyphen-separated path segments and `.html` files. Invalid or escaping paths
+  and include cycles fail explicitly.
 2. Define tokens, font faces, resets, and container rules in
   [`foundations.css`](/src/home/styles/foundations.css). Compose styles in
   [`home.css`](/src/home/home.css), preserving cascade order.
 3. Colocate each section's markup and CSS under `src/home/sections/<name>/`. Keep section-private
   patterns there; home-wide patterns belong in `src/home/components/<name>/`.
-  Introduce `shared/` only when another page actually reuses code. Use Grid and Flexbox instead
-  of copied canvas coordinates.
+  Reuse the LinkedIn action in
+  [`components/action-link/`](/src/home/components/action-link/) for the hero and contact sections.
+  Edit its label, destination, and title in
+  [`linkedin-action.html`](/src/home/components/action-link/linkedin-action.html).
+  Introduce `shared/` only when another page actually reuses code; reuse across homepage sections
+  stays in `home/components/`. Use Grid and Flexbox instead of copied canvas coordinates.
 4. Export and optimize production images and fonts under [`public/`](/public/), then reference
   them with root-relative URLs.
-5. Add real destinations, keyboard focus, and interaction states. The only primary action is
-  Message on LinkedIn (`https://www.linkedin.com/in/waldoibarra`). There is no top navigation
-  bar. If you expose the résumé, use `/resume`.
+5. Add real destinations, keyboard focus, and interaction states. Both primary actions use the
+  LinkedIn component's destination. There is no top navigation bar. If you expose the résumé,
+  use `/resume`.
 6. Do not add JavaScript to render static content. If the page gains behavior, implement only
   that behavior in TypeScript and document its public functions and types with JSDoc.
 7. Do not introduce a frontend runtime dependency, React, or Tailwind for exported markup. Vite 8
   remains the build and development tool.
 
-The `html-components` Vite plugin expands these comments in development and production builds.
-Missing component files fail the request or build rather than silently dropping content. Editing
-a component reloads the development page. The generated HTML contains the complete page and works
-without JavaScript; do not open the unprocessed source shell directly.
+The `html-components` Vite plugin recursively expands these comments in development and production
+builds, so sections can include home-wide components. Missing component files fail the request or
+build rather than silently dropping content. The same component can be included in multiple sections.
+Editing a component reloads the development page. The generated HTML contains the complete page and
+works without JavaScript; do not open the unprocessed source shell directly.
+
+Both sections include the same action with this source-relative comment:
+
+```html
+<!-- include: home/components/action-link/linkedin-action.html -->
+```
 
 ## Verify the implementation
 
@@ -82,6 +95,8 @@ just preview
 
 Compare browser screenshots with design renders at desktop and mobile sizes. Exercise links and
 keyboard navigation. Disable JavaScript and confirm that all content and links still work.
+Check the action in both the hero and contact sections. Each must render the component's current
+label, title, and destination with the existing focus and layout styles.
 
 Review changes in visual intent in the design as well, following
 [Edit the landing design](/docs/how-to/edit-landing-design.md). Importing HTML creates editable
