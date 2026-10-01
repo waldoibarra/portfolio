@@ -6,7 +6,7 @@ gh = "2.92.0"
 tflint = "0.62.0"
 just = "1.50.0"
 markdownlint-cli2 = "0.22.1"
-editorconfig-checker = "3.6.1"
+editorconfig-checker = { version = "3.6.1", rename_exe = { "ec-*" = "ec" } }
 hk = "1.45.0"
 committed = "1.1.11"
 pkl = "0.31.1"

@@ -34,7 +34,7 @@ also delete its contents.
     ```
 
     `tf-check` initializes the backend, validates the configuration, and runs the mock-provider
-    tests. A successful run ends with passing tests; stop and fix any failed check before planning.
+    tests and route-function behavior tests. Stop and fix any failed check before planning.
 3. Preview the production change:
 
     ```sh
@@ -46,26 +46,39 @@ also delete its contents.
 
 ## Apply only after review
 
-The normal delivery path is a push to `trunk` that matches the infrastructure workflow's path
-filter. Its lint, validation, and test gates run before `just tf-deploy`, which creates a saved
-plan and applies it automatically. A push or manual workflow dispatch is a production deployment,
-not a plan-only check. See [how delivery works](/docs/explanation/delivery.md).
+The normal delivery path is a push to `trunk` matching the
+[production workflow](/.github/workflows/website.yml)'s path filter. Website and infrastructure
+changes share one serialized deployment through `just deploy`: build and check, stage objects
+without deletion, apply a saved infrastructure plan, wait for CloudFront propagation, sync with
+deletion, then invalidate caches. A push or manual workflow dispatch deploys production;
+it is not a plan-only check. See [how delivery works](/docs/explanation/delivery.md).
 
-If you deliberately need an interactive local apply after the checks above:
+For a local deployment with an explicitly reviewed plan:
 
 ```sh
-just tf-apply
+just build
+just lint-tf
+just tf-check
+just tf-plan
+# Review the saved plan before proceeding.
+just deploy-reviewed
 ```
 
-This command creates a fresh plan and asks for confirmation. It does **not** reuse the output of
-`just tf-plan`; review the new plan before accepting it. Do not use `just tf-deploy` as a local
-preview: it applies without interactive approval.
+`tf-plan` saves `infrastructure/tfplan`; `deploy-reviewed` applies that saved plan after staging
+the built files and completes the propagation wait, deleting sync, and invalidation. If the
+configuration or intended deployment changes, generate and review a new plan.
+
+`just tf-apply` applies the existing saved plan without staging website files or waiting before
+a subsequent upload. Do not use it alone for routing or object-layout changes: `/` must not
+switch to `home/index.html` before that object exists, and old objects must remain until
+CloudFront finishes deploying. Use `deploy-reviewed` for the complete ordered cutover.
+`just deploy` is also a production command, not a local preview.
 
 After CI deployment, [verify the workflow and site](/docs/how-to/verify-deployment.md).
 
 ## Extend the mock tests
 
-[`main.tftest.hcl`](/infrastructure/tests/main.tftest.hcl) defines 27 assertions across 8 run blocks.
+[`main.tftest.hcl`](/infrastructure/tests/main.tftest.hcl) checks the declared AWS configuration.
 The S3 and Origin Access Control (OAC) checks use plan mode. The CloudFront checks use mock apply
 mode because referenced OAC IDs and certificate attributes are computed. Mock apply does not
 apply to AWS; both the default AWS provider and its `useast1` alias are mocked.
@@ -83,6 +96,18 @@ After changing a test, run:
 just tf-test
 ```
 
-These tests check configuration with mocked providers. They do not verify AWS permissions, live
-DNS, certificate issuance, or deployed behavior. The [justfile](/justfile) defines the individual
-initialization and validation recipes when you need to isolate a failure.
+The actual CloudFront Function source is exercised locally by
+[`routes.test.mjs`](/infrastructure/tests/routes.test.mjs). Run it independently with:
+
+```sh
+just test-routes
+```
+
+It checks that only `/resume` rewrites to `/resume/index.html`, preserves request metadata,
+and leaves root, asset, direct-object, and unknown paths untouched. Keep these cases aligned
+with the [routing contract](/docs/reference/infrastructure.md#request-routing).
+
+The Terraform tests use mocked providers; the route tests execute JavaScript locally. Neither
+verifies AWS permissions, live DNS, certificate issuance, or deployed behavior. The
+[justfile](/justfile) defines the individual initialization and validation recipes when you need
+to isolate a failure.

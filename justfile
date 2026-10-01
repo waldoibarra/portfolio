@@ -108,7 +108,7 @@ tf-init:
 
 # Initialize, validate and test Terraform
 [group("Terraform")]
-tf-check: (tf-init) (tf-validate) (tf-test)
+tf-check: (tf-init) (tf-validate) (tf-test) (test-routes)
 
 # Validate Terraform syntax and type checking.
 [group("Terraform")]
@@ -120,30 +120,58 @@ tf-validate:
 tf-test:
   terraform -chdir=infrastructure test
 
-# Plan infrastructure changes (interactive, review before apply)
+# Exercise the production CloudFront viewer-request function locally
+[group("Terraform")]
+test-routes:
+  node --test infrastructure/tests/routes.test.mjs
+
+# Save infrastructure changes for review before applying
 [group("Terraform")]
 tf-plan:
-  terraform -chdir=infrastructure plan
+  @bash scripts/tf-plan.sh
 
-# Apply infrastructure changes (interactive confirmation)
+# Apply the previously reviewed saved plan (no new plan or confirmation)
 [group("Terraform")]
 tf-apply:
-  terraform -chdir=infrastructure apply
+  @bash scripts/tf-deploy.sh
 
-# Plan and apply infrastructure (non-interactive, CI)
-[group("Terraform")]
-tf-deploy:
-  @scripts/tf-deploy.sh
-
-# Upload dist/ to S3
+# Build, check, plan and deploy both domains in a safe sequence
 [group("Deploy")]
-s3-sync: (tf-init)
-  @scripts/s3-sync.sh
+deploy: (build) (lint-tf) (tf-check) (tf-plan) (deploy-reviewed)
 
-# Invalidate CloudFront cache
+# Deploy an already built artifact and reviewed infrastructure/tfplan
+[group("Deploy")]
+deploy-reviewed: (s3-stage) (tf-apply) (s3-sync) (invalidate)
+
+# Snapshot the live artifact and CloudFront config into a new private directory
+[group("Deploy")]
+deploy-backup destination: (tf-init)
+  @bash scripts/deploy-backup.sh "{{ destination }}"
+
+# Restore a same-resource snapshot, wait for CloudFront, then clean and invalidate
+[group("Deploy")]
+deploy-rollback backup:
+  @bash scripts/deploy-rollback.sh "{{ backup }}"
+
+# Stage dist/ without deleting objects used by the current distribution
+[group("Deploy")]
+s3-stage: (tf-init)
+  @bash scripts/s3-sync.sh stage
+
+# Wait for the current CloudFront configuration to reach every edge
+[group("Deploy")]
+cloudfront-wait:
+  @bash scripts/cloudfront-wait.sh
+
+# Wait for CloudFront, then synchronize dist/ and remove obsolete objects
+[group("Deploy")]
+s3-sync: (tf-init) (cloudfront-wait)
+  @bash scripts/s3-sync.sh clean
+
+# Invalidate CloudFront cache and wait for completion
 [group("Deploy")]
 invalidate: (tf-init)
-  @scripts/invalidate.sh
+  @bash scripts/invalidate.sh
 
 # Full local check: lint + build + tests
 [group("Debug")]

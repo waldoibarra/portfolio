@@ -12,11 +12,12 @@ the project is the way it is.
 | ADR-0002 | [Enforce Editorconfig Rules with editorconfig-checker](0002-enforce-editorconfig-rules-with-editorconfig-checker.md) | accepted |
 | ADR-0003 | [Use Mise for Toolchain Pinning](/docs/decisions/0003-use-mise-for-toolchain-pinning.md) | accepted |
 | ADR-0004 | [Custom Terraform Code Only, No Third-Party Modules](0004-custom-terraform-code-only-no-third-party-modules.md) | accepted |
-| ADR-0005 | [Domain-Split CI/CD Workflows](/docs/decisions/0005-domain-split-cicd-workflows.md) | accepted |
+| ADR-0005 | [Domain-Split CI/CD Workflows](/docs/decisions/0005-domain-split-cicd-workflows.md) | superseded by ADR-0010 |
 | ADR-0006 | [Trunk-Based Development](0006-trunk-based-development.md) | accepted |
 | ADR-0007 | [Justfile as the Single Command Interface](0007-justfile-as-the-single-command-interface.md) | accepted |
 | ADR-0008 | [AI-Assisted Development as a First-Class Concern](0008-ai-assisted-development-as-first-class-concern.md) | proposed |
 | ADR-0009 | [Use hk for Git Hook Management](0009-use-hk-for-git-hook-management.md) | accepted |
+| ADR-0010 | [Coordinate Static Site and Route Deployments](/docs/decisions/0010-coordinate-static-site-and-route-deployments.md) | accepted |
 
 ## What is an ADR?
 

@@ -1,4 +1,4 @@
-name: Website CI/CD
+name: Production CI/CD
 
 on:
   push:
@@ -14,21 +14,18 @@ on:
       - 'eslint.config.mjs'
       - 'config/.stylelintrc.json'
       - '.mise.toml'
-      - 'scripts/s3-sync.sh'
-      - 'scripts/invalidate.sh'
+      - 'infrastructure/**'
+      - 'scripts/**'
       - '.github/workflows/website.yml'
   workflow_dispatch:
 
 concurrency:
-  group: website
+  group: production
   cancel-in-progress: false
 
 jobs:
   build-and-deploy:
-    # NOTE: Requires at least one successful infrastructure.yml run to populate
-    # Terraform outputs (S3 bucket ID, CloudFront distribution ID). For initial
-    # bootstrap, run infrastructure.yml manually via workflow_dispatch first.
-    name: Build and deploy website
+    name: Check and deploy website and infrastructure
     runs-on: ubuntu-latest
     environment: production
     env:
@@ -36,6 +33,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: us-east-1
       TF_TOKEN_app_terraform_io: ${{ secrets.TF_TOKEN_app_terraform_io }}
+      TF_VAR_domain_name: waldoibarra.com
 
     steps:
       - uses: actions/checkout@v6
@@ -44,6 +42,7 @@ jobs:
         uses: jdx/mise-action@v4
         with:
           cache: true
+          cache_key_prefix: mise-v2
           github_token: ${{ github.token }}
 
       - name: Cache npm dependencies
@@ -59,6 +58,4 @@ jobs:
       - run: just lint-sh
       - run: just lint-ts
       - run: just lint-css
-      - run: just build
-      - run: just s3-sync
-      - run: just invalidate
+      - run: just deploy

@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: superseded by ADR-0010
 date: 2026-05-05
 decision-makers: Waldo Ibarra, Claude Opus 4.7
 ---

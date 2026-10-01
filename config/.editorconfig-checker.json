@@ -1,5 +1,5 @@
 {
   "Exclude": [
-    "public/resume.html"
+    "public/resume/index.html"
   ]
 }

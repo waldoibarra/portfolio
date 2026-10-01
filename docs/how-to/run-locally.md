@@ -48,9 +48,9 @@ You need Git and [Mise](https://mise.jdx.dev/getting-started.html), with
     just run
     ```
 
-2. Open the local URL printed by Vite, normally <http://localhost:5173>. The rendered landing
-    presents Waldo's software services, production results, and LinkedIn inquiry action. Its
-    content works without JavaScript.
+2. Open the local URL printed by Vite, normally <http://localhost:5173>. `/` renders the landing
+    page from `src/home/index.html`; `/resume` serves the standalone `public/resume/index.html`.
+    Both work without JavaScript. Direct navigation and refresh use the same route mappings.
 3. Stop the server with `Ctrl+C` when you finish.
 4. Build and preview the production artifact:
 
@@ -59,9 +59,9 @@ You need Git and [Mise](https://mise.jdx.dev/getting-started.html), with
     just preview
     ```
 
-    A successful build writes the static site to `dist/`. `just preview` serves that directory
-    through Vite's production preview server. Open the printed local URL, then stop the server
-    with `Ctrl+C`.
+    A successful build writes `dist/home/index.html`, `dist/resume/index.html`, and assets.
+    `just preview` serves that directory with the same `/` and `/resume` mappings as development.
+    Open both routes at the printed local URL, then stop the server with `Ctrl+C`.
 
 ## Choose the next task
 
