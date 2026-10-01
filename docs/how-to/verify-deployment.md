@@ -89,6 +89,19 @@ CloudFront's default root serves `home/index.html` for `/`; the viewer-request f
 only `/resume` to `/resume/index.html`. `/resume/` and unknown paths are deliberately not aliases.
 Direct object URLs such as `/resume/index.html` remain accessible through CloudFront.
 
+## Check sharing previews
+
+Inspect the initial HTML response at <https://waldo.love/> without running JavaScript.
+Confirm the canonical and `og:url` values are `https://waldo.love/`, and the Open Graph
+title, description, and image tags are present alongside the Twitter `summary_large_image` card.
+Open <https://waldo.love/images/social-preview.jpg>; it must return HTTP 200 with
+`Content-Type: image/jpeg` and a 1200 × 630 image, not an HTML fallback.
+
+Paste the canonical URL into a new WhatsApp message and check the preview before sending.
+WhatsApp and other sharing services cache previews independently of CloudFront: a completed
+deployment invalidation does not clear their caches or update cards already sent. Correct
+live HTML and image responses do not guarantee an immediate refresh in every client.
+
 ## Recover a failed deployment
 
 Inspect the failed Actions step and current Terraform state before retrying. Do not continue with
