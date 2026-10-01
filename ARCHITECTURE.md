@@ -57,6 +57,12 @@ live under [`src/home/`](/src/home/); nothing is promoted to `shared/` until ano
 The `html-components` plugin in [`vite.config.ts`](/vite.config.ts) expands source-root-relative
 include comments before Vite processes HTML, without adding wrappers or browser JavaScript.
 
+The document shell also owns the canonical URL and Open Graph/Twitter sharing metadata.
+These tags ship in the initial HTML without JavaScript. The sharing image lives at
+[`public/images/social-preview.jpg`](/public/images/social-preview.jpg), a 1200 × 630 JPEG
+served at `https://waldo.love/images/social-preview.jpg`. Keep the metadata's image URL,
+dimensions, and alternative text aligned with that asset.
+
 Page entrypoints live in `src/<page>/index.html`. Vite emits `dist/home/index.html`; the standalone
 [`résumé`](/public/resume/index.html) is copied to `dist/resume/index.html`. Development and preview
 rewrite `/` and `/resume` to those documents. CloudFront uses `home/index.html` as its default
