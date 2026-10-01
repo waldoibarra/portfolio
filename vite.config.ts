@@ -53,6 +53,27 @@ function renderHomeMetadata(): string {
   ].join('\n    ');
 }
 
+function expandHtmlIncludes(html: string, activeIncludes = new Set<string>()): string {
+  return html.replace(/<!--\s*include:\s*(.*?)\s*-->/g, (_, path: string) => {
+    if (!/^(?:[a-z0-9-]+\/)*[a-z0-9-]+\.html$/.test(path)) {
+      throw new Error(`Invalid source-relative HTML include: ${path}`);
+    }
+    const filename = realpathSync(`${sourceDirectory}${path}`);
+    if (!normalizePath(filename).startsWith(normalizePath(sourceDirectory))) {
+      throw new Error(`HTML include escapes src/: ${path}`);
+    }
+    if (activeIncludes.has(filename)) {
+      throw new Error(`Circular HTML include: ${path}`);
+    }
+    activeIncludes.add(filename);
+    try {
+      return expandHtmlIncludes(readFileSync(filename, 'utf8').trimEnd(), activeIncludes);
+    } finally {
+      activeIncludes.delete(filename);
+    }
+  });
+}
+
 /** Keep development and production preview aligned with CloudFront's public routes. */
 function configureRoutes(server: { middlewares: Connect.Server }) {
   server.middlewares.use((request, _response, next) => {
@@ -80,16 +101,7 @@ export default defineConfig({
     transformIndexHtml: {
       order: 'pre',
       handler(html, context) {
-        const expanded = html.replace(/<!--\s*include:\s*(.*?)\s*-->/g, (_, path: string) => {
-          if (!/^(?:[a-z0-9-]+\/)*[a-z0-9-]+\.html$/.test(path)) {
-            throw new Error(`Invalid source-relative HTML include: ${path}`);
-          }
-          const filename = realpathSync(`${sourceDirectory}${path}`);
-          if (!normalizePath(filename).startsWith(normalizePath(sourceDirectory))) {
-            throw new Error(`HTML include escapes src/: ${path}`);
-          }
-          return readFileSync(filename, 'utf8').trimEnd();
-        });
+        const expanded = expandHtmlIncludes(html);
         return normalizePath(context.filename) === normalizePath(homeEntry)
           ? expanded.replace('</head>', `${renderHomeMetadata()}\n  </head>`)
           : expanded;
