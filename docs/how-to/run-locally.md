@@ -67,8 +67,14 @@ You need Git and [Mise](https://mise.jdx.dev/getting-started.html), with
 Keep charset, viewport, stylesheet, and favicon declarations in
 [`src/home/index.html`](/src/home/index.html). Read the
 [homepage metadata reference](/docs/reference/homepage-metadata.md) before changing field names
-or the sharing image; JSON edits do not regenerate the image.
+or the sharing image.
 For live sharing checks, see [Verify a deployment](/docs/how-to/verify-deployment.md#check-sharing-previews).
+
+Before releasing text or photo changes, review
+[`public/images/social-preview.jpg`](/public/images/social-preview.jpg) and regenerate it manually
+if needed. Metadata, hero copy, and portrait edits do not redraw this static image. Keep it a
+1200 × 630 JPEG and keep the sharing metadata aligned with the asset. There is no automated
+`just social-preview` recipe.
 
 ## Choose the next task
 

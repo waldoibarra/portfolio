@@ -24,8 +24,9 @@ There are no configured fallback values.
 
 The canonical and image URLs are absolute HTTPS URLs. Image metadata describes the static
 1200 × 630 JPEG at [`public/images/social-preview.jpg`](/public/images/social-preview.jpg).
-Changing the JSON does not redraw that image. Text or dimensions baked into the image need a
-separate asset edit.
+Metadata, hero copy, and portrait edits do not redraw that image. Changes to its text or photo
+require manual review and regeneration before release. The replacement remains a 1200 × 630
+JPEG, with metadata matching the asset. There is no automated `just social-preview` recipe.
 
 ## Generation and reload behavior
 
