@@ -55,7 +55,7 @@ body {
   background-color: var(--color-background);
   background-image: radial-gradient(
     circle at 0 2px,
-    rgb(161 161 170 / 14%) 1px,
+    rgb(161 161 170 / 24%) 1px,
     transparent 1px
   );
   background-size: 1.5rem 1.5rem;

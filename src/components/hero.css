@@ -66,13 +66,13 @@
 }
 
 .hero-name {
-  color: var(--color-accent);
+  color: var(--color-secondary);
   font-weight: 700;
 }
 
 .hero-role {
   grid-area: role;
-  color: var(--color-accent);
+  color: var(--color-secondary);
   font-size: 1.5rem;
   line-height: 2rem;
 }
