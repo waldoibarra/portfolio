@@ -32,7 +32,9 @@ the limitations found in this design.
 ## Implement in Lit
 
 1. Build semantic sections, headings, links, and buttons with responsive Grid/Flexbox.
-2. Add real destinations, keyboard focus, and interaction states.
+2. Add real destinations, keyboard focus, and interaction states. The only primary action is
+    Message on LinkedIn (`https://www.linkedin.com/in/waldoibarra`). There is no top navigation
+    bar. If you expose the résumé, use `/resume.html`.
 3. Do not copy canvas coordinates into the page layout or introduce React/Tailwind just for an export.
 
 ## Verify the implementation
