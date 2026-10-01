@@ -8,6 +8,7 @@ Choose a page by what you need to do or understand. Start with the
 | Task | Guide |
 | --- | --- |
 | Set up a checkout and see the site in a browser | [Run locally](/docs/how-to/run-locally.md) |
+| Change homepage titles, descriptions, or sharing tags | [Edit homepage metadata](/docs/how-to/run-locally.md#edit-homepage-metadata) |
 | Review a local Terraform plan and deploy through CI | [Change infrastructure](/docs/how-to/change-infrastructure.md) |
 | Check whether a push deployed and inspect failures | [Verify a deployment](/docs/how-to/verify-deployment.md) |
 | Register the website domain or retire unused DNS | [Domain account operations](/docs/how-to/change-infrastructure.md#domain-account-operations) |
@@ -16,6 +17,8 @@ Choose a page by what you need to do or understand. Start with the
 
 ## Look up a fact
 
+- [Homepage metadata reference](/docs/reference/homepage-metadata.md): JSON fields, generated tags,
+  development reloads, and sharing boundaries.
 - [Infrastructure reference](/docs/reference/infrastructure.md): AWS resources, Terraform
   inputs and outputs, environment requirements, security settings, and cited cost components.
 - [OpenPencil reference](/docs/reference/openpencil.md): workstation tooling, command behavior,
