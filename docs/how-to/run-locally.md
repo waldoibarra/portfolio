@@ -13,32 +13,23 @@ You need Git and [Mise](https://mise.jdx.dev/getting-started.html), with
     cd portfolio
     ```
 
-2. Create the local environment file if it does not already exist:
-
-    ```sh
-    test -f .env || cp .env.example .env
-    ```
-
-    Mise loads this file. Leave the Terraform token empty for frontend-only work; never commit
-    credentials. Read [Change infrastructure](/docs/how-to/change-infrastructure.md) before
-    configuring cloud access.
-
-3. Trust the checkout and install the toolchain before using `just` for the first time:
+2. If `just` is not installed yet, bootstrap it through Mise:
 
     ```sh
     mise trust
-    mise install
+    mise install just
     ```
 
-4. Install the Node dependencies and Git hooks:
+3. Set up the tools, Node dependencies, local environment file, and Git hooks:
 
     ```sh
-    just install-node-deps
-    just install-hooks
+    just setup
     ```
 
-    For later setup runs, `just install` combines toolchain, dependency, and hook installation.
-    Exact tool versions live in [.mise.toml](/.mise.toml) and [package.json](/package.json).
+    Setup preserves an existing `.env`. Leave the Terraform token empty for frontend-only work;
+    neither setup nor the development server needs AWS credentials. Never commit credentials.
+    Read [Change infrastructure](/docs/how-to/change-infrastructure.md) before configuring cloud
+    access. Exact tool versions live in [.mise.toml](/.mise.toml) and [package.json](/package.json).
 
 ## Start and verify
 
