@@ -8,10 +8,12 @@ and engineering decisions behind it.
 
 ## The design direction
 
-![Landing design concept with Waldo's portrait and software architecture introduction](/docs/designs/landing-preview.png)
+![Waldo's landing design: charcoal canvas with a dotted field, hero greeting, software services, production results, and a LinkedIn inquiry action](/docs/designs/landing-preview.png)
 
-Preview of the [OpenPencil design](/docs/designs/landing.fig). The design is not yet implemented
-in the Lit frontend, which currently contains an under-construction page.
+Preview of the [OpenPencil design](/docs/designs/landing.fig), with desktop and mobile compositions
+for prospective clients, CEOs, and recruiters. It leads with software services and résumé-backed
+results. The only call to action is Message on LinkedIn. The Lit frontend still contains an
+under-construction page.
 
 ## What this repository demonstrates
 
