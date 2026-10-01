@@ -23,10 +23,20 @@ install-hooks:
 install-node-deps:
   npm ci
 
-# Start development server
+# Update Node dependencies from the package manifest
+[group("Maintenance")]
+update-node-deps:
+  npm update
+
+# Run the development server
 [group("Development")]
-start:
+run:
   npx vite
+
+# Preview the production build
+[group("Development")]
+preview:
+  npx vite preview
 
 # Run all linters
 [group("Linting")]

@@ -24,6 +24,9 @@ terraform.rc
 # Testing.
 /coverage
 
+# Local implementation plans.
+/.agents/plans/
+
 # Production output.
 /dist
 

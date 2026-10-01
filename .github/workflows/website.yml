@@ -6,9 +6,9 @@ on:
     paths:
       - 'src/**'
       - 'public/**'
-      - 'index.html'
       - 'package.json'
       - 'package-lock.json'
+      - 'justfile'
       - 'vite.config.ts'
       - 'tsconfig.json'
       - 'eslint.config.mjs'

@@ -1,0 +1,38 @@
+.experience {
+  padding-block: 1rem 1.5rem;
+}
+
+.experience-label {
+  margin: 0 0 1rem;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.25rem;
+  text-transform: uppercase;
+}
+
+.experience-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) 2.5rem;
+  margin: 0;
+  padding: 0;
+  color: var(--color-text);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 2.125rem;
+  list-style: none;
+}
+
+.experience-list > li {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (width <= 48rem) {
+  .experience-list {
+    gap: 0 var(--space-5);
+    font-size: 1.25rem;
+    line-height: 2rem;
+  }
+}

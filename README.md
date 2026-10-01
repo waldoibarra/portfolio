@@ -1,40 +1,30 @@
-# [Waldo Ibarra · Portfolio](https://waldoibarra.com)
+# Waldo Ibarra · Portfolio
 
-The personal portfolio of software architect Waldo Ibarra, with the code, cloud infrastructure,
-and engineering decisions behind it.
+A live software-architecture portfolio backed by the frontend, AWS infrastructure, delivery
+automation, and engineering decisions that run it.
 
-[Visit the site](https://waldoibarra.com) · [Explore the architecture](/ARCHITECTURE.md) ·
-[Read the decisions](/docs/decisions/README.md)
+## Live site
 
-## The design direction
+[Open the portfolio](https://waldoibarra.com).
 
-![Waldo's landing design: charcoal canvas with a dotted field, hero greeting, software services, production results, and a LinkedIn inquiry action](/docs/designs/landing-preview.png)
+## Engineering proof
 
-Preview of the [OpenPencil design](/docs/designs/landing.fig), with desktop and mobile compositions
-for prospective clients, CEOs, and recruiters. It leads with software services and résumé-backed
-results. The only call to action is Message on LinkedIn. The Lit frontend still contains an
-under-construction page.
+- **Semantic without JavaScript:** the landing page uses semantic HTML and native CSS; its content
+  does not depend on client-side JavaScript or a frontend runtime.
+- **Infrastructure in code:** custom Terraform defines the AWS deployment, including a private S3
+  origin served through CloudFront Origin Access Control.
+- **Repeatable delivery:** Mise pins the toolchain, `just` provides the command interface, and
+  separate GitHub Actions workflows deliver website and infrastructure changes.
+- **Recorded decisions:** architectural decision records preserve alternatives, tradeoffs, and
+  decision status.
 
-## What this repository demonstrates
+## Explore the repository
 
-- **A small frontend:** a static site built with Lit, TypeScript, and Vite, without a backend
-  application to operate.
-- **Inspectable infrastructure:** custom Terraform defines the AWS resources, including a
-  private S3 origin behind CloudFront. The infrastructure is part of the repository.
-- **Repeatable delivery:** Mise manages the toolchain; `just` recipes connect local checks,
-  Git hooks, and GitHub Actions. Website and infrastructure changes have separate pipelines.
-- **Decisions with context:** architectural records preserve the alternatives and tradeoffs
-  behind the tooling and delivery model, including the evolving approach to AI-assisted work.
-
-Read the [architecture](/ARCHITECTURE.md) for the system boundaries or the
-[decision records](/docs/decisions/README.md) for the reasoning.
-
-## Work with the project
-
-[Run locally](/docs/how-to/run-locally.md) ·
-[Work on the design](/docs/how-to/edit-landing-design.md) ·
-[Browse the documentation](/docs/README.md)
+- [Architecture](https://github.com/waldoibarra/portfolio/blob/trunk/ARCHITECTURE.md)
+- [Run locally](https://github.com/waldoibarra/portfolio/blob/trunk/docs/how-to/run-locally.md)
+- [Documentation](https://github.com/waldoibarra/portfolio/blob/trunk/docs/README.md)
+- [Decision records](https://github.com/waldoibarra/portfolio/tree/trunk/docs/decisions)
 
 ## License
 
-[MIT](/LICENSE.md)
+[MIT](https://github.com/waldoibarra/portfolio/blob/trunk/LICENSE.md)
