@@ -2,7 +2,6 @@
 # gitignore: true automatically skips node_modules/, dist/, etc.
 gitignore: true
 ignores:
-  - CLAUDE.md
   - LICENSE.md
   - .atl/**
 config:
