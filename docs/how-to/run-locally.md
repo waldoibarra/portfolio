@@ -39,7 +39,8 @@ You need Git and [Mise](https://mise.jdx.dev/getting-started.html), with
     just run
     ```
 
-2. Open the local URL printed by Vite, normally <http://localhost:5173>. `/` renders the landing
+2. Open <http://localhost:3697>. Vite exits if port `3697` is occupied instead of switching ports.
+    `/` renders the landing
     page from `src/home/index.html`; `/resume` serves the standalone `public/resume/index.html`.
     Both work without JavaScript. Direct navigation and refresh use the same route mappings.
 3. Stop the server with `Ctrl+C` when you finish.
