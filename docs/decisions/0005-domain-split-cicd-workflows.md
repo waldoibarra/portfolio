@@ -8,7 +8,7 @@ decision-makers: Waldo Ibarra, Claude Opus 4.7
 
 ## Context and Problem Statement
 
-The repository contains two independent delivery domains — the website (Lit/Vite source) and the
+The repository contains two independent delivery domains — the website (Vite source) and the
 infrastructure (Terraform). Each has its own CI gates (lint, test) and CD steps (deploy, apply). How
 should GitHub Actions workflows be structured to run the right pipeline for the right change without
 silently skipping work? The split is by domain, not by stage — each workflow runs CI (lint+test)

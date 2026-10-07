@@ -17,7 +17,7 @@ Read the right file before you start. Each row pairs a task with its source of t
 | Writing a commit message | [config/committed.toml](/config/committed.toml) (Conventional Commits) |
 | Running project tasks or adding a recipe | [justfile](/justfile) |
 | Editing the OpenPencil design | [Edit the landing design](/docs/how-to/edit-landing-design.md) |
-| Implementing the design in Lit | [Implement the landing design](/docs/how-to/implement-landing-design.md) |
+| Implementing the design in HTML/CSS | [Implement the landing design](/docs/how-to/implement-landing-design.md) |
 | Changing the pre-commit / commit-msg hooks | [hk.pkl](/hk.pkl) |
 | Pinning a tool version | [.mise.toml](/.mise.toml) (mirror the Terraform pin in `infrastructure/versions.tf`) |
 | Writing or reorganizing documentation | [Documentation index](/docs/README.md); keep README focused on what and why |
