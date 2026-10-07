@@ -8,6 +8,9 @@ Choose a page by what you need to do or understand. Start with the
 | Task | Guide |
 | --- | --- |
 | Set up a checkout and see the site in a browser | [Run locally](/docs/how-to/run-locally.md) |
+| Obtain AWS keys and a Terraform token, then configure CI secrets | [Configure deployment credentials](/docs/how-to/configure-deployment-credentials.md) |
+| Create a GitHub repository and configure Actions | [Set up the repository](/docs/how-to/set-up-repository.md) |
+| Adapt the project and provision a separate client website | [Set up a client site](/docs/how-to/set-up-client-site.md) |
 | Change homepage titles, descriptions, or sharing tags | [Edit homepage metadata](/docs/how-to/run-locally.md#edit-homepage-metadata) |
 | Review a local Terraform plan and deploy through CI | [Change infrastructure](/docs/how-to/change-infrastructure.md) |
 | Check whether a push deployed and inspect failures | [Verify a deployment](/docs/how-to/verify-deployment.md) |
