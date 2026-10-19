@@ -103,7 +103,7 @@ native step filtering replaces what would otherwise be hand-rolled bash.
 - No `scripts/` hook directory — dispatch is declarative (deploy scripts live in `scripts/`
   but are not hooks)
 - `just install` includes `hk install`
-- `ARCHITECTURE.md` references `hk` instead of `Husky`
+- `architecture.md` references `hk` instead of `Husky`
 - `just check` still works as the full-suite command; its composition is unchanged
 - `.commitlintrc.json` and `@commitlint/cli` are removed; `just lint-commit` uses `committed`
   with `config/committed.toml`

@@ -31,7 +31,7 @@ Choose a page by what you need to do or understand. Start with the
 
 ## Understand the system
 
-- [Architecture](/ARCHITECTURE.md): components, ownership boundaries, and design-to-code handoff.
+- [Architecture](/architecture.md): components, ownership boundaries, and design-to-code handoff.
 - [Delivery model](/docs/explanation/delivery.md): local checks, workflow filtering, and
   deployment dependencies.
 - [Decision records](/docs/decisions/README.md): why choices were made, alternatives, and status.

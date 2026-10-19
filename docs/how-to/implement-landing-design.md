@@ -3,7 +3,7 @@
 Use this guide to translate the approved [landing design](/docs/designs/landing.fig) into the
 production HTML and CSS in [`src/home/index.html`](/src/home/index.html) and
 [`src/home/`](/src/home/). See the
-[design-to-code relationship](/ARCHITECTURE.md#design-and-implementation) and
+[design-to-code relationship](/architecture.md#design-and-implementation) and
 [OpenPencil reference](/docs/reference/openpencil.md) before using exported markup.
 
 Run commands from the repository root.

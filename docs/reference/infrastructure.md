@@ -2,7 +2,7 @@
 
 The production site uses S3, CloudFront, ACM, and Route53. Terraform declares the resources directly
 under [`infrastructure/`](/infrastructure), without third-party modules. See the
-[architecture map](/ARCHITECTURE.md) for the whole system and
+[architecture map](/architecture.md) for the whole system and
 [ADR 0004](/docs/decisions/0004-custom-terraform-code-only-no-third-party-modules.md) for that decision.
 
 ## Environment and state

@@ -32,7 +32,7 @@ tool installation. Frontend development needs no AWS credentials.
 
 ## Explore the repository
 
-- [Architecture](https://github.com/waldoibarra/portfolio/blob/trunk/ARCHITECTURE.md)
+- [Architecture](https://github.com/waldoibarra/portfolio/blob/trunk/architecture.md)
 - [Run locally](https://github.com/waldoibarra/portfolio/blob/trunk/docs/how-to/run-locally.md)
 - [Documentation](https://github.com/waldoibarra/portfolio/blob/trunk/docs/README.md)
 - [Decision records](https://github.com/waldoibarra/portfolio/tree/trunk/docs/decisions)

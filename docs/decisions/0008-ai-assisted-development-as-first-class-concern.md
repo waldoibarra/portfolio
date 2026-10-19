@@ -34,10 +34,10 @@ stabilize, the status moves to `accepted`.
 ## Considered Options
 
 - Treat AI as incidental — no `AGENTS.md`, no agent-specific conventions; agents read `README.md`
-  and `ARCHITECTURE.md` like a human contributor would
+  and `architecture.md` like a human contributor would
 - Treat AI as a tool category — light `AGENTS.md` with a few tips, no architectural commitments
 - Treat AI as a first-class collaborator — agent-shaped conventions encoded structurally;
-  `AGENTS.md` peer to `README.md` and `ARCHITECTURE.md`; persistent memory protocol;
+  `AGENTS.md` peer to `README.md` and `architecture.md`; persistent memory protocol;
   directory-scoped agent instructions
 
 ## Decision Outcome
@@ -57,7 +57,7 @@ following choices are downstream of this decision:
   indentation drift)
 - Pre-commit hook (`just check`) — the gate that PR review would otherwise have provided;
   catches lint, build, and Terraform test regressions before they hit `trunk`
-- `AGENTS.md` as a peer to `README.md` and `ARCHITECTURE.md` — agents have a primary entry point
+- `AGENTS.md` as a peer to `README.md` and `architecture.md` — agents have a primary entry point
   that is theirs, not borrowed from human-targeted documentation
 - Engram persistent memory protocol — gives agents cross-session continuity; the project's
   `AGENTS.md` mandates its use
@@ -65,7 +65,7 @@ following choices are downstream of this decision:
   live where they are most relevant, not in a single root file
 
 The concern map — what is true today across the codebase — lives in the "AI-Assisted
-Development" subsection of [ARCHITECTURE.md](/ARCHITECTURE.md). This ADR records the
+Development" subsection of [architecture.md](/architecture.md). This ADR records the
 decision; that subsection records the cross-cutting concern.
 
 ### Consequences
@@ -128,7 +128,7 @@ is no longer being honored and the ADR should be revisited.
 
 ## More Information
 
-- [ARCHITECTURE.md](/ARCHITECTURE.md) — "AI-Assisted Development" cross-cutting subsection
+- [architecture.md](/architecture.md) — "AI-Assisted Development" cross-cutting subsection
   describes the concern map (what is true today)
 - [ADR-0002](0002-enforce-editorconfig-rules-with-editorconfig-checker.md),
   [ADR-0006](0006-trunk-based-development.md),

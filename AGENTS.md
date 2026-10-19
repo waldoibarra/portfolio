@@ -8,7 +8,7 @@ Read the right file before you start. Each row pairs a task with its source of t
 
 | If you are... | Read this first |
 | --- | --- |
-| Touching code or infra, need the system map | [Architecture](/ARCHITECTURE.md) |
+| Touching code or infra, need the system map | [Architecture](/architecture.md) |
 | Setting up local development or the Mise toolchain | [Run locally](/docs/how-to/run-locally.md) |
 | Changing Terraform or AWS | [Change infrastructure](/docs/how-to/change-infrastructure.md) and [infrastructure reference](/docs/reference/infrastructure.md) |
 | Changing CI/CD, workflows, or path filters | [Delivery model](/docs/explanation/delivery.md) |
@@ -27,7 +27,7 @@ Read the right file before you start. Each row pairs a task with its source of t
 - **Commands are `just` recipes.** Never call `npm`/`tsc`/`terraform`/`eslint` directly — invoke them
   through the justfile so local, hook, and CI paths stay identical.
   Workstation design commands use `openpencil` directly; `just open-design` launches the GUI.
-- **One job per doc.** README.md = public introduction; ARCHITECTURE.md = system boundaries;
+- **One job per doc.** README.md = public introduction; architecture.md = system boundaries;
   AGENTS.md = task routing; `docs/decisions/` = durable reasoning. Keep task instructions,
   reference, and explanation separate, linked from [docs/README.md](/docs/README.md).
 - **Docs change with code.** If a change alters documented behavior, update the doc in the same
