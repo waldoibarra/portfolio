@@ -21,7 +21,7 @@ Explicit one-time operations outside Terraform manage them.
 | [`infrastructure/tests/`](/infrastructure/tests/) | Native Terraform tests with mock providers | Integration tests against real AWS |
 | [`scripts/`](/scripts/) | Setup, deployment, and explicit domain-account operations invoked by `just` | Automatic purchases or domain retirement in CI |
 | [`.github/workflows/`](/.github/workflows/) | One coordinated website and infrastructure production workflow | Inline shell logic; project tasks call recipes |
-| [`docs/designs/`](/docs/designs/) | Editable design source and the README's generated preview | Production frontend implementation |
+| [`docs/designs/`](/docs/designs/) | Editable design source and its design preview | Production frontend implementation |
 
 There are no source tests yet. The infrastructure tests cover S3, OAC, and CloudFront properties.
 Read [Infrastructure reference](/docs/reference/infrastructure.md) for resources, security
@@ -87,8 +87,9 @@ rewrite `/` and `/resume` to those documents. CloudFront uses `home/index.html` 
 root object and a viewer-request function for `/resume`. Unknown paths are not homepage fallbacks.
 Future built pages need an entry in `build.rolldownOptions.input` and an explicit public route.
 
-Import and export are a handoff, not automatic bidirectional synchronization. OpenPencil is a
-workstation tool and is not required by the website build or CI.
+Import and export are a handoff, not automatic bidirectional synchronization. The design palette
+records visual intent; [`foundations.css`](/src/home/styles/foundations.css) owns production colors.
+OpenPencil is a workstation tool and is not required by the website build or CI.
 
 Read [Edit the landing design](/docs/how-to/edit-landing-design.md) before
 changing the document.

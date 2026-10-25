@@ -58,8 +58,10 @@ The only CTA is `Message on LinkedIn`, repeated in the hero and contact section,
 
 ## Preserve the color hierarchy
 
-The palette follows [Santifer's dark theme](https://santifer.io/).
+The design palette follows [Santifer's dark theme](https://santifer.io/).
 It uses charcoal surfaces, a 24 px dotted field, cyan actions, and lilac accents.
+These are design-source values, not the production colors in
+[`foundations.css`](/src/home/styles/foundations.css). Review both owners when implementing a change.
 
 | Role | Color | Use |
 | --- | --- | --- |
@@ -134,11 +136,11 @@ the [earlier flat design](/docs/reference/openpencil.md#contrast-lint-observatio
 Once the design is approved, follow [Implement the landing design](/docs/how-to/implement-landing-design.md)
 to update the native implementation.
 
-## Refresh the README preview
+## Refresh the design preview
 
-When visual intent changes, refresh the [README preview](/docs/designs/landing-preview.png)
-from a strict-font export of `Landing`. The preview is the top 1440 × 720 px hero crop of that render.
-Review the cropped image before replacing it.
+When visual intent changes, refresh the [design preview](/docs/designs/landing-preview.png)
+from a strict-font export of `Landing`. The preview shows the full 1440 × 2149 px desktop page.
+Review the full-page image before replacing it.
 
 ## Work through local MCP
 

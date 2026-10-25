@@ -10,7 +10,8 @@ Run commands from the repository root.
 ## Inspect the approved design
 
 Inspect colors, typography, spacing, variables, and assets with `openpencil analyze`, `variables`,
-and `export`. Choose global CSS custom properties from the approved design.
+and `export`. Compare the [design palette](/docs/how-to/edit-landing-design.md#preserve-the-color-hierarchy)
+with [`foundations.css`](/src/home/styles/foundations.css) before changing production color properties.
 
 Use a strict-font PNG as the visual reference:
 
