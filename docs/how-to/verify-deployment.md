@@ -16,15 +16,18 @@ Confirm the new certificate and DNS changes preserve the bucket, distribution, O
 Stop on unexpected destruction, replacement, or unrelated drift. Registration and delegation
 must be ready before a matching push or manual workflow dispatch on `trunk`.
 
-Only CI applies Terraform and deploys production. It creates a fresh plan from its own checkout
-and state, stages objects without deletion, applies that saved plan, waits for CloudFront,
-syncs with deletion, and invalidates caches. The local plan file is a review artifact, not a
+Only CI applies Terraform and deploys production.
+CI plans afresh from its checkout and state, then stages objects without deletion.
+It applies that saved plan and waits for CloudFront.
+Only then does it sync with deletion and invalidate caches.
+The local plan file is a review artifact, not a
 file CI consumes. Do not run production apply, upload, or recovery commands from a local shell.
 
 ## Find the Actions run for a push
 
-Authenticate the pinned GitHub CLI with an account that can read the repository. Replace
-`COMMIT_SHA` with the full tip SHA of the push, rather than using a title or the latest run:
+Authenticate the pinned GitHub CLI with an account that can read the repository.
+Use the push's full tip SHA for `COMMIT_SHA`.
+Do not use a title or the latest run:
 
 ```sh
 gh run list --branch trunk --event push --commit COMMIT_SHA --limit 20 \
@@ -66,8 +69,9 @@ Require `completed` and `success`. For failure details:
 gh run view RUN_ID --log-failed
 ```
 
-Confirm the `just deploy` log completed staging, saved-plan apply, the CloudFront distribution
-waiter, deleting sync, and completed invalidation, in that order. Passing lint or mock tests alone
+Confirm the `just deploy` log's order: staging, saved-plan apply, CloudFront waiter,
+deleting sync, completed invalidation.
+Passing lint or mock tests alone
 is not a deployment. `gh run watch` does not support fine-grained personal access tokens; use
 supported authentication or the browser.
 
@@ -78,12 +82,14 @@ Open both <https://waldo.love> and <https://www.waldo.love> in a browser:
 - `/` renders the complete portfolio with its styles, fonts, and images.
 - `/resume` renders the standalone résumé, not the homepage, with no redirect to an HTML path.
 - Inspect the network panel: asset requests succeed and return their own content types, not HTML.
-- A deliberately unknown path does not render the portfolio. The private S3 origin may return
-  403 rather than 404; either is an error, not a homepage fallback.
+- A deliberately unknown path does not render the portfolio.
+  The private S3 origin may return 403 or 404.
+  Both indicate errors, not homepage fallbacks.
 - Confirm HTTPS and the expected content on both hostnames, then reload to check cached delivery.
 
-Check valid TLS and HTTP 200 for `/` on both HTTPS hostnames; HTTP requests must upgrade to
-HTTPS. Confirm deployed website links use the new domain. Existing email addresses are unchanged.
+Check valid TLS and HTTP 200 for `/` on both HTTPS hostnames.
+HTTP requests must upgrade to HTTPS.
+Confirm deployed website links use the new domain. Existing email addresses are unchanged.
 
 CloudFront's default root serves `home/index.html` for `/`; the viewer-request function rewrites
 only `/resume` to `/resume/index.html`. `/resume/` and unknown paths are deliberately not aliases.
@@ -92,32 +98,37 @@ Direct object URLs such as `/resume/index.html` remain accessible through CloudF
 ## Check sharing previews
 
 Inspect the initial HTML response at <https://waldo.love/> without running JavaScript.
-Compare its title, description, author, canonical URL, and Open Graph/Twitter tags with
-[`src/home/metadata.json`](/src/home/metadata.json) at the deployed commit. Vite generates these
-tags during the build; they must be present in the response, not added by runtime JavaScript.
-Use the [field mapping](/docs/reference/homepage-metadata.md#fields-and-generated-tags) to check
-that each generated tag matches its source value, including the title-derived image alt text.
-Confirm the canonical and `og:url` values are `https://waldo.love/`, and the Open Graph
-title, description, and image tags are present alongside the Twitter `summary_large_image` card.
-Open <https://waldo.love/images/social-preview.jpg>; it must return HTTP 200 with
-`Content-Type: image/jpeg` and a 1200 × 630 image, not an HTML fallback.
-Confirm `meta[name="author"]` identifies Waldo and `og:type` remains `website`. This homepage
-has no article publication date; do not invent one to fill an inspector's optional field.
+Compare title, description, author, canonical URL, and Open Graph/Twitter tags
+against the deployed [`src/home/metadata.json`](/src/home/metadata.json).
+Vite generates tags during the build.
+They must appear in the initial response, not through runtime JavaScript.
+Use the [field mapping](/docs/reference/homepage-metadata.md#fields-and-generated-tags)
+to compare each tag with its source.
+Include the title-derived image alt text.
+Confirm canonical and `og:url` equal `https://waldo.love/`.
+Check Open Graph title, description, and image tags alongside Twitter's `summary_large_image` card.
+Open <https://waldo.love/images/social-preview.jpg>.
+It must return HTTP 200, `Content-Type: image/jpeg`, and a 1200 × 630 image, not HTML.
+Confirm `meta[name="author"]` identifies Waldo and `og:type` remains `website`.
+This homepage has no article publication date.
+Do not invent one for an inspector's optional field.
 
 Paste the canonical URL into a new WhatsApp message and check the preview before sending.
-WhatsApp and other sharing services cache previews independently of CloudFront: a completed
-deployment invalidation does not clear their caches or update cards already sent. Correct
+WhatsApp and other sharing services cache previews independently of CloudFront.
+Deployment invalidation does not clear their caches or update cards already sent. Correct
 live HTML and image responses do not guarantee an immediate refresh in every client.
 
 ## Recover a failed deployment
 
 Inspect the failed Actions step and current Terraform state before retrying. Do not continue with
-a deleting upload when apply or CloudFront propagation failed. Keep shared resource identities
+a deleting upload when apply or CloudFront propagation failed.
+Keep shared resource identities
 and site content intact, review a corrective change or source revert locally, then deploy it
 through CI's ordered sequence.
 
 A source revert does not guarantee infrastructure recovery: a removed certificate may need
-reissuance, and a deleted zone would require recreation and registrar delegation. Restoring
+reissuance, and a deleted zone would require recreation and registrar delegation.
+Restoring
 the retired website is not required. Downtime during the domain migration is acceptable;
 there is no redirect or old-domain rollback guarantee.
 

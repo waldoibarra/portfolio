@@ -9,14 +9,14 @@ consulted: Claude Sonnet 4.6
 
 ## Context and Problem Statement
 
-The project previously used Husky 8 to manage two Git hooks: `pre-commit` (runs `just check`) and
-`commit-msg` (runs `just lint-commit`). Husky is an npm dependency — hooks only work after
-`npm ci`, and `"prepare": "husky"` must be a `package.json` script. This makes hook activation
-coupled to the Node lifecycle, even though the hooks themselves delegate to `just` and execute
-non-Node tools (Terraform, markdownlint-cli2, editorconfig-checker, AWS CLI).
+The project previously used Husky 8 for `pre-commit` (`just check`)
+and `commit-msg` (`just lint-commit`).
+Husky depended on npm: hooks required `npm ci` and a `"prepare": "husky"` script in `package.json`.
+Activation therefore depended on Node's lifecycle.
+The hooks delegated to `just`, running Terraform, markdownlint-cli2, editorconfig-checker, and AWS CLI.
 
-The previous `pre-commit` hook also ran `just check` unconditionally — a full
-lint-all + build + Terraform test suite on every commit, regardless of what changed. A developer
+The previous `pre-commit` ran `just check` unconditionally.
+Every commit ran lint-all, build, and Terraform tests, regardless of changed files. A developer
 fixing a typo in `README.md` paid the cost of `terraform validate` + `terraform test`. The hook
 should be smart: detect which files changed and run only the relevant checks.
 
@@ -25,14 +25,13 @@ The hooks manager should follow the same pattern — pinned by Mise, not by npm.
 
 ## Decision Drivers
 
-- **Mise integration** — the hooks manager must be installable and version-pinned via Mise, not
-  through a package manager from another ecosystem
+- **Mise integration** — install and pin the hook manager via Mise,
+  not another ecosystem's package manager
 - **No npm coupling** — hook activation must not depend on `node_modules` or `package.json`
   lifecycle scripts
-- **Local-only** — hooks are a developer guardrail on `trunk`; they are not a CI concern (CI runs
-  the same checks via `just`, independently)
-- **Smart dispatch** — `pre-commit` must run only the lint/test/build targets relevant to staged
-  changes, not the full suite every time
+- **Local-only** — hooks guard developers on `trunk`, not CI.
+  CI independently runs the same checks through `just`.
+- **Smart dispatch** — `pre-commit` must select lint/test/build targets relevant to staged changes
 - **Simplicity** — hook dispatch should be declarative, not imperative shell logic
 - **Single command interface** — the `justfile` ([ADR-0007](0007-justfile-as-the-single-command-interface.md))
   remains the single way to invoke any tool
@@ -47,15 +46,16 @@ The hooks manager should follow the same pattern — pinned by Mise, not by npm.
 
 ## Decision Outcome
 
-Chosen option: "**hk**", because it is the only option created by the same author as Mise (jdx),
-sharing the same design philosophy. Its sole purpose is managing local Git hooks — it has no CI
-features, which is the right scope for this project (CI runs `just` recipes directly, not through
-hooks). `hk install` is a one-time activation; hooks are executable shell scripts, not generated
-shims that require a runtime.
+Chosen option: "**hk**", created by Mise's author (jdx), shares its design philosophy.
+It manages local Git hooks without CI features.
+CI runs `just` recipes directly, not through hooks.
+`hk install` activates executable shell hooks once, without runtime-dependent generated shims.
 
-Smart dispatch is implemented declaratively in `hk.pkl`. Each `lint-*` and check target in the
-`justfile` is registered as a `Step` with a `glob` pattern. hk inspects staged files, skips any
-step whose `glob` does not match, and runs the survivors in parallel. The dispatch logic is
+Smart dispatch is implemented declaratively in `hk.pkl`.
+Each `justfile` lint/check target becomes a `Step` with a `glob` pattern.
+hk inspects staged files.
+It skips unmatched steps.
+It runs the remaining steps in parallel. The dispatch logic is
 hk's responsibility, not the project's — no shell script reimplements `git diff --cached`.
 
 ### Architecture
@@ -65,41 +65,41 @@ hk's responsibility, not the project's — no shell script reimplements `git dif
 | Hook → step dispatch | `hk.pkl` | Declares each step's `glob` and `check` command; hk skips steps whose globs do not match staged files |
 | Tool invocation | `justfile` | Knows HOW to run each tool — every step's `check` calls a `just` recipe |
 
-The Justfile retains its role as the single command interface
-([ADR-0007](0007-justfile-as-the-single-command-interface.md)). hk owns "which checks run for
-this commit"; `just` owns "how each check runs". No intermediate shell layer is needed — hk's
-native step filtering replaces what would otherwise be hand-rolled bash.
+The Justfile remains the single command interface
+([ADR-0007](0007-justfile-as-the-single-command-interface.md)).
+hk selects checks for a commit.
+`just` runs each check.
+hk's native filtering avoids an intermediate, hand-rolled shell layer.
 
 ### Consequences
 
 - Good, because hook management is decoupled from npm; `husky` and `"prepare": "husky"` are
   removed from `package.json`
-- Good, because `hk` is pinned in `.mise.toml` alongside every other tool — one source of truth
-  for the full toolchain
+- Good, because `.mise.toml` pins `hk` alongside other tools
+  as one toolchain source
 - Good, because `hk install` is a simple addition to `just install`, making onboarding a single
   `mise install && just install` command
-- Good, because `@commitlint/cli` and `@commitlint/config-conventional` are replaced by
-  `committed` (Rust binary), managed via Mise — one more npm dependency eliminated
-- Good, because smart dispatch eliminates irrelevant tool runs; a Markdown-only commit skips
-  TypeScript compilation, Terraform validation, and editorconfig violations on unrelated files
-- Good, because hk runs eligible steps in parallel — `lint-md`, `lint-tf`, `lint-ec`, and
-  `tf-check` execute concurrently, reducing wall-clock time
-- Good, because the dispatch is declarative (`hk.pkl`) — adding a new check is two lines of PKL,
-  not a shell script edit
-- Bad, because each step still calls `just lint-X` which runs the underlying tool against the
-  whole tree, not just staged files. The win comes from skipping the step entirely when no
-  staged file matches its glob. Per-file linting (passing `{{files}}` to the tool directly)
-  would bypass the justfile and is deferred
-- Bad, because smart dispatch can miss transitive effects (e.g., a TypeScript type change that
-  breaks a CSS import). `just check` remains available as the explicit "run everything" command
-  for when full confidence is needed
+- Good, because Mise-managed `committed` replaces `@commitlint/cli` and `@commitlint/config-conventional`.
+  This Rust binary removes another npm dependency.
+- Good, because smart dispatch skips irrelevant checks.
+  Markdown-only commits skip TypeScript compilation and Terraform validation,
+  plus EditorConfig checks on unrelated files.
+- Good, because hk runs eligible `lint-md`, `lint-tf`, `lint-ec`, and `tf-check` steps concurrently
+- Good, because declarative `hk.pkl` adds a check in two PKL lines, without shell edits
+- Bad, because `just lint-X` still checks the whole tree, not only staged files.
+  The benefit comes from skipping steps without staged matches.
+  Per-file linting via `{{files}}` would bypass the justfile and remains deferred.
+- Bad, because smart dispatch can miss transitive effects, such as types breaking CSS imports.
+  Use `just check` explicitly when full-suite confidence is needed.
 
 ### Confirmation
 
+These checks record the decision's original implementation, not current setup commands.
+Use the [justfile](/justfile) and [local setup guide](/docs/how-to/run-locally.md) for current recipes.
+
 - `husky` is absent from `package.json` `devDependencies` and `"prepare"` script
 - `hk = "1.45.0"` is present in `.mise.toml` `[tools]`
-- `hk.pkl` exists at the project root with one step per `lint-*` recipe plus `build` and
-  `tf-check`, each with an appropriate `glob`
+- `hk.pkl` defines steps for `lint-*` recipes, `build`, and `tf-check`, each with a `glob`
 - No `scripts/` hook directory — dispatch is declarative (deploy scripts live in `scripts/`
   but are not hooks)
 - `just install` includes `hk install`
@@ -129,30 +129,26 @@ native step filtering replaces what would otherwise be hand-rolled bash.
 - Good, because parallel execution support and advanced output control
 - Neutral, because CI-aware features are not needed for this project's use case
 - Bad, because YAML config diverges from the project's established config formats
-- Bad, because larger surface area than needed — features like `skip_output`, `piped`, and CI
-  detection are irrelevant for local-only hooks
+- Bad, because `skip_output`, `piped`, and CI detection enlarge the surface beyond local-only needs
 
 ### Stay with Husky 8
 
 - Good, because zero migration cost; already works
 - Good, because `husky` v8 is stable and well-understood by contributors and agents
-- Bad, because hook activation depends on `npm ci` — hooks are silently inactive on a fresh
-  clone until dependencies are installed
-- Bad, because Husky 9 introduced license changes (subscription model for non-open-source); v8
-  works now but the project is pinned to a version in maintenance mode
-- Bad, because npm is the wrong toolchain for a hook manager when Mise already governs the
-  project's tool versions
+- Bad, because hooks silently remained inactive until `npm ci` installed dependencies on fresh clones
+- Bad, because Husky 9 introduced subscription licensing
+  for non-open-source projects.
+  Husky 8 worked but was in maintenance mode.
+- Bad, because npm managed hooks while Mise already governed project tool versions
 
 ### pre-commit (Python)
 
 - Good, because mature framework with a large plugin ecosystem
 - Good, because `.pre-commit-config.yaml` is a standard format recognized across many projects
-- Bad, because adds Python as a new toolchain dependency; every other tool is managed through
-  Mise without a language runtime requirement
-- Bad, because the plugin model (each hook is a repo + rev) is overkill for hooks that are
+- Bad, because Python adds a runtime dependency absent from the other Mise-managed tools
+- Bad, because repository-and-revision plugins overcomplicate
   one-line delegations to `just`
-- Bad, because `pre-commit` hooks run in isolated environments, which conflicts with the
-  project's model of hooks delegating to `just` recipes that depend on the local toolchain
+- Bad, because `pre-commit` isolates hooks from the local toolchain needed by `just` recipes
 
 ## More Information
 
@@ -160,23 +156,24 @@ native step filtering replaces what would otherwise be hand-rolled bash.
 - [Mise documentation](https://mise.jdx.dev)
 - [ADR-0003](0003-use-mise-for-toolchain-pinning.md) — the decision that established Mise as the
   toolchain manager
-- [ADR-0007](0007-justfile-as-the-single-command-interface.md) — the Justfile remains the single
-  command interface; every `hk` step's `check` is a `just` recipe invocation
-- [ADR-0008](0008-ai-assisted-development-as-first-class-concern.md) — the pre-commit hook is the
-  gate that PR review would otherwise provide; smart dispatch makes that gate faster without
-  weakening it
+- [ADR-0007](0007-justfile-as-the-single-command-interface.md) —
+  the Justfile remains the single command interface.
+  Every `hk` step's `check` invokes a `just` recipe.
+- [ADR-0008](0008-ai-assisted-development-as-first-class-concern.md) —
+  pre-commit checks replace the PR gate.
+  Smart dispatch speeds those checks without weakening them.
 - **Revisit triggers**:
-  - If `hk` becomes unmaintained or if Mise gains built-in hook management that supersedes
-    `hk`'s role, re-evaluate against the remaining options
+  - Re-evaluate alternatives if `hk` becomes unmaintained or Mise adds hook management that
+    replaces its role.
   - **Per-file linting**: each step currently invokes `just lint-X` which lints the whole tree.
-    If pre-commit time becomes dominated by tools that scale with tree size (eslint over a much
-    larger codebase, for example), revisit whether steps should pass `{{files}}` directly to
-    the tool — accepting the cost of bypassing the justfile for that step
-- **Commit message linting**: `@commitlint/cli` and `@commitlint/config-conventional`
-  (both npm) are replaced by [committed](https://github.com/crate-ci/committed) — a Rust-based,
-  language-agnostic commit linting tool that enforces conventional commits, subject length
-  (50), and body line length (72). It is managed via `.mise.toml` as
-  `committed = "1.1.11"` (aqua backend) and configured via `config/committed.toml`
-  (`style = "conventional"`). The `just lint-commit` recipe invokes it as
-  `committed --config config/committed.toml --commit-file`. This is not a separate
-  architectural decision; it is the tool selected to implement the decision made here.
+    Revisit this if tree-size-sensitive tools dominate pre-commit time, such as eslint on a larger codebase.
+    Consider passing `{{files}}` directly to the tool, accepting the cost of bypassing that step's justfile.
+- **Commit message linting:** [committed](https://github.com/crate-ci/committed)
+  replaces npm's `@commitlint/cli` and `@commitlint/config-conventional`.
+  This Rust-based, language-agnostic tool enforces conventional commits,
+  50-character subjects, and 72-character body lines.
+  `.mise.toml` pins `committed = "1.1.11"` through aqua.
+  `config/committed.toml` sets `style = "conventional"`.
+  `just lint-commit` invokes
+  `committed --config config/committed.toml --commit-file`.
+  This tool implements the existing decision, not a separate architectural choice.

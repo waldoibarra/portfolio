@@ -1,8 +1,7 @@
 # Implement the landing design
 
-Use this guide to translate the approved [landing design](/docs/designs/landing.fig) into the
-production HTML and CSS in [`src/home/index.html`](/src/home/index.html) and
-[`src/home/`](/src/home/). See the
+Translate the approved [landing design](/docs/designs/landing.fig) into production HTML and CSS.
+Work in [`src/home/index.html`](/src/home/index.html) and [`src/home/`](/src/home/). See the
 [design-to-code relationship](/architecture.md#design-and-implementation) and
 [OpenPencil reference](/docs/reference/openpencil.md) before using exported markup.
 
@@ -54,16 +53,19 @@ the limitations found in this design.
 5. Add real destinations, keyboard focus, and interaction states. Both primary actions use the
   LinkedIn component's destination. There is no top navigation bar. If you expose the résumé,
   use `/resume`.
-6. Do not add JavaScript to render static content. If the page gains behavior, implement only
-  that behavior in TypeScript and document its public functions and types with JSDoc.
+6. Do not add JavaScript to render static content.
+  If the page gains behavior, implement only that behavior in TypeScript.
+  Document public functions and types with JSDoc.
 7. Do not introduce a frontend runtime dependency, React, or Tailwind for exported markup. Vite 8
   remains the build and development tool.
 
-The `html-components` Vite plugin recursively expands these comments in development and production
-builds, so sections can include home-wide components. Missing component files fail the request or
+The `html-components` Vite plugin recursively expands these comments in development and production.
+Sections can include home-wide components.
+Missing component files fail the request or
 build rather than silently dropping content. The same component can be included in multiple sections.
-Editing a component reloads the development page. The generated HTML contains the complete page and
-works without JavaScript; do not open the unprocessed source shell directly.
+Editing a component reloads the development page.
+Generated HTML contains the complete page and works without JavaScript.
+Do not open the unprocessed source shell directly.
 
 Both sections include the same action with this source-relative comment:
 
@@ -83,8 +85,10 @@ just lint-md
 just build
 ```
 
-`just lint-ts` checks [`vite.config.ts`](/vite.config.ts) and any future TypeScript behavior
-modules under `src/` with the repository's strict TypeScript configuration. `just check` is not
+`just lint-ts` uses the repository's strict TypeScript configuration.
+It checks [`vite.config.ts`](/vite.config.ts) and future TypeScript behavior
+modules under `src/`.
+`just check` is not
 a frontend-only shortcut: it also runs Terraform checks.
 
 Serve the generated `dist/` output:
@@ -95,9 +99,10 @@ just preview
 
 Compare browser screenshots with design renders at desktop and mobile sizes. Exercise links and
 keyboard navigation. Disable JavaScript and confirm that all content and links still work.
-Check the action in both the hero and contact sections. Each must render the component's current
-label, title, and destination with the existing focus and layout styles.
+Check the action in both the hero and contact sections.
+Each must render the component's current label, title, and destination.
+Check existing focus and layout styles.
 
 Review changes in visual intent in the design as well, following
-[Edit the landing design](/docs/how-to/edit-landing-design.md). Importing HTML creates editable
-layers but does not maintain a live mapping to the production HTML or component styles.
+[Edit the landing design](/docs/how-to/edit-landing-design.md). Importing HTML creates editable layers.
+It does not maintain a live mapping to production HTML or component styles.

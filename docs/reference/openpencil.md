@@ -27,15 +27,17 @@ The guides use the globally managed `openpencil` directly from the repository ro
 
 ## Contrast lint observation
 
-The earlier flat landing document triggered misleading contrast lint errors: two dark CTA labels
-sat over cyan sibling rectangles with 12:1 fill-color contrast. Lint reported 1.03:1 against the
+The earlier flat landing document triggered misleading contrast lint errors.
+Two dark CTA labels sat over cyan sibling rectangles with 12:1 fill-color contrast.
+Lint reported 1.03:1 against the
 dark parent frame. The revised design nests labels inside filled components and passes this check.
 
 ## HTML export observation
 
-The 0.15.1 export of the earlier flat design was inspected in a browser: all 86 nodes were
-absolutely positioned, there were no headings or interactive controls, and a 390 px viewport
-still had 1440 px of content.
+A browser inspection of the earlier flat design's 0.15.1 export found 86 nodes.
+All were absolutely positioned.
+It had no headings or interactive controls.
+A 390 px viewport still displayed 1440 px of content.
 External font URLs repeated the asset directory, and the portrait lost its circular clipping.
 
 ## Scripted layout observations
@@ -53,11 +55,13 @@ therefore has separate desktop and mobile component masters, with the same label
 
 Saving after `insertChild` can remap node ids. Later scripted edits should find layers by name.
 
-Imported nodes keep their original fig layout and order key. Setting `itemSpacing` or
-reordering with `insertChild` updates the live scene graph, but the `.fig` writer emits
-`source.fig.layout.stackSpacing` and `source.orderKey`. Change those too, or the gap and
-z-order revert when the file is reopened. Yoga also clamps a negative auto-layout gap to
-zero, so a tighter pair has to be positioned absolutely inside the empty sidebearing.
+Imported nodes keep their original fig layout and order key.
+Setting `itemSpacing` or reordering with `insertChild` updates the live scene graph.
+The `.fig` writer emits `source.fig.layout.stackSpacing`
+and `source.orderKey` instead.
+Change those too, or the gap and
+z-order revert when the file is reopened. Yoga clamps negative auto-layout gaps to zero.
+Position tighter pairs absolutely inside the empty sidebearing.
 
 Mixed-color text on one line needs two text layers. Range fills are not exposed on the 0.15.1
 eval API. Size each layer to the glyphs. Extra box width reads as extra space.

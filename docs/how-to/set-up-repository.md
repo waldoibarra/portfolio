@@ -1,8 +1,9 @@
 # Set up the GitHub repository
 
-Read this guide before publishing a checkout and configuring GitHub Actions. Read
-[Set up a client site](/docs/how-to/set-up-client-site.md) before adapting the project for a
-new website; its account isolation and infrastructure bootstrap are separate prerequisites.
+Read this guide before publishing a checkout and configuring GitHub Actions.
+Read [Set up a client site](/docs/how-to/set-up-client-site.md)
+before adapting the project.
+A new website needs separate account isolation and infrastructure bootstrap.
 
 ## Prepare the checkout
 
@@ -83,5 +84,5 @@ repository does not require new AWS resources or a fresh Terraform workspace.
 
 With unchanged configuration and no infrastructure drift, expect a no-change plan. CI still
 builds and uploads the website. The plan is a point-in-time check; CI generates its own plan
-before applying. Bootstrap is only for a new site's empty environment, not an existing site
-connected to a new repository.
+before applying. Bootstrap serves new, empty environments only.
+An existing site connected to a new repository does not need it.

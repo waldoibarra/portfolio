@@ -1,14 +1,16 @@
 # Architectural Decision Records
 
-This directory holds the project's Architectural Decision Records (ADRs) — durable records of why
-the project is the way it is.
+This directory holds Architectural Decision Records (ADRs).
+They explain why the project is the way it is.
 
 ADRs preserve historical reasoning, including earlier setup commands, workflow names, and
 recovery assumptions. They are exceptions to current-documentation cleanup, not operational
-instructions. Use the [local setup guide](/docs/how-to/run-locally.md) for `just setup` and
-`just run`, and the [infrastructure guide](/docs/how-to/change-infrastructure.md) for manual
-local plans and CI-only applies. The current domain migration permits downtime and does not
+instructions. Use the [local setup guide](/docs/how-to/run-locally.md) for `just setup` and `just run`.
+Use the [infrastructure guide](/docs/how-to/change-infrastructure.md)
+for local plans and CI-only applies. The current domain migration permits downtime and does not
 promise retired-domain routing or recovery.
+**Historical caveats:** ADR-0008 remains proposed; its Husky and Engram claims are not current instructions.
+ADR-0009's setup examples are historical; ADR-0010's recovery assumptions do not override CI-only recovery.
 
 ## ADR Index
 
@@ -28,12 +30,13 @@ promise retired-domain routing or recovery.
 
 ## What is an ADR?
 
-An ADR records a decision that is:
+Write an ADR when the request or project process calls for one and all three gates apply:
 
-- **Architectural** — affects structure, boundaries, technology, or process; not implementation
-  detail.
-- **Durable** — expected to outlive the change that introduced it.
-- **Reasoned** — chosen between real alternatives, with tradeoffs worth explaining.
+- **Hard to reverse:** Changing the choice later has meaningful cost.
+- **Surprising without context:** A future reader would ask why this choice was made.
+- **Real trade-off:** Genuine alternatives existed and specific reasons favored this choice.
+
+An ADR can concern structure, boundaries, technology, or process, not a routine implementation detail.
 
 An ADR is _not_:
 
@@ -53,8 +56,8 @@ An ADR is _not_:
 
 - Format: `NNNN-kebab-case-short-title.md`
 - `NNNN` is four digits, zero-padded, monotonic, never reused.
-- The kebab-case short title is derived from the ADR's `# Heading` — lowercase, spaces replaced with
-  hyphens, punctuation removed; make sure to use the exact same words from the heading.
+- Derive the kebab-case short title from the ADR's `# Heading`.
+  Use the heading's exact words, lowercase them, replace spaces with hyphens, and remove punctuation.
 
 ## Status lifecycle
 
@@ -70,6 +73,8 @@ Rejected and superseded ADRs are never deleted. The reasoning often outlives the
 
 ## Template
 
-The files [adr-template.md](adr-template.md) is adapted from [MADR 4.0](https://adr.github.io/madr/)
-and must comply with the project's markdownlint rules. Refreshing them from a future MADR release is
-itself a decision and requires a new ADR.
+The [ADR template](adr-template.md) adapts [MADR 4.0](https://adr.github.io/madr/)
+and must comply with the project's markdownlint rules.
+Maintain the template as ordinary documentation, preserving its MADR provenance and relevant rationale.
+An ADR for a template change requires a request or an established process requirement.
+All three [recording gates](#what-is-an-adr) must also apply.

@@ -9,14 +9,15 @@ consulted: Gemini 3 Flash
 
 ## Context and Problem Statement
 
-Code shows _what_ a project is. It rarely shows _why_. Decisions about technology, structure, and
-process accumulate over the life of a project, and without a durable record their reasoning is lost
-— to future contributors, to the original author six months later, and to anyone trying to evaluate
-or extend the work.
+Code shows _what_ a project is. It rarely shows _why_.
+Decisions about technology, structure, and process accumulate over a project's life.
+Without a durable record, future contributors and the original author
+can lose their reasoning.
+That loss also affects anyone evaluating or extending the work six months later.
 
-We want a place to capture architectural decisions, the alternatives considered, and the tradeoffs
-accepted, so that future readers can understand not just what the project does but why it's built
-this way. Which format and structure should these records follow?
+We want to capture architectural decisions, considered alternatives, and accepted tradeoffs.
+Future readers should understand both what the project does
+and why it is built this way. Which format and structure should these records follow?
 
 ## Considered Options
 
@@ -41,10 +42,9 @@ Chosen option: "MADR 4.0.0", because
 
 ### Consequences
 
-- Good, because architectural decisions live in one searchable place instead of being scattered
-  across code, commits, and prose.
-- Good, because the structure prompts whoever writes an ADR to record alternatives and tradeoffs,
-  not just outcomes.
+- Good, because architectural decisions live in one searchable place,
+  not scattered across code, commits, and prose.
+- Good, because the structure prompts ADR authors to record alternatives and tradeoffs, not just outcomes.
 - Bad, because every ADR adds maintenance overhead — the index in `README.md` must stay current.
-- Bad, because deciding "is this an ADR?" requires judgment; the criteria in `README.md` reduce but
-  don't eliminate ambiguity.
+- Bad, because "is this an ADR?" still requires judgment.
+  The criteria in `README.md` reduce ambiguity but cannot eliminate it.

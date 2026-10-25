@@ -19,9 +19,10 @@ the résumé at `/resume` when you implement the site; do not put it in a header
 Hero copy that must stay aligned across desktop and mobile:
 
 - Greeting `Hi, I'm` in muted gray, then `Waldo Ibarra` in lilac. Keep each text box at
-  the font's measured width. The name is absolutely positioned at x = 60 inside the
-  greeting row, 4 px into the greeting box's trailing sidebearing, so the visible gap
-  is about one word space. A positive auto-layout gap stacks on that sidebearing and
+  the font's measured width. Position the name absolutely at x = 60 inside the greeting row.
+  Its 4 px overlap with the greeting box's trailing sidebearing
+  produces roughly one word space.
+  A positive auto-layout gap stacks on that sidebearing and
   reads as a wide break.
 - Role `Hands-On Software Architect & Applied AI Engineer` in lilac, 24 px on desktop and
   20 px on mobile.
@@ -34,15 +35,18 @@ Keep the same audience split:
 - Recruiters: keep the role and technical skills on the page. The résumé is
   `/resume` in the implemented site.
 
-Use the [résumé](/public/resume/index.html) for historical claims, with Waldo's corrections taking
-precedence: WGSN used Amazon Personalize for applied ML, not LLMs; the Guros leadership figure
-is 44+ engineers, 8 tech leads, and 3 architects. The résumé has not yet incorporated these
+Use the [résumé](/public/resume/index.html) for historical claims,
+with Waldo's corrections taking precedence.
+WGSN used Amazon Personalize for applied ML, not LLMs.
+The Guros leadership figure is 44+ engineers, 8 tech leads, and 3 architects.
+The résumé has not yet incorporated these
 landing-copy corrections. Retain H-E-B's 90% search response time reduction and Waspe's
 95% deployment time reduction.
 
-The music-industry example is an in-progress project for an unnamed stealth startup: AI-assisted
-ETL extracts intelligence from royalty report files, with a medallion database architecture and
-a gold layer for dashboards and RAG. Keep the client anonymous; do not add identifying details
+The music-industry example is an in-progress project for an unnamed stealth startup.
+AI-assisted ETL extracts intelligence from royalty report files.
+Its medallion database architecture has a gold layer for dashboards and RAG.
+Keep the client anonymous; do not add identifying details
 or imply completed results. Label it `Applied AI`; use present-tense `Building` for its status.
 Do not add an NDA or client-withholding disclaimer to the public copy.
 
@@ -54,8 +58,8 @@ The only CTA is `Message on LinkedIn`, repeated in the hero and contact section,
 
 ## Preserve the color hierarchy
 
-The palette takes its direction from [Santifer's dark theme](https://santifer.io/):
-charcoal surfaces, a 24 px dotted field, cyan actions, and lilac secondary accents.
+The palette follows [Santifer's dark theme](https://santifer.io/).
+It uses charcoal surfaces, a 24 px dotted field, cyan actions, and lilac accents.
 
 | Role | Color | Use |
 | --- | --- | --- |
@@ -68,9 +72,11 @@ charcoal surfaces, a 24 px dotted field, cyan actions, and lilac secondary accen
 | Button text | `#09090b` | Text on cyan |
 | Border | `#313135` | Card strokes and quiet section dividers |
 
-The canvas uses a tiled 24 px zinc dot grid (`rgba(161, 161, 170, ~0.22)` at the tile origin)
-as a second fill. Atmosphere stays in the hero: a lilac orb on the left, a cyan orb on the
-right, and a vertical wash from cyan/lilac into the canvas. Those fixtures are the first
+The canvas has a second fill: a tiled 24 px zinc dot grid.
+Its tile origin uses `rgba(161, 161, 170, ~0.22)`.
+Keep atmosphere in the hero: lilac orb left, cyan orb right,
+and a cyan/lilac vertical wash.
+Those fixtures are the first
 children of the hero, behind the portrait and copy. Later siblings paint on top and take
 clicks away from the text. `color/heroTop` (`#152028`) and
 `color/heroMid` (`#241e2e`) record that wash. Gradient stops are literal values because the
@@ -80,8 +86,9 @@ gradients to every card.
 The LinkedIn action uses 24 px left and right padding, with the label centered in that inset.
 Desktop and mobile have separate component masters.
 
-Measured minimum contrast across the rendered hero, canvas, and surface colors:
-secondary text 6.16:1, lilac labels 6.37:1, and button text on cyan 11.29:1.
+Measured minimum contrast covers the rendered hero, canvas, and surfaces.
+Secondary text reaches 6.16:1.
+Lilac labels reach 6.37:1; button text on cyan reaches 11.29:1.
 
 ## Inspect the source
 
@@ -111,8 +118,8 @@ openpencil eval docs/designs/landing.fig -c 'return figma.currentPage.name'
 4. Reopen the saved candidate, render both pages, and review them before replacing the source.
     For scripted layouts, follow the [CLI observations](/docs/reference/openpencil.md#scripted-layout-observations).
 
-Use one writer at a time: save and close the desktop document before overwriting it headlessly,
-then reopen it.
+Use one writer at a time.
+Save and close the desktop document before overwriting it headlessly, then reopen it.
 
 ## Check the result
 

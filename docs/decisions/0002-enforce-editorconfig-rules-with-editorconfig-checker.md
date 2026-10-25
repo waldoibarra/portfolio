@@ -9,10 +9,11 @@ consulted: Gemini 3 Flash
 
 ## Context and Problem Statement
 
-The project has an `.editorconfig` that defines trailing whitespace, final newlines, indentation
-style, line endings, and charset — but nothing verifies that committed files actually comply.
-LLM-generated edits (and manual ones) frequently violate these rules: trailing spaces, missing
-final newlines, inconsistent indentation. Without enforcement, `.editorconfig` is purely advisory
+The project's `.editorconfig` defines whitespace, final newlines, indentation, line endings, and charset.
+At the time, nothing verified committed files against it.
+LLM-generated and manual edits can violate these rules.
+Examples include trailing spaces, missing final newlines, and inconsistent indentation.
+Without enforcement, `.editorconfig` is purely advisory
 and violations accumulate silently.
 
 ## Considered Options
@@ -27,27 +28,27 @@ and violations accumulate silently.
 Chosen option: "editorconfig-checker", because
 
 - It is the standard tool for this purpose — purpose-built, fast, and well-maintained.
-- It is a compiled Go binary with no Node.js dependency, managed via Mise alongside `tflint` and
-  `markdownlint-cli2` — consistent with the project's pattern for standalone dev tools.
-- `eclint` is less maintained, slower (Node-based), and adds an unnecessary npm dependency tree for
-  a task a single binary can do.
+- It is a compiled Go binary without a Node.js dependency.
+  Mise manages it alongside `tflint` and `markdownlint-cli2`, following the standalone-tool pattern.
+- `eclint` was less maintained and slower because it used Node.
+  It added an npm dependency tree for a task one binary could handle.
 - No enforcement means `.editorconfig` is decorative — violations will accumulate, particularly
   from LLM-generated diffs that ignore editor settings.
 
 ### Consequences
 
-- Good, because every commit is checked for trailing whitespace, final newlines, indentation style,
-  charset, and line endings — catching violations that LLMs and manual edits commonly introduce.
-- Good, because `editorconfig-checker` is managed via Mise (`.mise.toml`), consistent with how
-  `tflint` and `markdownlint-cli2` are pinned — no npm devDependency, no version drift.
-- Good, because `max_line_length = off` for `*.md` and `.tftest.hcl` avoids overlap:
-  markdownlint-cli2 already enforces line length in Markdown, and Terraform test assertions cannot
-  be meaningfully wrapped.
-- Good, because `quote_type` enforcement is deliberately left to ESLint (`quotes: ['error',
-  'single']`), since `editorconfig-checker` does not support non-standard `.editorconfig` properties.
-  The `quote_type` section has been removed from `.editorconfig`.
-- Good, because the decision _not_ to add a CI workflow is deliberate: trunk-based development by a
-  solo developer means the pre-commit hook is the enforcement point, and CI would add maintenance
-  overhead with negligible payoff.
-- Bad, because GitHub web edits or `--no-verify` commits bypass the pre-commit hook — acceptable
-  given this project's risk profile.
+- Good, because commits are checked for whitespace, final newlines, indentation, charset, and line endings.
+  This catches violations introduced by LLMs or manual edits.
+- Good, because Mise (`.mise.toml`) manages `editorconfig-checker` alongside `tflint` and `markdownlint-cli2`.
+  It adds no npm devDependency or separate version pin.
+- Good, because `max_line_length = off` avoids overlapping checks for `*.md` and `.tftest.hcl`.
+  markdownlint-cli2 checks Markdown line length.
+  Terraform test assertions cannot be meaningfully wrapped.
+- Good, because ESLint owns `quote_type` enforcement (`quotes: ['error', 'single']`).
+  `editorconfig-checker` does not support non-standard `.editorconfig` properties.
+  The `quote_type` section was removed from `.editorconfig`.
+- Good, because omitting a CI workflow was deliberate.
+  For a solo developer on trunk, the pre-commit hook provided enforcement.
+  CI would have added maintenance overhead with negligible payoff.
+- Bad, because GitHub web edits and `--no-verify` commits bypass the pre-commit hook.
+  The project accepted that risk.

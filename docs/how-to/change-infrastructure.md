@@ -7,15 +7,16 @@ see the [infrastructure reference](/docs/reference/infrastructure.md).
 
 - Complete the [local setup](/docs/how-to/run-locally.md) so the pinned tools and Git hooks are
   available. Run the commands below from the repository root.
-- Populate the gitignored `.env` using [`.env.example`](/.env.example). Generate a Terraform
-  Cloud personal API token at <https://app.terraform.io/app/settings/tokens> and set
-  `TF_TOKEN_app_terraform_io`. Mise loads `.env` through [`.mise.toml`](/.mise.toml).
+- Populate the gitignored `.env` using [`.env.example`](/.env.example).
+  Generate a Terraform Cloud personal API token at
+  <https://app.terraform.io/app/settings/tokens>.
+  Set `TF_TOKEN_app_terraform_io`. Mise loads `.env` through [`.mise.toml`](/.mise.toml).
 - Confirm access to the [Terraform Cloud workspace](https://app.terraform.io/app/waldo-io/workspaces/waldoibarra-com)
   and AWS account `767963650101` using local profile `waldo`. Clear conflicting environment
   credentials before planning and verify the effective identity with `just domain-inspect`.
   Never commit credentials. CI uses its own account credentials, not this local profile.
-- For a real plan, the public Route53 hosted zone for `waldo.love` must already exist with matching
-  registrar delegation. Terraform looks it up by name; there is no `hosted_zone_id` input.
+- For a real plan, the `waldo.love` public Route53 zone needs matching registrar delegation.
+  Terraform looks it up by name; there is no `hosted_zone_id` input.
 
 Mock tests do not create AWS resources. Initialization still needs the configured Terraform Cloud
 backend and provider downloads. Planning reads real state and provider data; applying changes
@@ -48,18 +49,20 @@ also delete its contents.
 
 ## Apply through CI only
 
-After reviewing the local plan, use the normal delivery path: a matching push to `trunk` or a
-manual dispatch of the [production workflow](/.github/workflows/website.yml) on `trunk`.
+After reviewing locally, deploy through a matching `trunk` push.
+Alternatively, dispatch the [production workflow](/.github/workflows/website.yml)
+manually on `trunk`.
 Both deploy production. Do not push the domain change until registration, the public hosted
 zone, and delegation are ready.
 
-`tf-plan` saves a local preview to ignored `infrastructure/tfplan`. CI creates its own fresh
-plan from its checkout and current state; it does not apply the local file. A local review is
+`tf-plan` saves a local preview to ignored `infrastructure/tfplan`.
+CI plans again from its checkout and current state.
+It does not apply the local file. A local review is
 not approval of unknown later drift. Inspect the CI plan and deployment results.
 
 Production apply and deploy recipes are CI-only. Do not run `tf-apply`, `deploy-reviewed`,
-or `deploy` locally. CI stages objects without deletion, applies its saved plan, waits for
-CloudFront, syncs with deletion, then invalidates caches. See the
+or `deploy` locally. CI stages without deletion and applies its saved plan.
+It waits for CloudFront before syncing with deletion and invalidating caches. See the
 [delivery model](/docs/explanation/delivery.md) and
 [deployment verification guide](/docs/how-to/verify-deployment.md).
 
@@ -78,11 +81,12 @@ or ACM's required `us-east-1` region.
 | `just domain-delete-zone ZONE_ID DOMAIN` | Delete the verified retiring hosted zone after dependency and record checks |
 
 Replace `CONTACT_FILE` with an absolute path outside the checkout to a private file with mode
-`0600`. Follow the [AWS register-domain input contract](https://docs.aws.amazon.com/cli/latest/reference/route53domains/register-domain.html):
-the JSON must set `DomainName` to `waldo.love`, `DurationInYears` to `1`, `AutoRenew` to `true`,
-all three contact objects (`AdminContact`, `RegistrantContact`, `TechContact`), and each
-`PrivacyProtectAdminContact`, `PrivacyProtectRegistrantContact`, and `PrivacyProtectTechContact`
-boolean. No purchase settings are inferred. Keep the payload out of Git, terminal transcripts,
+`0600`. Follow the [AWS register-domain input contract](https://docs.aws.amazon.com/cli/latest/reference/route53domains/register-domain.html).
+The JSON must set `DomainName` to `waldo.love`, `DurationInYears` to `1`, and `AutoRenew` to `true`.
+Include `AdminContact`, `RegistrantContact`, and `TechContact` objects.
+Set each `PrivacyProtectAdminContact`, `PrivacyProtectRegistrantContact`,
+and `PrivacyProtectTechContact` boolean.
+No purchase settings are inferred. Keep the payload out of Git, terminal transcripts,
 and CI artifacts. The CLI reads the private file directly; contact values never enter command-line
 arguments. Remove the payload after submission.
 `OPERATION_ID` is the ID returned by AWS; `DOMAIN` and `ZONE_ID` must come from inspected account
@@ -136,8 +140,9 @@ Recovery uses a reviewed fix through CI; there is no guarantee of restoring the 
 
 [`main.tftest.hcl`](/infrastructure/tests/main.tftest.hcl) checks the declared AWS configuration.
 The S3 and Origin Access Control (OAC) checks use plan mode. The CloudFront checks use mock apply
-mode because referenced OAC IDs and certificate attributes are computed. Mock apply does not
-apply to AWS; both the default AWS provider and its `useast1` alias are mocked.
+mode because referenced OAC IDs and certificate attributes are computed.
+Mock apply does not change AWS.
+Both the default AWS provider and its `useast1` alias are mocked.
 
 For a new assertion, prefer plan mode when its values are known during planning. Supply stable
 `mock_resource` defaults for computed fields the test needs. When a computed collection supplies
@@ -158,8 +163,10 @@ The actual CloudFront Function source is exercised locally by
 just test-routes
 ```
 
-It checks that only `/resume` rewrites to `/resume/index.html`, preserves request metadata,
-and leaves root, asset, direct-object, and unknown paths untouched. Keep these cases aligned
+It checks that only `/resume` rewrites to `/resume/index.html`.
+It checks preserved request metadata and untouched root, asset, direct-object,
+and unknown paths.
+Keep these cases aligned
 with the [routing contract](/docs/reference/infrastructure.md#request-routing).
 
 The Terraform tests use mocked providers; the route tests execute JavaScript locally. Neither

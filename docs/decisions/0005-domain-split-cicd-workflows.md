@@ -8,36 +8,35 @@ decision-makers: Waldo Ibarra, Claude Opus 4.7
 
 ## Context and Problem Statement
 
-The repository contains two independent delivery domains — the website (Vite source) and the
-infrastructure (Terraform). Each has its own CI gates (lint, test) and CD steps (deploy, apply). How
-should GitHub Actions workflows be structured to run the right pipeline for the right change without
-silently skipping work? The split is by domain, not by stage — each workflow runs CI (lint+test)
-and CD (deploy/apply) end-to-end for its domain.
+At the time, the repository treated website (Vite source) and infrastructure
+(Terraform) as independent delivery domains.
+Each had CI gates (lint, test) and CD steps (deploy, apply).
+How could workflows run the appropriate pipeline without silently skipping work?
+The proposed split followed domains, not stages.
+Each workflow would run CI (lint+test) and CD (deploy/apply) end-to-end for its domain.
 
 ## Considered Options
 
 - Single workflow with `paths-ignore` — one workflow, denylist for docs/config files
-- Single workflow with conditional jobs — one workflow with per-job `if:` guards to skip branches
-  that don't apply
-- Two domain-split workflows with `paths` allowlist — `website.yml` and `infrastructure.yml`, each
-  with explicit `paths:` listing what triggers it
+- Single workflow with conditional jobs — per-job `if:` guards skip irrelevant branches
+- Two domain-split workflows: `website.yml` and `infrastructure.yml`.
+  Each has an explicit `paths:` allowlist defining its triggers.
 
 ## Decision Outcome
 
-Chosen option: "Two domain-split workflows with `paths` allowlist", because explicit ownership per
-domain enables parallel execution when both domains change and simplifies concurrency groups.
+Chosen option: "Two domain-split workflows with `paths` allowlist".
+Explicit domain ownership enabled parallel execution and simplified concurrency groups.
 Allowlists require maintenance: a new path that matches no pattern does not trigger a workflow.
 
 ### Consequences
 
 - Good, because explicit ownership: `website.yml` owns source, `infrastructure.yml` owns Terraform
 - Good, because parallel execution when a single commit touches both domains
-- Bad, because a new file/config outside the allowlists silently bypasses CI unless its path is
-  added; an absent workflow run is not evidence that checks passed
-- Good, because concurrency groups (`group: website`, `group: infrastructure`) are scoped per domain
-  so a long Terraform apply never blocks a website deploy
-- Bad, because workflow YAML changes must be added to that workflow's own `paths:` list; the YAML
-  file itself is in its allowlist so a YAML edit re-triggers (see the
-  [delivery model](/docs/explanation/delivery.md) for the operational caveat)
-- Bad, because shared concerns (e.g., a future security scan over both source and infra) must be
-  duplicated or factored into a third workflow
+- Bad, because unlisted files silently bypassed CI unless their paths were added.
+  An absent workflow run never proved checks passed.
+- Good, because per-domain concurrency groups (`group: website`,
+  `group: infrastructure`) kept Terraform applies from blocking website deploys.
+- Bad, because workflow YAML needed inclusion in its own `paths:` list.
+  Including it made YAML edits retrigger the workflow; see the [delivery model](/docs/explanation/delivery.md).
+- Bad, because shared concerns required duplication or a third workflow,
+  such as a cross-domain security scan.

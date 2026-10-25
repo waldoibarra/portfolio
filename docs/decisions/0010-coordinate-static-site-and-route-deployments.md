@@ -10,9 +10,10 @@ decision-makers: Waldo Ibarra, GPT-6 Astra
 
 [ADR-0005](/docs/decisions/0005-domain-split-cicd-workflows.md) split website and infrastructure
 into independent production pipelines. Moving the home object to `home/index.html` makes the
-artifact layout and CloudFront route configuration one deployment contract. A deleting S3 sync
-can remove the old default root while CloudFront still references it; applying routes first can
-reference objects that have not been uploaded.
+artifact layout and CloudFront route configuration one deployment contract.
+A deleting S3 sync can remove the old default root
+before CloudFront stops referencing it.
+Applying routes first can reference objects not yet uploaded.
 
 ## Considered Options
 
@@ -22,9 +23,10 @@ reference objects that have not been uploaded.
 
 ## Decision Outcome
 
-Use one serialized production workflow. Stage the artifact without deletion, apply the saved
-infrastructure plan, wait for CloudFront deployment, then delete obsolete objects and invalidate
-cached responses. Both domains are checked before deployment. Read the
+Use one serialized production workflow.
+Stage the artifact without deletion, then apply the saved infrastructure plan.
+Wait for CloudFront deployment before deleting obsolete objects
+and invalidating cached responses. Both domains are checked before deployment. Read the
 [delivery model](/docs/explanation/delivery.md) for the executable sequence and recovery procedure.
 
 ### Consequences
@@ -35,6 +37,10 @@ cached responses. Both domains are checked before deployment. Read the
 - Local production deployments must not overlap an Actions deployment.
 - A failed apply retains previously served objects; recovery restores the prior artifact and
   routing configuration before cleanup.
+
+These consequences record the decision's original assumptions, not a current recovery guarantee.
+Production mutations are now CI-only; restoring the retired site is not guaranteed.
+Read [deployment recovery](/docs/how-to/verify-deployment.md#recover-a-failed-deployment) before acting.
 
 ### Confirmation
 

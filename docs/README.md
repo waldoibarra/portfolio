@@ -32,12 +32,23 @@ Choose a page by what you need to do or understand. Start with the
 ## Understand the system
 
 - [Architecture](/architecture.md): components, ownership boundaries, and design-to-code handoff.
+- [Glossary](/GLOSSARY.md): site, design, routing, and delivery terms.
 - [Delivery model](/docs/explanation/delivery.md): local checks, workflow filtering, and
   deployment dependencies.
 - [Decision records](/docs/decisions/README.md): why choices were made, alternatives, and status.
 
 ## Maintain the documentation
 
+**Keep one owner per fact.** The [README](/README.md) introduces the portfolio.
+The [architecture map](/architecture.md) owns current boundaries; task guides own procedures.
+References own field and resource details; explanations own delivery reasoning.
+Link to an owner rather than repeating operational instructions.
+
+**Evolve with code.** Update affected documentation when a source path, command, route, or
+deployment gate changes.
+Keep historical decisions and their status in the [decision index](/docs/decisions/README.md).
+Do not promote an old ADR command into current guidance without checking the [justfile](/justfile).
+
 Use [Diátaxis](https://diataxis.fr/) to separate task instructions, factual reference, and
-explanation. Add a tutorial when there is a concrete learning journey to teach; do not create
-empty categories. Read the [agent router](/AGENTS.md) before changing project conventions.
+explanation. Add a tutorial for a concrete learning journey, not an empty category.
+Read the [agent router](/AGENTS.md) before changing project conventions.

@@ -1,12 +1,12 @@
 # AI Assistant Instructions for Working with ADRs
 
-When working with Architectural Decision Records (ADR) files in this directory (`docs/decisions/`),
-follow these rules.
+Read [the decision index](README.md#what-is-an-adr) before proposing or changing an ADR.
+Follow these rules within `docs/decisions/`.
 
 ## ADR Index maintenance
 
-- When adding, modifying, or superseding an ADR, update the **Index** table in [README.md](README.md)
-  in the same commit.
+- Update the **Index** table in [README.md](README.md) when adding, modifying,
+  or superseding an ADR. Include both changes in the same commit.
 - The index `Status` column is the source of truth for ADR status.
 - Each index row links the ADR title to its file. Preserve the link when editing rows.
 - Keep the index sorted by number, ascending.
@@ -16,7 +16,7 @@ follow these rules.
 When superseding ADR-X with ADR-Y:
 
 - Set ADR-X's status in the index to `superseded by ADR-NNNN` (where `NNNN` is ADR-Y's number).
-- Update ADR-X `status` field in itss frontmatter block, for example:
+- Update ADR-X's `status` field in its frontmatter block, for example:
 
   ```markdown
   ---
@@ -33,8 +33,8 @@ List every human and LLM that participated in shaping the decision in the `decis
 LLMs are listed by model name (e.g., `Claude Opus 4.7`). This is intentional: AI-first means
 recording AI participation as first-class, not as tool use.
 
-- Humans go in `consulted` only when they were external sources of input (e.g., a colleague's
-  review). The driver of the decision goes in `decision-makers`.
+- List humans under `consulted` only for external input, such as a colleague's review.
+  List the decision's driver under `decision-makers`.
 - LLMs go in `consulted` only when used purely to look up facts. LLMs that shaped reasoning go
   in `decision-makers`.
 

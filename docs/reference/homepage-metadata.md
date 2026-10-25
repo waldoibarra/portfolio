@@ -42,9 +42,10 @@ During `just run`, saving the metadata JSON triggers a full-page browser reload 
 development client. The next HTML transformation reads the saved values without a server restart.
 Existing HTML include edits also trigger full-page reloads.
 
-`just build` writes the generated tags into `dist/home/index.html`. Production browsers and
-sharing crawlers receive them in the initial response; there is no production metadata script,
-JSON fetch, or new dependency. `just preview` serves the built artifact, so source changes need
+`just build` writes the generated tags into `dist/home/index.html`.
+Browsers and sharing crawlers receive them in the initial production response.
+No production metadata script, JSON fetch, or new dependency is required.
+`just preview` serves the built artifact, so source changes need
 another build before they appear there.
 
 ## Sharing boundaries

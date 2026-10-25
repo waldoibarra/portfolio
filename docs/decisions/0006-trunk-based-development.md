@@ -21,17 +21,17 @@ Should branching follow GitHub Flow (feature branches + PRs), GitFlow, or trunk-
 ## Decision Outcome
 
 Chosen option: "Trunk-based, direct commits", because there is no review bottleneck to optimize for
-(solo + AI). The pre-commit hook (`just check` + commitlint) is the gate that PRs would have
-provided, and CI gates (lint, build, terraform test) catch regressions before deploy. PR overhead
+(solo + AI). The original pre-commit hook (`just check` + commitlint) replaced the PR gate.
+CI gates (lint, build, terraform test) caught regressions before deployment. PR overhead
 would slow iteration with no review payoff.
 
 ### Consequences
 
 - Good, because it enables the fastest iteration loop; no PR ceremony
-- Good, because pre-commit hook (`just check`) and commit-msg hook (commitlint) are deterministic
-  and run identically locally and in CI
+- Good, because the original pre-commit (`just check`) and commit-msg (commitlint) hooks were deterministic.
+  Their checks ran identically locally and in CI.
 - Good, because the workflow forces small, well-scoped commits (no "PR rollup" temptation)
-- Bad, because there is no second pair of eyes before merge; mitigated by AI collaborators
-  reviewing changes pre-commit and by CI gates catching regressions before deploy
+- Bad, because no second human reviewer checks changes before merge.
+  AI collaborators review before commit; CI gates catch regressions before deployment.
 - Bad, because `git revert` is the only rollback path (acceptable: no migrations, no long-running
   state)

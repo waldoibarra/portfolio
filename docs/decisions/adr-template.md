@@ -13,11 +13,11 @@ informed: {list everyone who is kept up-to-date on progress; and with whom there
 
 ## Context and Problem Statement
 
-{Describe the context and problem statement, e.g., in free form using two to three
-sentences or in the form of an illustrative story. You may want to articulate the
-problem in form of a question. Consider adding links to collaboration boards or issue
-management systems. Make the scope of the decision explicit, for instance, by calling
-out or pointing at structural architecture elements (components, connectors, ...).}
+{Describe the context and problem in two or three sentences or an illustrative story.
+You may state the problem as a question.
+Consider linking collaboration boards or issue management systems.
+Make the decision's scope explicit.
+For example, identify relevant structural elements: components, connectors, and others.}
 
 <!-- This is an optional element. Feel free to remove. -->
 ## Decision Drivers
@@ -36,9 +36,9 @@ out or pointing at structural architecture elements (components, connectors, ...
 
 ## Decision Outcome
 
-Chosen option: "{title of option 1}", because {justification. e.g., only option,
-which meets k.o. criterion decision driver | which resolves force {force} | … | comes
-out best (see below)}.
+Chosen option: "{title of option 1}", because {justification.
+For example, the only option meeting the k.o. criterion decision driver.
+Alternatively, it resolves force {force} or comes out best (see below). …}
 
 <!-- This is an optional element. Feel free to remove. -->
 ### Consequences
@@ -54,8 +54,9 @@ out best (see below)}.
 
 {Describe how the implementation / compliance of the ADR can/will be confirmed. Is
 there any automated or manual fitness function? If so, list it and explain how it is
-applied. Is the chosen design and its implementation in line with the decision? E.g.,
-a design/code review or a test with a library such as ArchUnit can help validate this.
+applied. Is the chosen design and its implementation in line with the decision?
+For example, a design/code review can validate this.
+A test using a library such as ArchUnit can also help.
 Note that although we classify this element as optional, it is included in many ADRs.}
 
 <!-- This is an optional element. Feel free to remove. -->
@@ -85,7 +86,7 @@ Note that although we classify this element as optional, it is included in many 
 <!-- This is an optional element. Feel free to remove. -->
 ## More Information
 
-{You might want to provide additional evidence/confidence for the decision outcome
-here and/or document the team agreement on the decision and/or define when/how this
-decision the decision should be realized and if/when it should be re-visited. Links to
-other decisions and resources might appear here as well.}
+{Provide more evidence or confidence for the outcome, if needed.
+Document any team agreement or define when and how to implement the decision.
+State when to revisit it.
+Link to other decisions and resources when relevant.}

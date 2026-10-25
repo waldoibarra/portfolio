@@ -9,9 +9,11 @@ consulted: Gemini 3 Flash
 
 ## Context and Problem Statement
 
-The project needs deterministic, declarative version pins for Node, Terraform, AWS CLI, TFLint,
-just, markdownlint-cli2, editorconfig-checker, and gh so that local development, CI, and pre-commit
-hooks all run identical tool versions. The toolchain spans Node and non-Node binaries, so approaches
+The project needs deterministic version pins for Node, Terraform, AWS CLI,
+TFLint, and just.
+It also pins markdownlint-cli2, editorconfig-checker, and gh.
+Local development, CI, and pre-commit hooks must use identical tool versions.
+The toolchain spans Node and non-Node binaries, so approaches
 anchored to a single ecosystem are insufficient. Which toolchain manager should govern the project?
 
 ## Decision Drivers
@@ -33,11 +35,12 @@ anchored to a single ecosystem are insufficient. Which toolchain manager should 
 
 ## Decision Outcome
 
-Chosen option: "Mise", because it meets all decision drivers with the lowest overhead among
-cross-ecosystem options. It has first-class GitHub Actions support (`jdx/mise-action@v4`), TOML
-config is human-readable and diff-friendly, and `_.file = ".env"` provides per-project env loading
-without a separate dotenv tool. asdf is the closest alternative but Mise is more actively developed,
-has faster shell activation, and includes built-in env file integration.
+Chosen option: "Mise", because it meets the drivers with the lowest cross-ecosystem overhead.
+It supports GitHub Actions through `jdx/mise-action@v4`.
+Its human-readable TOML configuration is diff-friendly.
+`_.file = ".env"` loads project variables without a separate dotenv tool.
+asdf was the closest alternative.
+Mise offered faster activation, more active development, and built-in env integration.
 
 ### Consequences
 
@@ -46,16 +49,17 @@ has faster shell activation, and includes built-in env file integration.
   glue
 - Good, because `_.file = ".env"` provides per-project env loading without a separate dotenv tool
 - Good, because fast activation, no VM or daemon
-- Bad, because backend resolution (aqua/ubi/asdf) sometimes requires `mise registry show <tool>` to
-  verify the canonical identifier when adding a new tool
+- Bad, because aqua/ubi/asdf backend resolution can require `mise registry show <tool>`.
+  Run it to verify a new tool's canonical identifier.
 - Bad, because contributors must install Mise once before they can use the project; documented in
   [Run locally](/docs/how-to/run-locally.md)
 
 ### Confirmation
 
-`.mise.toml` is the source of truth; `mise install` provisions the toolchain locally and
-`jdx/mise-action@v4` does the same in CI. Drift between local and CI is impossible because both read
-the same file. `infrastructure/versions.tf` `required_version` exact pin must match the `terraform`
+`.mise.toml` is the source of truth.
+`mise install` provisions locally; `jdx/mise-action@v4` uses the same file in CI.
+This shared file prevents version-pin drift between local and CI.
+`infrastructure/versions.tf` `required_version` exact pin must match the `terraform`
 value in `.mise.toml` (see [infrastructure reference](/docs/reference/infrastructure.md)).
 
 ## Pros and Cons of the Options
@@ -67,16 +71,16 @@ value in `.mise.toml` (see [infrastructure reference](/docs/reference/infrastruc
 - Good, because `_.file = ".env"` loads per-project environment variables automatically
 - Good, because per-directory activation means different projects can have different tool versions
 - Bad, because Mise is newer than asdf so plugin ecosystem and community are still maturing
-- Bad, because tool backend resolution (which of aqua/ubi/asdf) is sometimes implicit and requires
-  `mise registry show <tool>` to verify
+- Bad, because aqua/ubi/asdf backend resolution can be implicit.
+  Use `mise registry show <tool>` to verify it.
 
 ### Docker / Devcontainers
 
 - Good, because total isolation guarantees exact reproduction of the environment
 - Bad, because Docker must also be installed locally, regressing on the "one tool to install" goal
 - Bad, because image rebuilds are slow and CI caching is complex
-- Bad, because host-tool integration (editor LSPs, git hooks) is poor — tools run inside the
-  container, not on the host
+- Bad, because editor LSPs and Git hooks integrate poorly
+  when tools run inside containers, not on hosts.
 
 ### asdf
 
@@ -88,12 +92,11 @@ value in `.mise.toml` (see [infrastructure reference](/docs/reference/infrastruc
 ### nvm + tfenv + manual installs
 
 - Good, because each tool uses its own ecosystem-native version manager
-- Bad, because there is no single declarative source of truth — versions are scattered across
-  `.nvmrc`, `.terraform-version`, and ad-hoc install scripts
+- Bad, because versions scatter across `.nvmrc`, `.terraform-version`,
+  and ad-hoc scripts without one declarative source.
 - Bad, because AWS CLI, TFLint, and other binaries require manual install scripts with no version
   pinning
-- Bad, because drift between local and CI is invisible — a contributor on a different Node version
-  may never notice until a CI failure
+- Bad, because a contributor's different Node version may cause invisible local/CI drift until CI fails.
 
 ### Nix
 
@@ -105,5 +108,5 @@ value in `.mise.toml` (see [infrastructure reference](/docs/reference/infrastruc
 ## More Information
 
 - [Mise documentation](https://mise.jdx.dev)
-- Re-visit trigger: if Mise becomes unmaintained or if a multi-architecture / hermetic build
-  requirement emerges that Mise cannot satisfy, re-evaluate against Nix.
+- Re-visit trigger: compare Nix if Mise becomes unmaintained.
+  Also compare Nix if Mise cannot satisfy a new multi-architecture or hermetic build requirement.

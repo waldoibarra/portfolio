@@ -35,8 +35,9 @@ variables and targets the `production` GitHub environment.
 | [`acm.tf`](/infrastructure/acm.tf) | DNS-validated certificate for the root domain and wildcard subdomains, with `create_before_destroy`; validation records use known domain-name keys and ACM-computed record values |
 | [`dns.tf`](/infrastructure/dns.tf) | Looks up an existing public hosted zone by domain name; creates root and `www` alias A records pointing to CloudFront |
 
-The bucket policy grants `s3:GetObject` to the CloudFront service principal only when the source
-ARN matches this distribution. CloudFront redirects HTTP to HTTPS, requires `TLSv1.2_2021`,
+The bucket policy grants `s3:GetObject` to CloudFront's service principal
+only for this distribution's source ARN.
+CloudFront redirects HTTP to HTTPS, requires `TLSv1.2_2021`,
 allows GET/HEAD/OPTIONS, and caches GET/HEAD. The distribution enables compression and IPv6,
 forwards no query strings or cookies, and has no geographic restriction. DNS currently declares
 A records only. The full cache and distribution settings remain in the resource source.
@@ -65,8 +66,8 @@ It returns the request rather than a redirect and preserves request metadata. `/
 `/Resume`, and unknown routes receive no alias or HTML fallback. The existing HTTP-to-HTTPS
 redirect is independent of this route rewrite. S3 remains private behind OAC.
 
-The production deployment stages new objects without deletion, applies infrastructure, waits
-for CloudFront propagation, then syncs with deletion and invalidates cached objects. This keeps
+Production stages new objects without deletion and applies infrastructure.
+It waits for CloudFront before syncing with deletion and invalidating cached objects. This keeps
 the previous root object available until the new default root and route function are deployed.
 
 ## Tags and destructive changes
@@ -81,9 +82,9 @@ public-access blocking does not protect against an authorized destructive apply.
 ## Cost components
 
 These are published AWS USD rates, not a monthly bill estimate. Actual charges depend on usage,
-region, account-wide allowances, billing plan, and taxes. Recheck linked pricing and account
-billing before approving spending; the repository does not establish free-tier eligibility or
-enrollment in a CloudFront flat-rate plan.
+region, account-wide allowances, billing plan, and taxes.
+Recheck linked pricing and account billing before approving spending.
+The repository establishes neither free-tier eligibility nor CloudFront flat-rate plan enrollment.
 
 | Component | Pricing and limits |
 | --- | --- |
@@ -101,10 +102,12 @@ choice and can bundle DNS, edge compute, and storage credits. Do not apply those
 this site's estimate without verifying the distribution's actual plan. HCP Terraform workspace
 charges or limits likewise depend on the organization's subscription, not its historical name.
 
-A Terraform plan describes proposed resource changes; it is not a cost forecast and does not
-purchase a domain or prove registration, DNS delegation, or certificate issuance. A plan with
-no changes does not mean the running site is free. Disabling renewal avoids a later renewal
-charge but does not refund registration or stop hosted-zone, storage, or delivery charges.
+A Terraform plan describes proposed resource changes, not a cost forecast.
+It neither purchases domains nor proves registration, DNS delegation,
+or certificate issuance.
+A plan with
+no changes does not mean the running site is free. Disabling renewal avoids future renewal charges.
+It does not refund registration or stop hosted-zone, storage, or delivery charges.
 
 ## Toolchain and command sources
 

@@ -1,11 +1,11 @@
 # How delivery works
 
 Production has one coordinated [workflow](/.github/workflows/website.yml), covering website and
-infrastructure changes. Every deployment builds and checks both domains, stages the artifact,
-applies a saved infrastructure plan, waits for CloudFront, and only then removes old objects.
-This replaces the independent pipelines recorded in
-[ADR 0005](/docs/decisions/0005-domain-split-cicd-workflows.md): independent deploys could delete
-`index.html` before CloudFront switched its default root to `home/index.html`.
+infrastructure changes. Every deployment builds and checks both domains,
+then stages the artifact and applies a saved plan.
+It waits for CloudFront before removing old objects.
+This replaces [ADR 0005](/docs/decisions/0005-domain-split-cicd-workflows.md)'s independent pipelines.
+Those pipelines could delete `index.html` before CloudFront switched its default root to `home/index.html`.
 [ADR 0010](/docs/decisions/0010-coordinate-static-site-and-route-deployments.md) records the
 coordinated delivery decision.
 
@@ -28,11 +28,13 @@ after its EditorConfig, shell, TypeScript, and CSS lint steps:
 A failed command stops the sequence. In particular, a failed apply or distribution waiter cannot
 reach the deleting sync or invalidation. Staging is non-destructive, not atomic: it can update
 same-key files before the infrastructure changes. Vite's hashed assets avoid that overlap for
-compiled assets. The saved plan is removed after a successful apply; a new planning attempt
-removes any earlier plan first so a failed attempt cannot leave a stale apply target.
+compiled assets. A successful apply removes its saved plan.
+A new planning attempt removes earlier plans first,
+preventing stale apply targets after failure.
 
-The `production` concurrency group has `cancel-in-progress: false`. One workflow owns the whole
-sequence, rather than relying on a shared lock between independent jobs whose order is unknown.
+The `production` concurrency group has `cancel-in-progress: false`.
+One workflow owns the sequence, avoiding shared locks
+between independently ordered jobs.
 GitHub may replace pending runs; it does not promise FIFO deployment order. Each run nevertheless
 ships the artifact and infrastructure from one checkout together. Production applies and
 deployment mutations are CI-only; local operators review plans with `AWS_PROFILE=waldo`.
@@ -44,8 +46,9 @@ route or layout changes.
 
 ## Bootstrap and shared state
 
-Upload, distribution wait, and invalidation scripts read the bucket/distribution identifiers from
-Terraform outputs, requiring Terraform Cloud and AWS access. Existing production deployments
+Upload, distribution wait, and invalidation scripts read
+bucket/distribution identifiers from Terraform outputs.
+They require Terraform Cloud and AWS access. Existing production deployments
 already have these outputs. The domain migration preserves them; it is not a new environment.
 Domain registration and its public hosted zone are explicit account prerequisites outside
 Terraform. The [infrastructure guide](/docs/how-to/change-infrastructure.md) covers bootstrap
@@ -56,13 +59,13 @@ settings, and exact lint selection. The [infrastructure reference](/docs/referen
 describes AWS resources, state, and credentials. Mock-provider and route-function tests check
 configuration and rewrite behavior, not live AWS permissions, DNS, or edge propagation.
 
-Local `tf-plan` is a manual preview. CI creates a fresh saved plan using its own credentials and
-current state; it never consumes the workstation's plan file. Registration and delegation must
+Local `tf-plan` is a manual preview. CI saves a fresh plan using its own credentials and current state.
+It never consumes the workstation's plan file. Registration and delegation must
 be ready before a domain-changing push. Downtime is acceptable, and the previous website
 domain has no coexistence, redirect, or rollback guarantee.
 
-Mise explicitly selects EditorConfig Checker's `ec-<os>-<arch>` archive and normalizes its
-executable to `ec`, so `just lint-ec` uses the same command on Linux and macOS. Autodetection
+Mise selects EditorConfig Checker's `ec-<os>-<arch>` archive and normalizes its executable to `ec`.
+`just lint-ec` therefore works identically on Linux and macOS. Autodetection
 can select the separate `editorconfig-checker` archive, which does not match that rename rule.
 The workflow's cache prefix excludes installations made before explicit asset selection.
 
@@ -75,14 +78,17 @@ hooks do. See [ADR 0007](/docs/decisions/0007-justfile-as-the-single-command-int
 
 ## Filtering limits
 
-The workflow's `paths` allowlist includes website sources, static assets, infrastructure, all
-scripts, `justfile`, toolchain/build configuration, and its own YAML. Docs-only pushes normally do
-not run it. `hk.pkl`, `.editorconfig`, and `.gitignore` remain outside the allowlist. A new unlisted
-source or configuration path can silently skip delivery; no run is not a passing check.
+The workflow's `paths` allowlist covers website sources, assets,
+infrastructure, scripts, and `justfile`.
+It also covers toolchain/build configuration and its own YAML. Docs-only pushes normally do
+not run it. `hk.pkl`, `.editorconfig`, and `.gitignore` remain outside the allowlist.
+An unlisted source or configuration path can silently skip delivery.
+No run does not mean checks passed.
 
-GitHub evaluates at most 300 changed files for path filtering. Matching files beyond that list can
-miss a run; pushes exceeding 1,000 commits or timing out diff generation run without normal path
-filtering. See [GitHub's path-filter documentation](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#git-diff-comparisons).
+GitHub evaluates at most 300 changed files for path filtering.
+Matching files beyond 300 can miss a run.
+Pushes exceeding 1,000 commits or timing out diff generation
+run without normal path filtering. See [GitHub's path-filter documentation](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#git-diff-comparisons).
 
 The [deployment guide](/docs/how-to/verify-deployment.md) covers Actions results, live routes,
 and recovery through a reviewed corrective change in CI.

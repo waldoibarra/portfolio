@@ -88,18 +88,22 @@ routes, TLS, metadata, and assets. Confirm state and resource ownership before h
 
 ## Prepare for repeatable automation
 
-Before building a client-site provisioning command, define explicit inputs for repository owner,
-visibility, domain, AWS account/region, resource prefix, Terraform organization/workspace, and
-credential source. Reject an existing workspace or resources unless recovery/import was selected.
+Before building client-site provisioning, define explicit repository owner,
+visibility, domain, and AWS account/region inputs.
+Also define resource prefix, Terraform organization/workspace, and credential source.
+Reject an existing workspace or resources unless recovery/import was selected.
 Never infer a client's account from the workstation's default AWS profile.
 
-Keep these operations separate and resumable: repository creation, environment/secret setup,
-external account prerequisites, reviewed infrastructure bootstrap, and ordinary deployment.
+Keep repository creation, environment/secret setup,
+and external account prerequisites separate and resumable.
+Separate reviewed infrastructure bootstrap from ordinary deployment.
 Require approval for purchases, IAM changes, first apply, and destructive actions. Resolve secret
 values from a credential manager or named profile and transmit them without logs. Record resource
-IDs and completed steps, not credentials. A failed run must be safe to inspect and resume without
-buying a second domain or provisioning a second environment.
+IDs and completed steps, not credentials.
+Inspect and resume failed runs safely, without buying another domain
+or provisioning another environment.
 
-Manual prerequisites remain account access and billing, domain/registrant approval, DNS delegation,
-GitHub authorization, and initial deployment identity/token creation. A `.env` file or dotfiles
+Manual prerequisites include account access, billing, domain/registrant approval, and DNS delegation.
+GitHub authorization and initial deployment identity/token creation also remain manual.
+A `.env` file or dotfiles
 profile supplies local configuration; neither automatically provisions secrets on GitHub.

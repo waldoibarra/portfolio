@@ -31,9 +31,9 @@ before issuing or rotating keys.
 
 ### Reuse an approved local credential source
 
-If the deployment key is already in your secret manager, use that saved pair. A local AWS profile
-may also resolve it from `~/.aws/credentials`, environment variables, or a credential helper
-configured by your dotfiles. Do not commit populated credential files to dotfiles.
+If the deployment key is already in your secret manager, use that saved pair.
+A local AWS profile may resolve it from `~/.aws/credentials` or environment variables.
+Dotfiles may configure a credential helper. Do not commit populated credential files to dotfiles.
 
 Check the identity without printing credentials:
 
@@ -43,21 +43,23 @@ aws sts get-caller-identity --profile waldo
 ```
 
 For this portfolio, require account `767963650101`. For a client, substitute the explicitly
-approved profile and account. Environment credentials can override profile selection when using
-`AWS_PROFILE`; clear conflicting variables and verify the identity actually used by each command.
+approved profile and account. Environment credentials can override `AWS_PROFILE`.
+Clear conflicting variables and verify each command's effective identity.
 
 The AWS CLI can resolve a profile with `aws configure export-credentials --profile PROFILE
---format process`. That JSON contains secrets. An automation tool must capture it privately,
-reject session credentials for this workflow, and pass the individual fields directly to the
-GitHub secret uploader through standard input. Do not run it unfiltered in a recorded terminal.
+--format process`. That JSON contains secrets.
+Automation must capture the JSON privately and reject session credentials for this workflow.
+Pass individual fields directly to the GitHub secret uploader through standard input.
+Do not run it unfiltered in a recorded terminal.
 Read [AWS credential export](https://docs.aws.amazon.com/cli/latest/reference/configure/export-credentials.html)
 before implementing such an uploader.
 
 Exported `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables can also be a source.
 Keep shell tracing off, never print them, and never put expanded values in command arguments.
-The current workflow does not pass `AWS_SESSION_TOKEN`; temporary STS or SSO credentials cannot
-be restored as just two secrets. For future client automation, prefer GitHub OIDC with a scoped
-IAM role; this requires a workflow and IAM change, not an additional static secret.
+The current workflow does not pass `AWS_SESSION_TOKEN`.
+Two secrets cannot restore temporary STS or SSO credentials.
+For future client automation, prefer GitHub OIDC with a scoped IAM role.
+That requires workflow and IAM changes, not another static secret.
 
 ## Obtain a Terraform Cloud token
 
@@ -77,9 +79,11 @@ IAM role; this requires a workflow and IAM change, not an additional static secr
     **local execution**: Terraform runs on the Actions runner, with remote state in Terraform Cloud.
     Token creation alone does not grant workspace permissions.
 
-For a client, use client-owned access and a separate workspace. A user token inherits its user's
-access; prefer a suitable restricted team token where the client's HCP Terraform plan supports
-it. Do not share a broad personal token across unrelated clients. Read
+For a client, use client-owned access and a separate workspace.
+A user token inherits its user's access.
+Prefer a restricted team token if the client's HCP Terraform plan supports it.
+Do not share a broad personal token across unrelated clients.
+Read
 [HCP Terraform API tokens](https://developer.hashicorp.com/terraform/cloud-docs/users-teams-organizations/api-tokens)
 before selecting token scope and rotation policy.
 
@@ -109,6 +113,5 @@ gh secret list --env production --repo OWNER/REPOSITORY
 
 Only the three secrets above are required by the current workflow. `TF_VAR_HOSTED_ZONE_ID` is
 unused. Do not commit populated `.env` files or assume `.gitignore` protects files already tracked.
-Read [Set up the repository](/docs/how-to/set-up-repository.md) before enabling deployments
-on GitHub, or [Set up a client site](/docs/how-to/set-up-client-site.md) before
-provisioning a new website.
+Read [Set up the repository](/docs/how-to/set-up-repository.md) before enabling GitHub deployments.
+Read [Set up a client site](/docs/how-to/set-up-client-site.md) before provisioning a new website.
