@@ -17,10 +17,14 @@ to compare each surface's emphasis.
   but its served HTML still contains conflicting leadership counts,
   a phone number, named references, and an instruction directed at AI rankers.
   Review the source résumé and regenerate a corrected artifact before adding a link.
-- The sharing image now shows the current homepage headline and public portrait.
+- The sharing image shows “Follow what connects,” the public portrait, and four illustrated interests.
+  The homepage instead opens “Welcome to my library” with “Follow what connects” as its second line.
+  The image is a related sharing composition, not an identical screenshot of the opening view.
   Confirm its human-life theme and the editable design's desktop/mobile compositions fit the
   reviewed public voice. Both strict-font exports and asset dimensions were checked locally.
   Chromium layout checks passed at desktop, mobile, and narrow widths.
   The served sharing image and image-specific alt tags passed local checks.
   Third-party sharing-card rendering remains unverified.
-- Publication needs its own approval. No profile changes or deployment are included here.
+- The library's site publication is authorized under the
+  [current plan](/docs/plans/library-world.md); this draft grants no external profile changes.
+  Check served cards after deployment. A successful local build does not establish third-party previews.

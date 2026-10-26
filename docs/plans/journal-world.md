@@ -1,10 +1,15 @@
 # A deeper, illustrated journal
 
+**Historical predecessor:** The [library plan](/docs/plans/library-world.md)
+supersedes this scope and delivery authority.
+Its navigation evidence and design rationale remain here for context.
+
 ## Goal and authority
 
 Preserve the world distribution the user liked while improving navigation, depth, artistry, and motion.
 The user authorized this next version and frequent local commits.
-No push, deployment, profile publication, or private-photo publication is authorized.
+At this earlier stage, no push, deployment, profile publication,
+or private-photo publication was authorized.
 The approved interactive baseline is recorded in local commit `a0c63b3`.
 Navigation corrections are recorded in local commit `525cebf`.
 The user subsequently chose a colorful multiverse identity with connected perspectives.

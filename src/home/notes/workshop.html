@@ -1,0 +1,74 @@
+<details id="workshop-policy">
+  <summary>Working note: one policy, several clients <span aria-hidden="true">+</span></summary>
+  <p>How can shared guidance reach different coding agents without pretending they load
+    instructions alike?
+    I give a rule one canonical owner, then adapt its delivery to each client.</p>
+  <p>My public <a href="https://github.com/waldoibarra/dotfiles">dotfiles</a> document
+    <a href="https://github.com/waldoibarra/dotfiles/blob/main/docs/ai-harness/configuration.md">
+      configuration ownership</a>.
+    The <a href="https://github.com/waldoibarra/dotfiles/blob/main/scripts/
+update-coding-agents/sync-cursor-rule.sh">
+      Cursor rule renderer</a>
+    expands a marker and replaces rendered output atomically.
+    Its <a
+      href="https://github.com/waldoibarra/dotfiles/blob/main/scripts/tests/test-cursor-rule.py">
+      tests</a>
+    cover repeated runs, invalid inputs, migration, and replacement failure.</p>
+  <p>This trades a small adapter and its tests for fewer competing copies of policy.
+    A correctly rendered file still does not prove an agent loaded or followed it.
+    <a href="#workshop-verification">See the verification boundary</a> or
+    <a href="#workshop-agents">return to the harness topic</a>.</p>
+</details>
+<details id="workshop-verification">
+  <summary>Working note: what did we actually verify? <span aria-hidden="true">+</span></summary>
+  <p>A file can exist without being discovered, loaded, or followed.
+    I separate source, installation, fresh-session loading, and exercised behavior.</p>
+  <p>The public
+    <a
+  href="https://github.com/waldoibarra/dotfiles/blob/main/docs/ai-harness/harness-verification.md">
+      verification guide</a>
+    names those boundaries.
+    A <a
+  href="https://github.com/waldoibarra/dotfiles/blob/main/scripts/tests/check-agent-startup.mjs">
+      Pi startup check</a>
+    examines effective prompts and skill discovery in fresh workspaces.
+    It needs an installed Pi package; its source is not evidence of a current passing run.</p>
+  <p>A passing startup check would establish loading under those test conditions,
+    not future model compliance.
+    That is why <a href="#workshop-review">review and recovery</a> remain separate from setup.</p>
+</details>
+<details id="workshop-native">
+  <summary>Working note: why this site stays small <span aria-hidden="true">+</span></summary>
+  <p>What should work before a script runs?
+    On this site, links, disclosures, and the relationship directory live in the HTML response.</p>
+  <p><a href="https://github.com/waldoibarra/portfolio/blob/trunk/src/home/index.html">
+    The homepage source</a>
+    contains the reading paths.
+    <a href="https://github.com/waldoibarra/portfolio/blob/trunk/src/home/world.ts">The enhancer</a>
+    adds panel selection, fragment-aware focus, titles, and interruptible decorative motion.
+    <a href="https://github.com/waldoibarra/portfolio/blob/trunk/src/home/world.browser.test.mjs">
+      Browser tests</a>
+    check navigation and no-script reading.</p>
+  <p>Native HTML reduces runtime machinery for this content-led site.
+    It does not remove the need to test focus, history, mobile layout, and reduced motion.
+    <a href="#workshop-delivery">Follow the artifact to production</a>.</p>
+</details>
+<details id="workshop-delivery">
+  <summary>Working note: deploy in the right order <span aria-hidden="true">+</span></summary>
+  <p>A new route may refer to an artifact object absent from the previous build.
+    Deleting old objects before CloudFront changes can break the site.</p>
+  <p><a href="https://github.com/waldoibarra/portfolio/blob/trunk/docs/decisions/
+0010-coordinate-static-site-and-route-deployments.md">
+      The delivery decision</a>
+    replaces independent pipelines.
+    <a href="https://github.com/waldoibarra/portfolio/blob/trunk/justfile">Recipes</a>
+    build and check, save an infrastructure plan, stage files, apply, then wait.
+    Finally, they clean obsolete objects and invalidate caches.
+    <a href="https://github.com/waldoibarra/portfolio/blob/trunk/infrastructure/s3.tf">S3 access</a>
+    and <a href="https://github.com/waldoibarra/portfolio/blob/trunk/infrastructure/cloudfront.tf">
+      distribution routing</a>
+    remain explicit Terraform rather than third-party modules.</p>
+  <p>This favors inspection and ordering over a faster website-only pipeline.
+    Staging is not atomic; mocked infrastructure tests cannot prove live edge propagation.
+    <a href="#workshop-native">Return to the site's implementation</a>.</p>
+</details>

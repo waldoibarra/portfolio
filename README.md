@@ -9,8 +9,9 @@ a display-only way to make Pi transcripts easier to read.
 
 ## What this repository shows
 
-The world map uses semantic HTML and native CSS. Its content remains readable without JavaScript.
-A small TypeScript enhancer makes the places addressable and restores browser history.
+The living library uses semantic HTML and native CSS.
+Its places and connections remain readable without JavaScript.
+A small TypeScript enhancer switches reading paths and preserves fragment navigation and browser history.
 Custom Terraform defines AWS infrastructure. One ordered workflow delivers the site and
 infrastructure together. The editable [landing design](docs/designs/landing.fig) records visual
 intent separately from production code.

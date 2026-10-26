@@ -5,8 +5,9 @@ Read [architecture.md](architecture.md) before changing their implementation.
 
 ## Site and design
 
-**World map**:
-The homepage overview at `/`, introducing Waldo and offering labeled places to explore.
+**Library**:
+The homepage overview at `/`, introducing Waldo's connected interests and labeled places to explore.
+_Avoid_: World map
 
 **Domain view**:
 A shareable destination within the homepage, focused on one group of interests.
@@ -18,11 +19,15 @@ It does not assert literal alternate realities.
 **Depth link**:
 A fragment leading directly to a disclosure inside a domain view.
 
+**Working note**:
+An optional, directly linked disclosure beneath a topic.
+It explains a question through examples and limits.
+
 **Résumé**:
-The standalone career document served at `/resume`, separate from the world map.
+The standalone career document served at `/resume`, separate from the library.
 
 **Landing design**:
-The editable OpenPencil document expressing the world map's visual intent for desktop and mobile compositions.
+The editable OpenPencil document expressing the library's visual intent for desktop and mobile compositions.
 It is not the production HTML.
 
 ## Delivery

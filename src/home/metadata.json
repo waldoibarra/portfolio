@@ -1,12 +1,12 @@
 {
-  "title": "Many worlds, one life | Waldo Ibarra",
+  "title": "Waldo's living library | Waldo Ibarra",
   "author": "Waldo Ibarra",
-  "description": "Explore Waldo's connected perspectives on building, inquiry, presence, and curiosity. Follow a thread or say hello.",
+  "description": "Explore Waldo's library of connected interests: building, inquiry, presence, and curiosity. Open a shelf or follow a thread.",
   "url": "https://waldo.love/",
   "type": "website",
   "image": {
     "url": "https://waldo.love/images/social-preview.jpg",
-    "alt": "Waldo's portrait connects four illustrated worlds: Workshop, Observatory, Garden, and Crossroads.",
+    "alt": "Waldo's living library: a portrait surrounded by four illustrated interests, beside 'Follow what connects.'",
     "width": 1200,
     "height": 630,
     "type": "image/jpeg"

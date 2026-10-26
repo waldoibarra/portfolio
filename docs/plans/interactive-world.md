@@ -1,5 +1,9 @@
 # Explore Waldo's world
 
+**Historical predecessor:** The [library plan](/docs/plans/library-world.md)
+supersedes this scope and delivery authority.
+This plan retains early navigation decisions and rejected brochure alternatives.
+
 ## Goal and authority
 
 Replace the brochure-style homepage with a personal, explorable website.
@@ -7,7 +11,7 @@ Start with Waldo as a person, then let visitors choose their depth and direction
 Prioritize information architecture, navigation, and completeness, in that order.
 The user authorized research and implementation through local review.
 The earlier refresh remains an intermediate implementation, not the final experience.
-No commits, pushes, deployment, or external profile updates are authorized.
+At this plan's earlier stage, no commits, pushes, deployment, or external profile updates were authorized.
 
 ## What the previous version missed
 

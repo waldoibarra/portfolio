@@ -3,7 +3,28 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { resolveFragment, views } from './world.ts';
 
-const html = readFileSync(new URL('index.html', import.meta.url), 'utf8');
+const shell = readFileSync(new URL('index.html', import.meta.url), 'utf8');
+const html = shell.replace(/<!-- include: (home\/notes\/[a-z-]+\.html) -->/g,
+  (_, filename) => readFileSync(new URL(`../${filename}`, import.meta.url), 'utf8'));
+
+test('working notes remain reachable from their topics in initial HTML', () => {
+  for (const [view, notes] of Object.entries({
+    workshop: ['policy', 'verification', 'native', 'delivery'],
+    observatory: ['evidence', 'learning-map'],
+    garden: ['experiments', 'attention'],
+    crossroads: ['decisions', 'perspectives'],
+  })) {
+    for (const note of notes) {
+      const id = `${view}-${note}`;
+      assert.match(html, new RegExp(`<details id="${id}"`));
+      assert.match(html, new RegExp(`href="#${id}"`));
+      assert.deepEqual(resolveFragment(`#${id}`, target => target === id ? view : null), {
+        view, detail: id, invalid: false,
+      });
+    }
+  }
+  assert.doesNotMatch(html, /<!-- include:/);
+});
 
 test('every named view has an addressable panel and heading', () => {
   for (const view of views) {
@@ -31,7 +52,14 @@ test('detail fragments resolve through their containing view', () => {
   });
 });
 
-test('depth and navigation remain in the initial HTML', () => {
+test('embedded navigation and depth remain in the initial HTML', () => {
+  assert.doesNotMatch(html, /<header|<footer|site-header|site-footer/);
+  for (const view of views) {
+    assert.match(html, new RegExp(`href="#${view}" data-location="${view}"`));
+  }
+  assert.match(html, /data-lens-panel="shelves"/);
+  assert.match(html, /data-lens-panel="connections"/);
+  assert.match(html, /Made with curiosity and care/);
   for (const view of views.slice(1, 5)) {
     assert.match(html, new RegExp(`href="#${view}"`));
     assert.match(html, new RegExp(`<details id="${view}-`));

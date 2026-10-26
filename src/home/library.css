@@ -1,0 +1,154 @@
+/* The library index owns its relationships and reading modes. */
+.place-nav {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem 1rem;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid #d9dac46e;
+}
+
+.place-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #ffe0a6;
+  font-size: .85rem;
+  text-decoration: none;
+}
+
+.place-nav [aria-current="location"] {
+  text-decoration: underline;
+  text-underline-offset: .5em;
+}
+
+.library-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem 2rem;
+}
+
+.map-intro .library-shortcut {
+  display: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #e9d399;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: .25em;
+  cursor: pointer;
+}
+
+html.world-ready .map-intro .library-shortcut {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.library-lens {
+  display: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
+  margin: 0 0 2rem;
+  padding: 0;
+  border: 0;
+}
+
+html.world-ready .library-lens {
+  display: flex;
+}
+
+.library-lens legend {
+  float: left;
+  width: 100%;
+  margin-bottom: .75rem;
+  font: 400 1.35rem Georgia, serif;
+}
+
+.library-lens label {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .75rem 1rem;
+  border: 1px solid #e9d9ad8c;
+  min-height: 48px;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
+}
+
+.library-lens[data-selected="shelves"] [data-lens-choice="shelves"],
+.library-lens[data-selected="connections"] [data-lens-choice="connections"] {
+  background: #e9d9ad;
+  color: #17262b;
+}
+
+.library-lens input {
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: #17262b;
+}
+
+.connection-index {
+  max-width: 74rem;
+  border-block: 1px solid #d9dac46e;
+  padding-block: 2rem;
+}
+
+.connection-index h3 {
+  font: 400 clamp(1.6rem, 3vw, 2.5rem)/1.2 Georgia, serif;
+}
+
+.connection-index p, .connection-index li {
+  line-height: 1.65;
+}
+
+.connection-index ul {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 2rem;
+}
+
+.connection-index li {
+  padding: 1.25rem 0;
+  border-top: 1px solid #d9dac46e;
+}
+
+.connection-index strong {
+  display: block;
+  margin-bottom: .5rem;
+  color: #f4d492;
+}
+
+.connection-index a {
+  color: #ffe0a6;
+}
+
+.library-signature {
+  margin: 3rem 0 0;
+  color: #d5ddd4;
+  font-size: .85rem;
+}
+
+@media (width <= 620px) {
+  .connection-index ul {
+    grid-template-columns: 1fr;
+  }
+
+  .place-nav {
+    margin-bottom: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .library-lens label {
+    transition: none;
+  }
+}

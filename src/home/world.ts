@@ -26,7 +26,10 @@ export function resolveFragment(
 
 if (typeof document !== 'undefined') {
   const panels = [...document.querySelectorAll<HTMLElement>('[data-view]')];
-  const links = [...document.querySelectorAll<HTMLAnchorElement>('.site-header nav a')];
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-location]')];
+  const lens = document.querySelector<HTMLFieldSetElement>('[data-lens-control]');
+  const lensPanels = [...document.querySelectorAll<HTMLElement>('[data-lens-panel]')];
+  let arrival: Animation | undefined;
   let initialized = false;
   let lastRequested = '';
   history.scrollRestoration = 'manual';
@@ -34,9 +37,7 @@ if (typeof document !== 'undefined') {
   function synchronize(focusHeading = true): void {
     const requested = window.location.hash;
     const route = resolveFragment(requested);
-    if (initialized && focusHeading && requested !== lastRequested) {
-      document.documentElement.classList.add('has-traveled');
-    }
+    arrival?.cancel();
     if (route.invalid) {
       history.replaceState(null, '', `${window.location.pathname}${window.location.search}#map`);
     }
@@ -47,9 +48,17 @@ if (typeof document !== 'undefined') {
     }
     const title = document.getElementById(`${route.view}-title`);
     const label = route.view === 'map'
-      ? 'Explore Waldo\'s world'
+      ? 'Explore Waldo\'s library'
       : title?.textContent?.trim().replace(/\s+/g, ' ') ?? route.view;
     document.title = `${label} | Waldo Ibarra`;
+    if (initialized && focusHeading && requested !== lastRequested &&
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const artwork = document.querySelector<HTMLElement>(`#${route.view} .journal-plate`);
+      arrival = artwork?.animate([
+        { opacity: 0.65, translate: '0 8px' },
+        { opacity: 1, translate: '0 0' },
+      ], { duration: 240, easing: 'cubic-bezier(.22, 1, .36, 1)' });
+    }
     document.documentElement.dataset.place = route.view;
     document.documentElement.classList.add('world-ready');
     if (route.detail) {
@@ -69,6 +78,24 @@ if (typeof document !== 'undefined') {
     lastRequested = window.location.hash;
   }
   synchronize();
+  if (lens) {
+    const updateLens = (): void => {
+      const selected = lens.querySelector<HTMLInputElement>('input:checked')?.value;
+      for (const panel of lensPanels) panel.hidden = panel.dataset.lensPanel !== selected;
+      lens.dataset.selected = selected;
+    };
+    lens.addEventListener('change', updateLens);
+    updateLens();
+    document.querySelector<HTMLButtonElement>('[data-open-connections]')
+      ?.addEventListener('click', () => {
+        const choice = lens.querySelector<HTMLInputElement>('input[value="connections"]');
+        if (!choice) return;
+        choice.checked = true;
+        updateLens();
+        choice.focus({ preventScroll: true });
+        lens.scrollIntoView({ block: 'start', behavior: 'instant' });
+      });
+  }
   window.addEventListener('hashchange', () => synchronize());
   window.addEventListener('load', () => synchronize(false), { once: true });
   document.addEventListener('click', event => {
@@ -77,8 +104,15 @@ if (typeof document !== 'undefined') {
     const link = (event.target as Element).closest<HTMLAnchorElement>('a[href]');
     if (!link || link.target || link.hasAttribute('download') ||
         link.origin !== window.location.origin || link.pathname !== window.location.pathname ||
-        link.search !== window.location.search || link.hash !== window.location.hash ||
-        !link.hash || link.hash === '#main') return;
+        link.search !== window.location.search || !link.hash) return;
+    if (link.hash === '#main') {
+      event.preventDefault();
+      const main = document.getElementById('main');
+      main?.focus({ preventScroll: true });
+      main?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      return;
+    }
+    if (link.hash !== window.location.hash) return;
     const route = resolveFragment(link.hash);
     if (route.invalid || route.detail) return;
     event.preventDefault();

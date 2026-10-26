@@ -1,4 +1,6 @@
-/* Common elements and view-scoped surfaces share this stylesheet. */
+@import url("./library.css");
+
+/* Shared domain surfaces and navigation styles. */
 /* stylelint-disable no-descending-specificity */
 @font-face {
   font-family: "Space Grotesk";
@@ -54,7 +56,7 @@ a:hover {
   color: var(--accent, #b8e0d5);
 }
 
-a:focus-visible, summary:focus-visible {
+a:focus-visible, summary:focus-visible, input:focus-visible {
   outline: 3px solid #f4d492;
   outline-offset: 5px;
 }
@@ -90,63 +92,13 @@ em {
   top: 1rem;
 }
 
-.site-header {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem 2rem;
-  padding: 1.5rem clamp(1.25rem, 5vw, 5rem);
-  background: #17262b;
-  border-bottom: 1px solid #8fb2a980;
-}
-
-.wordmark {
-  font-size: 1.3rem;
-  font-weight: 700;
-  text-decoration: none;
-  letter-spacing: -.055em;
-  white-space: nowrap;
-}
-
-.wordmark span {
-  color: #a8d2c2;
-}
-
-.site-header nav {
-  display: flex;
-  gap: clamp(.7rem, 2vw, 2rem);
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.site-header nav a {
-  font-size: .82rem;
-  text-decoration: none;
-  color: #d4d9d0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 44px;
-  min-height: 44px;
-  padding: .5rem .25rem;
-}
-
-.site-header nav a:hover, .site-header nav a[aria-current="location"] {
-  color: #f4d492;
-  text-decoration: underline;
-  text-underline-offset: .5em;
-}
-
 .view {
   min-height: min(850px, 100svh);
   padding: clamp(2rem, 4vw, 4rem) clamp(1.25rem, 5vw, 5rem)
   clamp(4rem, 8vw, 8rem);
 }
 
-html.world-ready .view[hidden] {
+html.world-ready [hidden] {
   display: none;
 }
 
@@ -170,17 +122,6 @@ html.world-ready .view[hidden] {
   letter-spacing: 0;
 }
 
-.site-footer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 1rem;
-  background: #17262b;
-  padding: 2rem clamp(1.25rem, 5vw, 5rem);
-  color: #becdc2;
-  font-size: .85rem;
-}
-
 /* Atlas: portrait, landmarks, topic directory, and linked relationships. */
 .map-view {
   --accent: #b5dbc2;
@@ -190,8 +131,7 @@ html.world-ready .view[hidden] {
   grid-template-rows: auto auto;
   align-items: start;
   gap: 2rem 3rem;
-  background: radial-gradient(circle at 68% 21%, #3e776b 0, transparent 38%),
-  linear-gradient(130deg, #142d34 40%, #203d43);
+  background: linear-gradient(140deg, #142d34 35%, #294944);
 }
 
 .map-intro {
@@ -204,8 +144,8 @@ html.world-ready .view[hidden] {
 }
 
 .map-intro h1 {
-  font-size: clamp(3.4rem, 6vw, 6.8rem);
-  margin-bottom: 2.5rem;
+  font-size: clamp(3rem, 5vw, 5.4rem);
+  margin-bottom: 1.75rem;
 }
 
 .map-intro h1 em {
@@ -220,8 +160,8 @@ html.world-ready .view[hidden] {
 }
 
 .atlas {
-  height: min(45vw, 620px);
-  min-height: 450px;
+  height: min(38vw, 510px);
+  min-height: 390px;
   max-width: 760px;
   width: 100%;
   position: relative;
@@ -349,7 +289,8 @@ html.world-ready .view[hidden] {
 
 .map-index {
   grid-column: 1 / -1;
-  border-top: 2px solid #e9d9ad8c;
+  background: repeating-linear-gradient(90deg, #e9d9ad 0 12px, #72c4ba 12px 17px,
+    #c78378 17px 23px, transparent 23px 32px) top left / 100% 3px no-repeat;
   padding-top: 2rem;
 }
 
@@ -408,17 +349,6 @@ html.world-ready .view[hidden] {
   font-size: .9rem;
 }
 
-.atlas-connection {
-  margin: 2rem 0 0;
-  max-width: 70rem;
-  font-size: 1.08rem;
-  line-height: 1.7;
-}
-
-.atlas-connection a {
-  color: #ffdb96;
-}
-
 /* Domains share wayfinding and disclosure behavior, but each owns its palette. */
 .domain {
   --accent: #9aead8;
@@ -449,17 +379,27 @@ html.world-ready .view[hidden] {
 .domain-top {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .25rem 1.5rem;
   font-size: .77rem;
   letter-spacing: .09em;
   text-transform: uppercase;
   color: var(--accent);
   border-bottom: 1px solid #ffffff40;
-  padding-bottom: 1.3rem;
+  padding-bottom: 1rem;
 }
 
 .domain-top a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   text-decoration: none;
+}
+
+.domain-top [aria-current="location"] {
+  text-decoration: underline;
+  text-underline-offset: .5em;
 }
 
 .domain-hero {
@@ -829,10 +769,10 @@ html.world-ready .view[hidden] {
 }
 
 .connect li a {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
   align-items: center;
-  gap: 1rem;
+  gap: .25rem 1rem;
   min-height: 88px;
   padding: 1.6rem 0;
   text-decoration: none;
@@ -840,17 +780,17 @@ html.world-ready .view[hidden] {
 }
 
 .connect li a img {
-  flex: none;
+  grid-row: span 2;
   width: 32px;
   height: 32px;
 }
 
 .connect li a strong {
-  margin-right: auto;
   font-size: 1.25rem;
 }
 
 .connect li span {
+  grid-column: 2;
   color: #582e42;
 }
 
@@ -860,23 +800,6 @@ html.world-ready .view[hidden] {
 
 .connect a:focus-visible, .connect h2:focus {
   outline-color: #672f49;
-}
-
-/* A short arrival marks the selected illustration. No content waits for it. */
-html.world-ready.has-traveled [data-view]:not([hidden]) .journal-plate {
-  animation: plate-arrive 240ms cubic-bezier(.22, 1, .36, 1) both;
-}
-
-@keyframes plate-arrive {
-  from {
-    opacity: .5;
-    translate: 0 8px;
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -924,7 +847,7 @@ html.world-ready.has-traveled [data-view]:not([hidden]) .journal-plate {
   }
 
   .atlas {
-    height: 580px;
+    height: 510px;
     max-width: 680px;
     margin-inline: auto;
   }
@@ -935,14 +858,6 @@ html.world-ready.has-traveled [data-view]:not([hidden]) .journal-plate {
 }
 
 @media (width <= 620px) {
-  .site-header nav {
-    gap: .3rem 1rem;
-  }
-
-  .site-header nav a {
-    font-size: .77rem;
-  }
-
   .view {
     min-height: auto;
     padding-inline: 1.25rem;
@@ -1081,14 +996,6 @@ html.world-ready.has-traveled [data-view]:not([hidden]) .journal-plate {
     grid-template-columns: 1fr;
   }
 
-  .connect li a {
-    flex-wrap: wrap;
-  }
-
-  .connect li span {
-    flex-basis: 100%;
-    padding-left: 3rem;
-  }
 }
 
 @media (width <= 360px) {
@@ -1098,10 +1005,6 @@ html.world-ready.has-traveled [data-view]:not([hidden]) .journal-plate {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html.world-ready.has-traveled [data-view]:not([hidden]) .journal-plate {
-    animation: none;
-  }
-
   .landmark, .connect li a, .depth summary span {
     transition: none;
   }

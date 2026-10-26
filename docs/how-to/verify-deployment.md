@@ -104,7 +104,7 @@ Vite generates tags during the build.
 They must appear in the initial response, not through runtime JavaScript.
 Use the [field mapping](/docs/reference/homepage-metadata.md#fields-and-generated-tags)
 to compare each tag with its source.
-Include the title-derived image alt text.
+Compare image alt text with `image.alt` and the actual sharing image.
 Confirm canonical and `og:url` equal `https://waldo.love/`.
 Check Open Graph title, description, and image tags alongside Twitter's `summary_large_image` card.
 Open <https://waldo.love/images/social-preview.jpg>.

@@ -1,6 +1,6 @@
 # Architecture
 
-`waldo.love` is a static, explorable portfolio. Its homepage introduces Waldo through a world map.
+`waldo.love` is a static, explorable portfolio. Its homepage is Waldo's living library.
 Visitors choose the Workshop, Observatory, Garden, Crossroads, or Connect.
 Each view has its own fragment URL; deeper disclosures also have direct links.
 The `/resume` route remains available, separate and unpromoted pending content review.
@@ -18,22 +18,28 @@ The `/resume` route remains available, separate and unpromoted pending content r
 
 ## Homepage behavior
 
-[`index.html`](/src/home/index.html) owns the complete initial document.
-All views and native disclosures remain readable without JavaScript.
-[`home.css`](/src/home/home.css) owns shared styles, atlas geometry, domain palettes,
-and brief motion.
+[`index.html`](/src/home/index.html) composes the initial document from four working-note fragments.
+[`notes/`](/src/home/notes/) owns optional depth beneath each domain's topic disclosures.
+Vite expands source-relative includes at build and development time, without a runtime request.
+All views, relationship summaries, and native disclosures remain readable without JavaScript.
+[`home.css`](/src/home/home.css) owns shared styles and domain palettes.
+[`library.css`](/src/home/library.css) owns library-specific composition and lens controls.
 Original artwork lives in [`public/images/journal/`](/public/images/journal/).
 Licensed icons and Caveat have provenance in the [asset reference](/docs/reference/visual-assets.md).
-[`world.ts`](/src/home/world.ts) synchronizes panels, title, location indicator, and focus.
+[`world.ts`](/src/home/world.ts) synchronizes panels, title, view-local location indicators, and focus.
+It enhances the library's native radio lenses and cancels interrupted artwork arrivals.
 It runs once before hiding inactive views, then responds to `hashchange`.
-Native links create history entries; unknown fragments use `replaceState` to recover the map.
+Native links create history entries; unknown fragments use `replaceState` to recover the library.
 Top-level entries settle at document start, including direct entry, repeated clicks, and history traversal.
 The enhancer handles unchanged fragments explicitly because they do not fire `hashchange`.
-`#main` preserves skip-link focus and scrolling into main content.
-Detail fragments open their parent disclosure and focus its summary with viewport clearance.
+Clicking the skip link focuses and scrolls to main without changing URL, active view, or history.
+Initial `#main` entry instead opens the library, focuses main, and retains that fragment.
+Detail fragments, including peer working notes, open their disclosure.
+They focus its summary with viewport clearance.
 Read [navigation as orientation](/docs/explanation/experience-design.md) for observed friction and tradeoffs.
 [`world.test.mjs`](/src/home/world.test.mjs) exercises fragment and source contracts through `just test-world`.
-The map lists precise topics; each domain offers local topic links and native disclosures.
+The library lists precise topics and labeled relationships.
+Each domain offers embedded return, location, contact, topic, and related links.
 [`world.browser.test.mjs`](/src/home/world.browser.test.mjs) exercises production browser behavior.
 Run it through `just test-world-browser` with an external Playwright module path.
 It requires a built preview; Chromium coverage does not establish other browsers' behavior.

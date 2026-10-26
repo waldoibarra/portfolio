@@ -42,6 +42,14 @@ Choose a page by what you need to do or understand. Start with the
   deployment dependencies.
 - [Decision records](/docs/decisions/README.md): why choices were made, alternatives, and status.
 
+## Explore current work and retained context
+
+- [Library plan](/docs/plans/library-world.md): accepted scope, checks, and delivery work.
+- [Personal-brand research](/docs/research/personal-brand.md): evidence for the introduction.
+- [Publication review](/docs/drafts/publication-review.md): draft review boundaries, not published profiles.
+- [Earlier journal plan](/docs/plans/journal-world.md) and
+  [interactive-world plan](/docs/plans/interactive-world.md): historical predecessors, not current authority.
+
 ## Maintain the documentation
 
 **Keep one owner per fact.** The [README](/README.md) introduces the portfolio.

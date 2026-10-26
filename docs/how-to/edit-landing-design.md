@@ -1,22 +1,25 @@
-# Edit the world design
+# Edit the library design
 
 Use OpenPencil to maintain [`landing.fig`](/docs/designs/landing.fig) and its
 [preview](/docs/designs/landing-preview.png).
 The document expresses visual intent, not the homepage's interactive state.
 Read the [OpenPencil reference](/docs/reference/openpencil.md) for tool limitations.
 
-## Keep the map recognizable
+## Keep the library recognizable
 
 Show Waldo's welcome, illustrated destinations, textual wayfinding, and a visible contact route.
+The library includes Shelves and Connections reading paths.
+The interactive selector and per-view links live in production HTML, not this static preview.
 The Workshop uses turquoise construction; the Observatory uses violet lenses.
 The Garden uses light botanical greens; the Crossroads uses coral route charts.
-Connect welcomes direct conversation. These places share typography and navigation.
+Connect welcomes direct conversation.
+These places share typography; each production view embeds its own navigation.
 Do not restore the old Work, Approach, About, and Contact brochure sections.
 Avoid decorative scores, forced journeys, private reference images, or unreviewed résumé links.
 
 Keep separate desktop and mobile compositions.
 Mobile must present readable labels, not a scaled desktop atlas.
-The preview records the desktop overview; the Mobile page records narrow wayfinding.
+The preview records the desktop library; the Mobile page records narrow wayfinding.
 Colored glyphs indicate each universe; production SVGs carry the actual drawings.
 Production code owns the deeper views and interactive states.
 Update the design alongside the [implementation guide](/docs/how-to/implement-landing-design.md).

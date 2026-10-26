@@ -1,62 +1,74 @@
 # Navigation as orientation
 
-The world map offers places to explore, but navigation must preserve orientation.
-The multiverse describes one person's connected perspectives, not literal parallel realities.
-The initial browser reproduction found viewport friction in 26 of 30 desktop and mobile cases.
-Top-level entries often placed the header and return link above the viewport.
+Waldo's library connects one person's interests without claiming literal parallel realities.
+The first browser reproduction found viewport friction in 26 of 30 desktop and mobile cases.
+Top-level entries often placed the former header and return link above the viewport.
 Repeated destination clicks also moved the viewport without changing the fragment.
 
-The enhancer now settles top-level destinations at the document start.
+The current enhancer settles top-level destinations at the document start.
 It does so after panel visibility changes and again after initial loading.
-A repeated destination click needs explicit handling.
-Its unchanged fragment does not fire `hashchange`.
-History restoration is manual so Back and Forward also return to the beginning.
+A repeated destination click needs explicit handling because its unchanged fragment does not fire `hashchange`.
+History restoration is manual, so Back and Forward return to the beginning.
 This sacrifices a reader's previous scroll position within a domain.
-The choice favors visible navigation after the observed disorientation.
 Depth links remain available for precise destinations.
 
-`#main` is not a top-level destination.
-The skip link keeps its native fragment and moves keyboard focus into the main landmark.
-Depth links reveal their parent and disclosure, then focus the summary with visible outline clearance.
-Unknown fragments recover the map without adding a history entry.
+Each view now embeds its location and return route within its content.
+A domain also provides local topic links, a named relationship, and a contact route.
+Connect embeds its own location and return route.
+`aria-current="location"` identifies the active view in its local navigation.
+This replaces the detached header and footer without recreating global chrome.
+The library retains the original attribution within its own view.
+
+The [homepage behavior](/architecture.md#homepage-behavior) distinguishes clicked skip links
+from initial `#main` entry.
+Depth links reveal their parent disclosure, then focus its summary with outline clearance.
+Unknown fragments recover the library without adding a history entry.
+The older `#map` fragment remains a library alias; other existing fragments remain direct links.
 Modified and external links retain browser behavior.
-The initial HTML remains readable without JavaScript.
+All destinations and relationship summaries remain in initial HTML without JavaScript.
 
-The production browser regression checks document-start position and repeated destinations.
-It also checks history, skip focus, and detail clearance.
-The original reproduction now passes all 30 measured desktop and mobile cases.
-These Chromium results do not establish other browser engines or real-device behavior.
+## Choose subjects or follow relationships
 
-## Let choices reveal knowledge
+The library pairs each poetic destination with recognizable subjects and precise topic links.
+The Shelves lens groups those subjects by domain.
+The Connections lens offers four distinct questions with named cross-domain routes.
+Native radios switch visible explanatory content and links, not merely their color.
+The introduction's connection shortcut selects that lens and focuses its control.
+The selector is hidden without JavaScript; both directories remain visible and usable.
 
-A choice should lead to a different subject, not a decorative branch.
-The map pairs each poetic destination with recognizable subjects and precise topic links.
-Each domain offers local contents, native disclosures, and relevant links to another domain.
-Workshop anchors its public tools; Observatory adds a question ledger.
-Garden sets aside space for intentions; Crossroads diagrams the public journaling method.
-These sections increase page length, but related disclosures remain addressable without a reading sequence.
-Visitors can enter a topic directly or leave without completing a prescribed tour.
-The existing header and map return preserve orientation without another breadcrumb layer.
-
-For example, the Workshop explains an agent harness and links an inspectable tool.
-The Observatory examines feedback and coherence; the Crossroads shows structured trading notes.
-Their connections explain why recording evidence matters beyond any one interest.
+Workshop anchors its public tools; Observatory asks how evidence changes a belief.
+Garden makes room for care; Crossroads describes the public trading journal.
+Optional working notes now follow topic disclosures within each domain.
+They expose questions, examples, tradeoffs, and public evidence where available.
+They increase page length but remain addressable without a reading sequence.
+Private family prototypes and learning materials are described without source links or personal records.
 Each public example has one substantive home; related views link instead of copying its claims.
-The map identifies knowledge organization across every interest without repeating one slogan everywhere.
+The library connects interests through knowledge organization without repeating a slogan in each view.
 
 The [branching journal research](/docs/research/personal-brand.md#branching-journal-research)
-records seven sources and evidence limits.
-Those sources guided our choices but did not test this design with visitors.
+informed these choices without measuring visitor outcomes.
+A draggable graph or canvas would require precision input and hide essential navigation.
+The semantic index keeps every link operable through keyboard, touch, and ordinary HTML.
 
-## Use color and motion as orientation
+## Motion and visual continuity
 
 Four original illustrations identify different universes within one drawing grammar.
-The authentic portrait remains the common thread, while handwriting marks brief observations only.
-Light Garden and Connect surfaces need dark focus outlines and links, unlike the dark domains.
-The atlas becomes a textual grid on narrow screens, avoiding portrait overlap.
+The portrait remains the common thread; handwriting marks brief observations only.
+Drawn connections and warm ink evoke tactile materials.
+Private references remain outside public assets.
+Its narrow layout uses labeled lists instead of a compressed graph.
 
-A brief illustration arrival acknowledges navigation without hiding content or animating on direct entry.
-Map landmarks, disclosures, and contact links provide immediate local feedback.
-Focus, URL changes, and scroll positioning do not wait for animation.
-Reduced motion removes the illustration arrival and spatial feedback.
-No looping drawing, parallax, or timed tour competes with reading.
+After user navigation, the selected illustration briefly arrives through the Web Animations API.
+The enhancer cancels its previous `Animation` before updating the next view.
+It animates individual `translate`, preserving the illustration's resting CSS rotation.
+URL, visibility, focus, and scroll update synchronously, without waiting for motion.
+Reduced motion suppresses spatial arrival but keeps native selection and disclosure feedback.
+The library radios use short color feedback; their content changes immediately.
+There is no looping drawing, parallax, modal sequence, or scroll hijack.
+A View Transition would coordinate more DOM states but complicate immediate focus and rapid navigation.
+This smaller mechanism affects only decorative artwork.
+
+The production Chromium regression checks navigation, lenses, history, skip focus, and detail clearance.
+It also checks touch emulation, keyboard selection, reduced motion, and no-JavaScript reading.
+The earlier 30-case navigation reproduction passed before this change; it has not been rerun separately.
+Chromium checks do not establish other browser engines, real-device use, or assistive-technology outcomes.

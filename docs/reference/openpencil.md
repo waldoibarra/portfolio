@@ -27,9 +27,10 @@ The guides use the globally managed `openpencil` directly from the repository ro
 
 ## Historical observations from the earlier flat landing
 
-The following observations describe the replaced brochure design, not the current world map.
-The current multiverse export was reviewed and saved as `docs/designs/landing-preview.png`.
-The Mobile page also records a distinct narrow atlas and topic directory.
+The following observations describe the replaced brochure design, not the current library.
+The library overview export was reviewed and saved as `docs/designs/landing-preview.png`.
+The Mobile page also records distinct narrow landmarks and a subject directory.
+Both previews label Shelves and Connections but cannot demonstrate radio behavior.
 Colored glyphs are design placeholders; production uses original SVG illustrations.
 Future design edits require a new export review.
 
