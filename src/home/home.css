@@ -399,7 +399,11 @@ html.world-ready .view[hidden] { display: none; }
   color: #e1e2d9;
 }
 .depth { border-top: 1px solid #ffffff50; }
-.depth details { border-bottom: 1px solid #ffffff50; }
+
+.depth details {
+  border-bottom: 1px solid #ffffff50;
+  scroll-margin-top: 1.5rem;
+}
 
 .depth summary {
   cursor: pointer;

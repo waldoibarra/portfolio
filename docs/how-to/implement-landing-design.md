@@ -16,9 +16,12 @@ Do not hide a view in CSS before the script initializes successfully.
 
 The enhancer in [`world.ts`](/src/home/world.ts) synchronizes panels after resolving the initial fragment.
 It responds to `hashchange` for normal links and browser history.
+Settle top-level destinations at document start, including direct entry, refresh, and Back or Forward.
+Handle repeated same-destination clicks separately because they do not fire `hashchange`.
 Reveal the parent before scrolling to depth content or focusing its summary.
 Focus a detail summary on direct entry and refresh as well as intentional navigation.
 Focus entered headings after intentional navigation, not on initial map load.
+Keep keyboard activation of `#main` distinct: scroll into main content and focus the main landmark.
 Use native disclosures and visible focus. Never gate contact behind an animation or sequence.
 Reduced-motion navigation changes immediately, without camera travel, zoom, or parallax.
 
@@ -58,8 +61,8 @@ just test-world-browser /path/to/installed/node_modules/playwright
 
 Alternatively, set `PLAYWRIGHT_MODULE` and run `just test-world-browser`.
 No Playwright dependency or browser installation belongs in this repository.
-The browser regression covers visibility, title, focus, history, details, malformed fragments,
-no-JavaScript content, and hidden tab stops.
+The browser regression covers viewport positioning, repeated clicks, skip focus, history, details,
+malformed fragments, no-JavaScript content, and hidden tab stops.
 Also inspect rapid links and modified clicks in a browser.
 Check focus, the skip link, and disclosure controls with a keyboard.
 Check no-JavaScript reading, reduced motion, 200 percent zoom, and 1440, 390, and 320 px layouts.

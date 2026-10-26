@@ -28,8 +28,9 @@ if (typeof document !== 'undefined') {
   const panels = [...document.querySelectorAll<HTMLElement>('[data-view]')];
   const links = [...document.querySelectorAll<HTMLAnchorElement>('.site-header nav a')];
   let initialized = false;
+  history.scrollRestoration = 'manual';
 
-  function synchronize(): void {
+  function synchronize(focusHeading = true): void {
     const requested = window.location.hash;
     const route = resolveFragment(requested);
     if (route.invalid) {
@@ -52,14 +53,30 @@ if (typeof document !== 'undefined') {
       disclosure.open = true;
       disclosure.scrollIntoView({ block: 'start', behavior: 'instant' });
       disclosure.querySelector('summary')?.focus({ preventScroll: true });
-    } else if (initialized && requested !== '#main') {
-      title?.scrollIntoView({ block: 'start', behavior: 'instant' });
-      title?.focus({ preventScroll: true });
     } else if (requested === '#main') {
-      document.getElementById('main')?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      const main = document.getElementById('main');
+      main?.focus({ preventScroll: true });
+      main?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    } else {
+      if (initialized && focusHeading) title?.focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
     initialized = true;
   }
   synchronize();
-  window.addEventListener('hashchange', synchronize);
+  window.addEventListener('hashchange', () => synchronize());
+  window.addEventListener('load', () => synchronize(false), { once: true });
+  document.addEventListener('click', event => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey ||
+        event.shiftKey || event.altKey) return;
+    const link = (event.target as Element).closest<HTMLAnchorElement>('a[href]');
+    if (!link || link.target || link.hasAttribute('download') ||
+        link.origin !== window.location.origin || link.pathname !== window.location.pathname ||
+        link.search !== window.location.search || link.hash !== window.location.hash ||
+        !link.hash || link.hash === '#main') return;
+    const route = resolveFragment(link.hash);
+    if (route.invalid || route.detail) return;
+    event.preventDefault();
+    synchronize();
+  });
 }

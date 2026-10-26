@@ -25,6 +25,31 @@ async function state(page) {
   }));
 }
 
+async function expectTop(page, view) {
+  await page.waitForFunction(() => window.scrollY === 0);
+  const geometry = await page.evaluate(view => {
+    const header = document.querySelector('.site-header').getBoundingClientRect();
+    const title = document.getElementById(`${view}-title`).getBoundingClientRect();
+    const returnLink = document.querySelector(`#${view} .domain-top`)?.getBoundingClientRect();
+    return { scrollY, headerTop: header.top, headerBottom: header.bottom,
+      titleTop: title.top, returnTop: returnLink?.top };
+  }, view);
+  assert.equal(geometry.scrollY, 0);
+  const viewportHeight = await page.evaluate(() => innerHeight);
+  assert.ok(geometry.headerTop >= 0 && geometry.headerBottom <= viewportHeight);
+  assert.ok(geometry.titleTop >= 0, JSON.stringify(geometry));
+  if (view !== 'map') assert.ok(geometry.returnTop >= 0, JSON.stringify(geometry));
+}
+
+async function expectDetail(page, detail) {
+  const geometry = await page.locator(`#${detail} summary`).evaluate(summary => {
+    const rect = summary.getBoundingClientRect();
+    return { top: rect.top, bottom: rect.bottom, height: innerHeight };
+  });
+  assert.ok(geometry.top >= 8 && geometry.bottom <= geometry.height - 8,
+    `${detail}: ${JSON.stringify(geometry)}`);
+}
+
 async function expectView(page, view, hash = `#${view}`) {
   await page.waitForFunction(expected => document.documentElement.dataset.place === expected, view);
   const actual = await state(page);
@@ -50,13 +75,39 @@ test('production world navigation and focus', { timeout: 60000 }, async () => {
     for (const view of views.slice(1)) {
       await page.locator(`.site-header nav a[href="#${view}"]`).click();
       assert.equal((await expectView(page, view)).focused, `${view}-title`);
+      await expectTop(page, view);
     }
     await page.locator('.site-header nav a[href="#map"]').click();
     await expectView(page, 'map');
+    await expectTop(page, 'map');
     await page.goBack();
     assert.equal((await expectView(page, 'connect')).focused, 'connect-title');
+    await expectTop(page, 'connect');
     await page.goForward();
     assert.equal((await expectView(page, 'map')).focused, 'map-title');
+    await expectTop(page, 'map');
+
+    await page.goto(new URL('#workshop', origin).href);
+    await expectTop(page, 'workshop');
+    await page.reload();
+    await expectTop(page, 'workshop');
+    await page.locator('#workshop .domain-next').scrollIntoViewIfNeeded();
+    const historyLength = await page.evaluate(() => history.length);
+    await page.locator('.site-header nav a[href="#workshop"]').click();
+    await expectTop(page, 'workshop');
+    assert.equal(await page.evaluate(() => history.length), historyLength);
+    await page.locator('#workshop .domain-next a').click();
+    await expectView(page, 'observatory');
+    await expectTop(page, 'observatory');
+    await page.goBack();
+    await expectView(page, 'workshop');
+    await expectTop(page, 'workshop');
+    await page.goForward();
+    await expectView(page, 'observatory');
+    await expectTop(page, 'observatory');
+    await page.locator('#observatory .domain-top a[href="#map"]').click();
+    await expectView(page, 'map');
+    await expectTop(page, 'map');
 
     for (const detail of ['workshop-practice', 'garden-balance']) {
       await page.goto(new URL(`#${detail}`, origin).href);
@@ -65,11 +116,13 @@ test('production world navigation and focus', { timeout: 60000 }, async () => {
       assert.equal(await page.locator(`#${detail}`).evaluate(el => el.open), true);
       assert.equal(await page.locator(`#${detail} summary`)
         .evaluate(el => document.activeElement === el), true);
+      await expectDetail(page, detail);
       await page.reload();
       await expectView(page, view, `#${detail}`);
       assert.equal(await page.locator(`#${detail}`).evaluate(el => el.open), true);
       assert.equal(await page.locator(`#${detail} summary`)
         .evaluate(el => document.activeElement === el), true);
+      await expectDetail(page, detail);
     }
     for (const hash of ['#unknown', '#%E0%A4%A', '#%3Cimg%20src=x%20onerror=alert(1)%3E']) {
       await page.goto(new URL(hash, origin).href);
@@ -78,6 +131,13 @@ test('production world navigation and focus', { timeout: 60000 }, async () => {
     }
     await page.goto(new URL('#main', origin).href);
     await expectView(page, 'map', '#main');
+    await page.goto(origin);
+    await page.locator('.skip-link').focus();
+    await page.keyboard.press('Enter');
+    await expectView(page, 'map', '#main');
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'main');
+    const mainTop = await page.locator('#main').evaluate(main => main.getBoundingClientRect().top);
+    assert.ok(mainTop >= 0);
     await page.goto(new URL('#workshop', origin).href);
     const hiddenTabStops = await page.evaluate(() =>
       [...document.querySelectorAll('[data-view][hidden] a, [data-view][hidden] summary')]

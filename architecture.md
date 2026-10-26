@@ -24,7 +24,11 @@ All views and native disclosures remain readable without JavaScript.
 [`world.ts`](/src/home/world.ts) synchronizes panels, title, location indicator, and focus.
 It runs once before hiding inactive views, then responds to `hashchange`.
 Native links create history entries; unknown fragments use `replaceState` to recover the map.
-`#main` preserves the skip link, while detail fragments open their parent disclosure.
+Top-level entries settle at document start, including direct entry, repeated clicks, and history traversal.
+The enhancer handles unchanged fragments explicitly because they do not fire `hashchange`.
+`#main` preserves skip-link focus and scrolling into main content.
+Detail fragments open their parent disclosure and focus its summary with viewport clearance.
+Read [navigation as orientation](/docs/explanation/experience-design.md) for observed friction and tradeoffs.
 [`world.test.mjs`](/src/home/world.test.mjs) exercises fragment and source contracts through `just test-world`.
 [`world.browser.test.mjs`](/src/home/world.browser.test.mjs) exercises production browser behavior.
 Run it through `just test-world-browser` with an external Playwright module path.
