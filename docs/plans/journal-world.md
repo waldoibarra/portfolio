@@ -6,6 +6,9 @@ Preserve the world distribution the user liked while improving navigation, depth
 The user authorized this next version and frequent local commits.
 No push, deployment, profile publication, or private-photo publication is authorized.
 The approved interactive baseline is recorded in local commit `a0c63b3`.
+Navigation corrections are recorded in local commit `525cebf`.
+The user subsequently chose a colorful multiverse identity with connected perspectives.
+The user confirmed that knowledge organization is a recurring practice across every interest.
 
 ## Evidence
 
@@ -35,6 +38,8 @@ The implementation must confirm causes through the reproduction, not assume them
 | J10 | Keep motion brief, interruptible, and subordinate to navigation | Polish must not reintroduce scrolling friction or delays |
 | J11 | Keep the native-web architecture and existing task recipes | Avoids unnecessary framework and dependency growth |
 | J12 | Commit verified slices locally and preserve licenses alongside assets | Makes recovery and review manageable |
+| J13 | Frame the journal as one person exploring connected universes | Implements the user's explicit multiverse direction |
+| J14 | Show knowledge organization and feedback as connections across domains | Reflects the user's stated practice across interests |
 
 ## Navigation contract
 
@@ -64,7 +69,9 @@ Keep professional offers concrete without turning the map into a sales funnel.
 
 ## Visual and motion direction
 
-Make the overview feel like an annotated atlas and the views like different pages of one journal.
+Make the overview an annotated multiverse atlas and each domain a distinct journal universe.
+Use richer color contrasts and original artwork while preserving readable controls and content.
+The multiverse is an artistic perspective, not a scientific or supernatural claim.
 Use original illustrations, sketches, paper details, and restrained asymmetry.
 Vary section treatments within each view instead of repeating one hero-and-disclosure template.
 Keep navigation and long reading in the main readable typeface.
@@ -137,5 +144,13 @@ Baseline committed. Navigation slice implemented and browser-verified locally.
 Independent audit and lead checks passed; this slice is ready for its local checkpoint.
 The original reproduction failed 26 of 30 cases before the fix and passed all 30 afterward.
 Visual, content, motion, design-source, and licensed-asset work remain pending.
-The review requests exact asset provenance before vendoring and a representative information-depth route.
-Neither belongs to the navigation slice.
+The next slice must record exact asset provenance before vendoring.
+A representative route is Map, Workshop harness topic, Pi Lens example, then Observatory feedback.
+Another connects Crossroads journaling, evidence about decisions, and Workshop's verification practice.
+
+The user supplied a public Trading Journaling Guide as additional first-person evidence.
+It supports structured tagging, comparing intentions with behavior, and explaining a repeatable process.
+It does not establish profitability or validate absolute claims about all successful traders.
+Only the supplied guide is relevant; linked trading records and personal examples remain excluded.
+The notes-directory scout inventoried all areas and sampled safe conceptual material.
+Private diaries and confidential work were excluded; uncertain-authorship prose is not a voice exemplar.

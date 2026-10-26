@@ -26,6 +26,8 @@ Choose a page by what you need to do or understand. Start with the
   inputs and outputs, environment requirements, security settings, and cited cost components.
 - [OpenPencil reference](/docs/reference/openpencil.md): workstation tooling, command behavior,
   and known rendering limitations.
+- [Visual assets](/docs/reference/visual-assets.md): illustration ownership, icon sources,
+  and font licenses.
 - [justfile](/justfile): project commands and their dependencies.
 - [.mise.toml](/.mise.toml): project tool versions.
 
