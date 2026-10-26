@@ -72,6 +72,8 @@ test('production world navigation and focus', { timeout: 60000 }, async () => {
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(origin);
     assert.equal((await expectView(page, 'map', '')).focused, '');
+    assert.equal(await page.locator('html').evaluate(el =>
+      el.classList.contains('has-traveled')), false);
     for (const view of views.slice(1)) {
       await page.locator(`.site-header nav a[href="#${view}"]`).click();
       assert.equal((await expectView(page, view)).focused, `${view}-title`);
@@ -91,6 +93,8 @@ test('production world navigation and focus', { timeout: 60000 }, async () => {
     await expectTop(page, 'workshop');
     await page.reload();
     await expectTop(page, 'workshop');
+    assert.equal(await page.locator('.workshop .journal-plate').evaluate(el =>
+      getComputedStyle(el).animationName), 'none');
     await page.locator('#workshop .domain-next').scrollIntoViewIfNeeded();
     const historyLength = await page.evaluate(() => history.length);
     await page.locator('.site-header nav a[href="#workshop"]').click();
@@ -153,8 +157,42 @@ test('production world navigation and focus', { timeout: 60000 }, async () => {
       const link = page.locator(`.workshop-proof a[href="https://github.com/waldoibarra/${repo}"]`);
       assert.equal(await link.count(), 1);
     }
-    for (const width of [390, 320]) {
+    await page.goto(new URL('#crossroads-trading', origin).href);
+    const guide = 'https://app.tradezella.com/shared/0bc6afe1/note/4b3475f1';
+    assert.equal(await page.locator(`#crossroads-trading a[href="${guide}"]`).count(), 1);
+    assert.equal(await page.locator('.journal-method ol li').count(), 3);
+    await page.goto(new URL('#connect', origin).href);
+    const icons = await page.locator('.connect li img').evaluateAll(images =>
+      images.map(image => image.complete && image.naturalWidth > 0 && image.alt === ''));
+    assert.deepEqual(icons, [true, true, true, true]);
+    const atlasTopics = [
+      'workshop-agents', 'workshop-review', 'workshop-sharing',
+      'observatory-coherence', 'observatory-worldviews', 'observatory-inquiry',
+      'garden-practice', 'garden-care', 'garden-balance',
+      'crossroads-trading', 'crossroads-learning', 'crossroads-stories',
+    ];
+    for (const width of [1440, 390, 320]) {
       await page.setViewportSize({ width, height: 844 });
+      await page.goto(origin);
+      for (const detail of atlasTopics) {
+        const link = page.locator(`.atlas-directory a[href="#${detail}"]`);
+        assert.equal(await link.count(), 1);
+        await link.click();
+        await expectView(page, detail.split('-')[0], `#${detail}`);
+        assert.equal(await page.locator(`#${detail}`).evaluate(el => el.open), true);
+        await expectDetail(page, detail);
+        await page.locator(`#${detail.split('-')[0]} .domain-top a[href="#map"]`).click();
+        await expectView(page, 'map');
+        await expectTop(page, 'map');
+      }
+      await page.evaluate(() => {
+        document.querySelector('a[href="#workshop-agents"]').click();
+        document.querySelector('a[href="#garden-care"]').click();
+        document.querySelector('a[href="#observatory-worldviews"]').click();
+      });
+      await expectView(page, 'observatory', '#observatory-worldviews');
+      await expectDetail(page, 'observatory-worldviews');
+      await page.goto(new URL('#workshop', origin).href);
       const targets = await page.locator('.site-header nav a').evaluateAll(links =>
         links.map(link => {
           const rect = link.getBoundingClientRect();
@@ -165,6 +203,13 @@ test('production world navigation and focus', { timeout: 60000 }, async () => {
       assert.equal(await page.evaluate(() =>
         document.documentElement.scrollWidth <= window.innerWidth), true);
     }
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto(new URL('#garden', origin).href);
+    assert.equal(await page.locator('.garden .journal-plate').evaluate(el =>
+      getComputedStyle(el).animationName), 'none');
+    await page.locator('.garden .topic-nav a[href="#garden-care"]').click();
+    await expectView(page, 'garden', '#garden-care');
+    await expectDetail(page, 'garden-care');
     assert.deepEqual(errors, []);
     await context.close();
 

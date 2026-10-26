@@ -25,6 +25,7 @@ There are no configured fallback values.
 
 The canonical and image URLs are absolute HTTPS URLs. Image metadata describes the static
 1200 × 630 JPEG at [`public/images/social-preview.jpg`](/public/images/social-preview.jpg).
+The image combines the public portrait with four original local journal illustrations.
 Metadata, homepage copy, and portrait edits do not redraw that image. Changes to its text or photo
 require manual review and regeneration before release. The replacement remains a 1200 × 630
 JPEG, with metadata matching the asset. There is no automated `just social-preview` recipe.

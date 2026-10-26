@@ -11,6 +11,10 @@ The homepage overview at `/`, introducing Waldo and offering labeled places to e
 **Domain view**:
 A shareable destination within the homepage, focused on one group of interests.
 
+**Multiverse**:
+The portfolio's artistic model of one Waldo exploring several connected perspectives.
+It does not assert literal alternate realities.
+
 **Depth link**:
 A fragment leading directly to a disclosure inside a domain view.
 

@@ -7,6 +7,9 @@ The site welcomes personal conversations as readily as professional ones.
 The Workshop covers software and practical AI. The Observatory holds questions and worldviews.
 The Garden makes room for presence and care. The Crossroads connects newer interests and experiments.
 Love and balance run through the whole map rather than becoming separate attractions.
+The multiverse is a brand metaphor: one Waldo, many connected perspectives.
+Across software, inquiry, presence, and trading, he structures knowledge and learns from feedback.
+Cross-links show specific relationships instead of repeating a slogan in every place.
 
 LinkedIn explains professional collaboration.
 GitHub's pinned work supplies project evidence; its README invites fellow builders.

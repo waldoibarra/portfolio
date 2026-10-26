@@ -28,14 +28,19 @@ Reduced-motion navigation changes immediately, without camera travel, zoom, or p
 ## Translate visual intent
 
 Keep a person-first welcome and readable destination labels beside the illustrated map.
-Use each domain's color and drawing to reinforce meaning within one typographic system.
+Use each domain's color and original drawing to reinforce meaning within one typographic system.
+Keep the map's topic directory and each domain's local links aligned with real disclosure IDs.
+The map stacks the portrait above four landmarks on narrow screens.
 Retain a legible textual destination list on narrow screens.
 Use native CSS and inline SVG instead of a canvas-only interface or runtime framework.
 The design export is inspectable handoff material, not production-ready markup.
+Its simple colored glyphs stand in for the production SVG drawings.
+[`home.css`](/src/home/home.css) owns shared layout, themes, responsive behavior, and motion.
 The [OpenPencil reference](/docs/reference/openpencil.md) records its limitations.
 
 Homepage metadata is generated from [`metadata.json`](/src/home/metadata.json).
 The sharing image needs a separate manual update when its copy changes.
+The 1200 × 630 JPEG uses the public portrait and original local world illustrations.
 Leave `/resume` unlinked until its content passes separate review.
 
 ## Check the result

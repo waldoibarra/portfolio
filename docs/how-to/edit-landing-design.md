@@ -8,15 +8,17 @@ Read the [OpenPencil reference](/docs/reference/openpencil.md) for tool limitati
 ## Keep the map recognizable
 
 Show Waldo's welcome, illustrated destinations, textual wayfinding, and a visible contact route.
-The Workshop uses cyan drafting lines; the Observatory uses amber orbit diagrams.
-The Garden uses botanical green space; the Crossroads uses terracotta routes.
+The Workshop uses turquoise construction; the Observatory uses violet lenses.
+The Garden uses light botanical greens; the Crossroads uses coral route charts.
 Connect welcomes direct conversation. These places share typography and navigation.
 Do not restore the old Work, Approach, About, and Contact brochure sections.
 Avoid decorative scores, forced journeys, private reference images, or unreviewed résumé links.
 
 Keep separate desktop and mobile compositions.
 Mobile must present readable labels, not a scaled desktop atlas.
-The preview records the desktop overview; production code owns the deeper views.
+The preview records the desktop overview; the Mobile page records narrow wayfinding.
+Colored glyphs indicate each universe; production SVGs carry the actual drawings.
+Production code owns the deeper views and interactive states.
 Update the design alongside the [implementation guide](/docs/how-to/implement-landing-design.md).
 
 ## Inspect and update

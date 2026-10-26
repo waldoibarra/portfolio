@@ -28,11 +28,15 @@ if (typeof document !== 'undefined') {
   const panels = [...document.querySelectorAll<HTMLElement>('[data-view]')];
   const links = [...document.querySelectorAll<HTMLAnchorElement>('.site-header nav a')];
   let initialized = false;
+  let lastRequested = '';
   history.scrollRestoration = 'manual';
 
   function synchronize(focusHeading = true): void {
     const requested = window.location.hash;
     const route = resolveFragment(requested);
+    if (initialized && focusHeading && requested !== lastRequested) {
+      document.documentElement.classList.add('has-traveled');
+    }
     if (route.invalid) {
       history.replaceState(null, '', `${window.location.pathname}${window.location.search}#map`);
     }
@@ -62,6 +66,7 @@ if (typeof document !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
     initialized = true;
+    lastRequested = window.location.hash;
   }
   synchronize();
   window.addEventListener('hashchange', () => synchronize());

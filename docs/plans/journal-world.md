@@ -140,11 +140,11 @@ Keep the final preview running for owner review and report exact local commit ha
 
 ## Status
 
-Baseline committed. Navigation slice implemented and browser-verified locally.
-Independent audit and lead checks passed; this slice is ready for its local checkpoint.
-The original reproduction failed 26 of 30 cases before the fix and passed all 30 afterward.
-Visual, content, motion, design-source, and licensed-asset work remain pending.
-The next slice must record exact asset provenance before vendoring.
+Baseline and navigation slices are committed. The original navigation reproduction passes 30 cases.
+The atlas, domain topics, original art, and licensed assets reached a second local checkpoint.
+CSS ownership, browser regressions, design preview, sharing image, and experience guidance followed.
+Final review and browser verification remain required before another local commit.
+The [asset reference](/docs/reference/visual-assets.md) records pinned provenance and notices.
 A representative route is Map, Workshop harness topic, Pi Lens example, then Observatory feedback.
 Another connects Crossroads journaling, evidence about decisions, and Workshop's verification practice.
 

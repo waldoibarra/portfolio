@@ -20,7 +20,10 @@ The `/resume` route remains available, separate and unpromoted pending content r
 
 [`index.html`](/src/home/index.html) owns the complete initial document.
 All views and native disclosures remain readable without JavaScript.
-[`home.css`](/src/home/home.css) owns the map and each place's visual atmosphere.
+[`home.css`](/src/home/home.css) owns shared styles, atlas geometry, domain palettes,
+and brief motion.
+Original artwork lives in [`public/images/journal/`](/public/images/journal/).
+Licensed icons and Caveat have provenance in the [asset reference](/docs/reference/visual-assets.md).
 [`world.ts`](/src/home/world.ts) synchronizes panels, title, location indicator, and focus.
 It runs once before hiding inactive views, then responds to `hashchange`.
 Native links create history entries; unknown fragments use `replaceState` to recover the map.
@@ -30,6 +33,7 @@ The enhancer handles unchanged fragments explicitly because they do not fire `ha
 Detail fragments open their parent disclosure and focus its summary with viewport clearance.
 Read [navigation as orientation](/docs/explanation/experience-design.md) for observed friction and tradeoffs.
 [`world.test.mjs`](/src/home/world.test.mjs) exercises fragment and source contracts through `just test-world`.
+The map lists precise topics; each domain offers local topic links and native disclosures.
 [`world.browser.test.mjs`](/src/home/world.browser.test.mjs) exercises production browser behavior.
 Run it through `just test-world-browser` with an external Playwright module path.
 It requires a built preview; Chromium coverage does not establish other browsers' behavior.

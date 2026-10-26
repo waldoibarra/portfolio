@@ -20,6 +20,24 @@ They are design judgments, not demonstrated conversion improvements.
 Stanford and NN/G provide foundational research, not current portfolio conversion benchmarks.
 Accessibility requirements do not mandate generic visual design.
 
+## Branching journal research
+
+Seven sources inform navigation and evidence choices, not measured outcomes for this portfolio.
+They were accessed October 26, 2026.
+
+| Finding | Evidence | Application and limit |
+| --- | --- | --- |
+| A choice should change what readers learn | [Ink authoring guide](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md) | Branches can rejoin without copying the story; this is an authoring pattern, not visitor evidence |
+| Labels should predict their destinations | [NN/G information scent](https://www.nngroup.com/articles/information-scent/) | Pair poetic places with recognizable subjects; practitioner guidance, not a portfolio trial |
+| Depth should remain optional | [NN/G progressive disclosure](https://www.nngroup.com/articles/progressive-disclosure/) | Offer overview, topic, and example without a required sequence |
+| Orientation should stay recognizable | [NN/G breadcrumbs](https://www.nngroup.com/articles/breadcrumbs/) and [W3C consistent navigation](https://www.w3.org/WAI/WCAG22/Understanding/consistent-navigation.html) | Retain the existing header and map return instead of adding breadcrumbs |
+| Links should reveal their purpose | [W3C link purpose](https://www.w3.org/WAI/WCAG22/Understanding/link-purpose-in-context.html) | Name the related topic so link-list readers need not guess |
+| Evidence should be inspectable | [Stanford credibility guidelines](https://credibility.stanford.edu/guidelines/index.html) | Link public examples and direct contact; older credibility research supplies no current conversion benchmark |
+| Motion should not gate choices | [W3C animation from interactions](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html) | Keep controls immediate and respect reduced motion, including vestibular concerns |
+
+Ink describes authoring possibilities, not tested visitor behavior.
+No usability or conversion study measured this portfolio's branching design.
+
 ## Avoiding generic AI-generated presentation
 
 A [writing experiment](https://doi.org/10.1126/sciadv.adn5290) found improved individual
