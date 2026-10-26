@@ -1,11 +1,12 @@
 {
-  "title": "Waldo — Software Architect & Applied AI Engineer",
+  "title": "Explore Waldo's world | Waldo Ibarra",
   "author": "Waldo Ibarra",
-  "description": "Hands-on software architect and applied AI engineer who builds SaaS platforms, APIs and AI systems.",
+  "description": "Meet Waldo through a map of building, big questions, presence, and curiosity. Choose a path or just say hello.",
   "url": "https://waldo.love/",
   "type": "website",
   "image": {
     "url": "https://waldo.love/images/social-preview.jpg",
+    "alt": "Explore Waldo's world: building, big questions, presence, and curiosity.",
     "width": 1200,
     "height": 630,
     "type": "image/jpeg"

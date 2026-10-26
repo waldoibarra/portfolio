@@ -102,6 +102,16 @@ compile-ts:
 build-for-prod:
   npx vite build
 
+# Exercise homepage fragment and progressive-content contracts
+[group("Debug")]
+test-world:
+  node --test src/home/world.test.mjs
+
+# Exercise the built homepage in Chromium using an externally installed Playwright module
+[group("Debug")]
+test-world-browser playwright_module="":
+  @node src/home/world.browser.test.mjs "{{ playwright_module }}"
+
 # Initialize Terraform
 [group("Terraform")]
 tf-init:
@@ -143,7 +153,7 @@ require-ci:
 
 # Build, check, plan and deploy website and infrastructure in CI
 [group("Deploy")]
-deploy: (require-ci) (build) (lint-tf) (tf-check) (tf-plan) (deploy-reviewed)
+deploy: (require-ci) (build) (test-world) (lint-tf) (tf-check) (tf-plan) (deploy-reviewed)
 
 # Deploy CI's built artifact and saved infrastructure/tfplan
 [group("Deploy")]
@@ -176,7 +186,7 @@ invalidate: (tf-init)
 
 # Full local check: lint + build + tests
 [group("Debug")]
-check: (lint) (build) (tf-check)
+check: (lint) (build) (test-world) (tf-check)
 
 # Debug pre-commit hook
 [group("Debug")]

@@ -3,6 +3,7 @@
 gitignore: true
 ignores:
   - LICENSE.md
+  - raw/**
   - .atl/**
 config:
   default: true

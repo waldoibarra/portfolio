@@ -1,109 +1,67 @@
-# Implement the landing design
+# Implement the world design
 
-Translate the approved [landing design](/docs/designs/landing.fig) into production HTML and CSS.
-Work in [`src/home/index.html`](/src/home/index.html) and [`src/home/`](/src/home/). See the
-[design-to-code relationship](/architecture.md#design-and-implementation) and
-[OpenPencil reference](/docs/reference/openpencil.md) before using exported markup.
+Translate the [editable design](/docs/designs/landing.fig) into the production homepage.
+The design expresses composition and atmosphere.
+[`src/home/index.html`](/src/home/index.html) owns content and semantics.
+Read the [architecture](/architecture.md#homepage-behavior) for state ownership and routing.
 
-Run commands from the repository root.
+## Preserve the navigation contract
 
-## Inspect the approved design
+Keep the map, Workshop, Observatory, Garden, Crossroads, and Connect in the initial HTML.
+Use genuine links to `#map`, `#workshop`, `#observatory`, `#garden`, `#crossroads`, and `#connect`.
+Depth links target `details` elements inside their parent domain.
+Preserve `#main` as the skip target.
+Only unknown fragments normalize to `#map` without creating another history entry.
+Do not hide a view in CSS before the script initializes successfully.
 
-Inspect colors, typography, spacing, variables, and assets with `openpencil analyze`, `variables`,
-and `export`. Compare the [design palette](/docs/how-to/edit-landing-design.md#preserve-the-color-hierarchy)
-with [`foundations.css`](/src/home/styles/foundations.css) before changing production color properties.
+The enhancer in [`world.ts`](/src/home/world.ts) synchronizes panels after resolving the initial fragment.
+It responds to `hashchange` for normal links and browser history.
+Reveal the parent before scrolling to depth content or focusing its summary.
+Focus a detail summary on direct entry and refresh as well as intentional navigation.
+Focus entered headings after intentional navigation, not on initial map load.
+Use native disclosures and visible focus. Never gate contact behind an animation or sequence.
+Reduced-motion navigation changes immediately, without camera travel, zoom, or parallax.
 
-Use a strict-font PNG as the visual reference:
+## Translate visual intent
 
-```sh
-openpencil export docs/designs/landing.fig -o /tmp/landing.png --font-policy strict
-```
+Keep a person-first welcome and readable destination labels beside the illustrated map.
+Use each domain's color and drawing to reinforce meaning within one typographic system.
+Retain a legible textual destination list on narrow screens.
+Use native CSS and inline SVG instead of a canvas-only interface or runtime framework.
+The design export is inspectable handoff material, not production-ready markup.
+The [OpenPencil reference](/docs/reference/openpencil.md) records its limitations.
 
-An HTML/CSS handoff can help inspect generated assets:
+Homepage metadata is generated from [`metadata.json`](/src/home/metadata.json).
+The sharing image needs a separate manual update when its copy changes.
+Leave `/resume` unlinked until its content passes separate review.
 
-```sh
-openpencil export docs/designs/landing.fig -f html --html standalone \
-  --css inline --assets external --fonts assets -o /tmp/landing.html
-```
+## Check the result
 
-Treat HTML export as inspectable handoff material, not production-ready or pixel-faithful output.
-The [0.15.1 export observations](/docs/reference/openpencil.md#html-export-observation) document
-the limitations found in this design.
-
-## Build the page
-
-1. Keep the document shell and section order in [`src/home/index.html`](/src/home/index.html).
-  Edit generated head values through [homepage metadata](/docs/reference/homepage-metadata.md).
-  Compose sections with comments such as `<!-- include: home/sections/hero/hero.html -->`.
-  Paths resolve from `src/`, including nested includes, not from the including document.
-  Use lowercase, hyphen-separated path segments and `.html` files. Invalid or escaping paths
-  and include cycles fail explicitly.
-2. Define tokens, font faces, resets, and container rules in
-  [`foundations.css`](/src/home/styles/foundations.css). Compose styles in
-  [`home.css`](/src/home/home.css), preserving cascade order.
-3. Colocate each section's markup and CSS under `src/home/sections/<name>/`. Keep section-private
-  patterns there; home-wide patterns belong in `src/home/components/<name>/`.
-  Reuse the LinkedIn action in
-  [`components/action-link/`](/src/home/components/action-link/) for the hero and contact sections.
-  Edit its label, destination, and title in
-  [`linkedin-action.html`](/src/home/components/action-link/linkedin-action.html).
-  Introduce `shared/` only when another page actually reuses code; reuse across homepage sections
-  stays in `home/components/`. Use Grid and Flexbox instead of copied canvas coordinates.
-4. Export and optimize production images and fonts under [`public/`](/public/), then reference
-  them with root-relative URLs.
-5. Add real destinations, keyboard focus, and interaction states. Both primary actions use the
-  LinkedIn component's destination. There is no top navigation bar. If you expose the résumé,
-  use `/resume`.
-6. Do not add JavaScript to render static content.
-  If the page gains behavior, implement only that behavior in TypeScript.
-  Document public functions and types with JSDoc.
-7. Do not introduce a frontend runtime dependency, React, or Tailwind for exported markup. Vite 8
-  remains the build and development tool.
-
-The `html-components` Vite plugin recursively expands these comments in development and production.
-Sections can include home-wide components.
-Missing component files fail the request or
-build rather than silently dropping content. The same component can be included in multiple sections.
-Editing a component reloads the development page.
-Generated HTML contains the complete page and works without JavaScript.
-Do not open the unprocessed source shell directly.
-
-Both sections include the same action with this source-relative comment:
-
-```html
-<!-- include: home/components/action-link/linkedin-action.html -->
-```
-
-## Verify the implementation
-
-Run the frontend checks and create the production build:
+Run these commands from the repository root:
 
 ```sh
 just lint-ec
 just lint-ts
 just lint-css
 just lint-md
+just test-world
 just build
 ```
 
-`just lint-ts` uses the repository's strict TypeScript configuration.
-It checks [`vite.config.ts`](/vite.config.ts) and future TypeScript behavior
-modules under `src/`.
-`just check` is not
-a frontend-only shortcut: it also runs Terraform checks.
-
-Serve the generated `dist/` output:
+`just test-world` covers fragment classification and the initial HTML contract.
+Build first, then serve the output at `http://localhost:4173/`.
+Pass an existing Playwright installation to the optional Chromium regression recipe:
 
 ```sh
-just preview
+just test-world-browser /path/to/installed/node_modules/playwright
 ```
 
-Compare browser screenshots with design renders at desktop and mobile sizes. Exercise links and
-keyboard navigation. Disable JavaScript and confirm that all content and links still work.
-Check the action in both the hero and contact sections.
-Each must render the component's current label, title, and destination.
-Check existing focus and layout styles.
-
-Review changes in visual intent in the design as well, following
-[Edit the landing design](/docs/how-to/edit-landing-design.md). Importing HTML creates editable layers.
-It does not maintain a live mapping to production HTML or component styles.
+Alternatively, set `PLAYWRIGHT_MODULE` and run `just test-world-browser`.
+No Playwright dependency or browser installation belongs in this repository.
+The browser regression covers visibility, title, focus, history, details, malformed fragments,
+no-JavaScript content, and hidden tab stops.
+Also inspect rapid links and modified clicks in a browser.
+Check focus, the skip link, and disclosure controls with a keyboard.
+Check no-JavaScript reading, reduced motion, 200 percent zoom, and 1440, 390, and 320 px layouts.
+Compare rendered output with the [editable design](/docs/designs/landing.fig).
+`just preview` serves the last build, so rebuild before reviewing a changed source.

@@ -1,26 +1,617 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="stylesheet" href="/home/home.css" />
+    <script type="module" src="/home/world.ts"></script>
   </head>
   <body>
-    <main>
-      <!-- include: home/sections/hero/hero.html -->
-
-      <!-- include: home/sections/experience/experience.html -->
-
-      <!-- include: home/sections/selected-work/selected-work.html -->
-
-      <!-- include: home/sections/services/services.html -->
-
-      <!-- include: home/sections/leadership/leadership.html -->
-
-      <!-- include: home/sections/contact/contact.html -->
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    <header class="site-header">
+      <a
+        class="wordmark"
+        href="#map"
+        aria-label="Waldo Ibarra, return to the map">
+        waldo
+        <span>
+          .love
+        </span>
+      </a>
+      <nav aria-label="World destinations">
+        <a href="#map">
+          Map
+        </a>
+        <a href="#workshop">
+          Workshop
+        </a>
+        <a href="#observatory">
+          Observatory
+        </a>
+        <a href="#garden">
+          Garden
+        </a>
+        <a href="#crossroads">
+          Crossroads
+        </a>
+        <a href="#connect">
+          Connect
+        </a>
+      </nav>
+    </header>
+    <main id="main">
+      <section class="view map-view" id="map" aria-labelledby="map-title" data-view>
+        <div class="map-intro">
+          <p class="kicker">
+            A little atlas of one human
+          </p>
+          <h1 id="map-title" tabindex="-1">
+            Hi, I'm Waldo.
+            <br />
+            <em>
+              Come wander.
+            </em>
+          </h1>
+          <p>
+            I love learning, building, and sharing what I find. I can spend hours thinking about a
+            software system, a worldview, or what makes a good life.
+          </p>
+          <p>
+            This is a map of those curiosities. Choose a place. There is no right order.
+          </p>
+          <a class="text-link" href="#connect">
+            Or just say hello
+            <span aria-hidden="true">
+              →
+            </span>
+          </a>
+        </div>
+        <div class="atlas" aria-label="Explore the world">
+          <svg
+            class="atlas-lines"
+            viewBox="0 0 760 620"
+            preserveAspectRatio="none"
+            aria-hidden="true">
+            <path
+              d="M380 304 C240 248 205 145 108 124
+              M380 304 C490 246 530 110 651 128
+              M380 304 C500 360 554 455 650 485
+              M380 304 C268 400 217 494 110 491" />
+            <circle cx="380" cy="304" r="135" />
+            <circle cx="380" cy="304" r="155" stroke-dasharray="2 16" />
+          </svg>
+          <div class="atlas-center">
+            <img src="/images/portrait.webp" alt="Waldo Ibarra" width="156" height="156" />
+            <span>
+              One life, many paths
+            </span>
+          </div>
+          <a class="landmark workshop-mark" href="#workshop">
+            <span class="landmark-art" aria-hidden="true">
+              ⌘
+            </span>
+            <strong>
+              Workshop
+            </strong>
+            <small>
+              Software &amp; building
+            </small>
+          </a>
+          <a class="landmark observatory-mark" href="#observatory">
+            <span class="landmark-art" aria-hidden="true">
+              ✳
+            </span>
+            <strong>
+              Observatory
+            </strong>
+            <small>
+              Ideas &amp; perspective
+            </small>
+          </a>
+          <a class="landmark garden-mark" href="#garden">
+            <span class="landmark-art" aria-hidden="true">
+              ❧
+            </span>
+            <strong>
+              Garden
+            </strong>
+            <small>
+              Presence &amp; care
+            </small>
+          </a>
+          <a class="landmark crossroads-mark" href="#crossroads">
+            <span class="landmark-art" aria-hidden="true">
+              ↝
+            </span>
+            <strong>
+              Crossroads
+            </strong>
+            <small>
+              Curiosity in motion
+            </small>
+          </a>
+        </div>
+        <div class="map-index">
+          <p>
+            Pick a path
+          </p>
+          <ul>
+            <li>
+              <a href="#workshop">
+                Workshop
+                <span>
+                  Build and share
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="#observatory">
+                Observatory
+                <span>
+                  Question and reflect
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="#garden">
+                Garden
+                <span>
+                  Pay attention
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="#crossroads">
+                Crossroads
+                <span>
+                  Try new directions
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
+      <section class="view domain workshop" id="workshop"
+        aria-labelledby="workshop-title" data-view>
+        <div class="domain-top">
+          <a href="#map">
+            ← Return to map
+          </a>
+          <span>
+            Software &amp; building
+          </span>
+        </div>
+        <div class="domain-hero">
+          <div>
+            <p class="kicker">
+              The Workshop
+            </p>
+            <h2 id="workshop-title" tabindex="-1">
+              Make it useful.
+              <br />
+              <em>
+                Then make it clearer.
+              </em>
+            </h2>
+            <p class="domain-lede">
+              I build software and the working systems around AI agents. I like when a good idea
+              becomes something people can actually use, understand, and improve.
+            </p>
+          </div>
+          <svg class="domain-art blueprint" viewBox="0 0 400 320" aria-hidden="true">
+            <rect x="44" y="42" width="285" height="216" rx="3"/>
+            <path d="M44 95h285M113 42v216M113 162h216M192 95v67M113 209h216M246 162v96"/>
+            <circle cx="113" cy="95" r="14"/>
+            <circle cx="329" cy="162" r="14"/>
+            <path d="M23 42h11m-6-5v10M340 258h22m-11-11v22M86 280h204"/>
+            <text x="135" y="143">
+              IDEA → TEST → LEARN
+            </text>
+          </svg>
+        </div>
+        <div class="domain-body">
+          <div>
+            <h3>
+              What lives here
+            </h3>
+            <p>
+              I like working from a clear problem toward something a team can inspect and change.
+              That includes architecture, developer tools, practical AI, and explanations
+              that survive handoff.
+            </p>
+            <p>
+              My public work is on
+              <a href="https://github.com/waldoibarra">GitHub</a>. For career context, visit
+              <a href="https://www.linkedin.com/in/waldoibarra">LinkedIn</a>.
+            </p>
+          </div>
+          <div class="depth">
+            <details id="workshop-practice">
+              <summary>
+                How I like to work
+                <span aria-hidden="true">
+                  +
+                </span>
+              </summary>
+              <p>
+                I ask what problem we are solving and who will use the result.
+                Then I name assumptions and test a small version.
+                Feedback may change the plan.
+                I want the next person to understand the decision without needing me in the room.
+              </p>
+            </details>
+            <details id="workshop-agents">
+              <summary>
+                What is an AI harness?
+                <span aria-hidden="true">
+                  +
+                </span>
+              </summary>
+              <p>
+                It is the instructions, tools, and checks that help people work with agents.
+                Clear boundaries show an agent what it may change and when a person must decide.
+                Tests and review make its work easier to verify.
+              </p>
+            </details>
+          </div>
+        </div>
+        <section class="workshop-proof" aria-labelledby="workshop-proof-title">
+          <h3 id="workshop-proof-title">
+            A piece you can inspect
+          </h3>
+          <p>
+            <a href="https://github.com/waldoibarra/pi-lens">Pi Lens</a> folds Pi's tool runs
+            into a transcript you can expand when you need details.
+            It changes the display, not tool execution or model context.
+            The code and limitations are public if you want to inspect them.
+          </p>
+          <p>
+            My <a href="https://github.com/waldoibarra/dotfiles">dotfiles</a> show how I configure
+            tools and guidance around AI coding agents.
+            I want to help teams improve their own harnesses and learn together from real work.
+            I also like helping leaders make technical decisions with evidence.
+          </p>
+        </section>
+        <p class="domain-next">
+          The tools matter. So does the thinking behind them.
+          <a href="#observatory">
+            Visit the Observatory →
+          </a>
+        </p>
+      </section>
+      <section class="view domain observatory" id="observatory"
+        aria-labelledby="observatory-title" data-view>
+        <div class="domain-top">
+          <a href="#map">
+            ← Return to map
+          </a>
+          <span>
+            Ideas &amp; perspective
+          </span>
+        </div>
+        <div class="domain-hero">
+          <div>
+            <p class="kicker">
+              The Observatory
+            </p>
+            <h2 id="observatory-title" tabindex="-1">
+              Look closer.
+              <br />
+              <em>
+                Look again.
+              </em>
+            </h2>
+            <p class="domain-lede">
+              I am curious about why we believe what we believe. Philosophy, different worldviews,
+              and honest conversations help me examine the picture I think I see.
+            </p>
+          </div>
+          <svg class="domain-art orbits" viewBox="0 0 400 320" aria-hidden="true">
+            <circle cx="200" cy="160" r="112"/>
+            <circle cx="200" cy="160" r="70"/>
+            <circle cx="200" cy="160" r="21"/>
+            <path d="M14 160h372M200 2v316M87 43l226 234M313 43 87 277"/>
+            <circle cx="123" cy="78" r="8" class="solid"/>
+            <circle cx="300" cy="209" r="13" class="solid"/>
+            <path d="M38 32h25M51 19v26M355 268h24M367 256v24"/>
+          </svg>
+        </div>
+        <div class="domain-body">
+          <div>
+            <h3>
+              Questions worth keeping open
+            </h3>
+            <p>
+              I enjoy Stoic inquiry and theories about reality. I ask what supports an explanation
+              and what might change my mind. Listening to someone else's view helps me find
+              blind spots.
+            </p>
+          </div>
+          <div class="depth">
+            <details id="observatory-inquiry">
+              <summary>
+                Thinking out loud
+                <span aria-hidden="true">
+                  +
+                </span>
+              </summary>
+              <p>
+                I learn by discussing an idea with a person or an LLM.
+                I also structure notes as though I were teaching someone else.
+                If I cannot explain a claim clearly, I look for the gap before defending it.
+              </p>
+            </details>
+            <details id="observatory-coherence">
+              <summary>
+                Coherence in practice
+                <span aria-hidden="true">
+                  +
+                </span>
+              </summary>
+              <p>
+                Keeping my word matters to me. When my decisions and actions diverge,
+                I want feedback
+                early enough to change course. A coherent worldview should survive honest questions.
+              </p>
+            </details>
+          </div>
+        </div>
+        <p class="domain-next">
+          Perspective is easier to practice when I slow down.
+          <a href="#garden">
+            Walk into the Garden →
+          </a>
+        </p>
+      </section>
+      <section class="view domain garden" id="garden" aria-labelledby="garden-title" data-view>
+        <div class="domain-top">
+          <a href="#map">
+            ← Return to map
+          </a>
+          <span>
+            Presence &amp; care
+          </span>
+        </div>
+        <div class="domain-hero">
+          <div>
+            <p class="kicker">
+              The Garden
+            </p>
+            <h2 id="garden-title" tabindex="-1">
+              Be here.
+              <br />
+              <em>
+                There is time.
+              </em>
+            </h2>
+            <p class="domain-lede">
+              Ambition means more to me when it leaves room for love, health, and being alive today.
+              I practice yoga and meditation; I am still learning to pay attention.
+            </p>
+          </div>
+          <svg class="domain-art leaves" viewBox="0 0 400 320" aria-hidden="true">
+            <path
+              d="M190 303C194 224 198 148 258 45
+              M190 272C119 233 77 163 72 86
+              M192 223C246 230 323 205 352 140
+              M165 180C105 178 89 128 99 107c40 5 69 28 66 73Z
+              M216 155c-5-57 24-101 54-115 13 45-1 94-54 115Z
+              M240 219c13-58 58-82 104-79-7 47-43 81-104 79Z
+              M173 258c-55 19-99 2-122-37 40-23 94-16 122 37Z"/>
+            <path d="M12 306h375"/>
+          </svg>
+        </div>
+        <div class="domain-body">
+          <div>
+            <h3>
+              A different measure
+            </h3>
+            <p>
+              I would rather explore among trees than buildings. A walk, a conscious breath,
+              and time with people I love remind me why I build.
+            </p>
+          </div>
+          <div class="depth">
+            <details id="garden-practice">
+              <summary>
+                Small practices
+                <span aria-hidden="true">
+                  +
+                </span>
+              </summary>
+              <p>
+                Yoga and meditation help me notice what is happening before I try to change it.
+                Sometimes I simply pause and breathe consciously.
+                I return to these practices because attention takes practice.
+              </p>
+            </details>
+            <details id="garden-balance">
+              <summary>
+                Why balance belongs here
+                <span aria-hidden="true">
+                  +
+                </span>
+              </summary>
+              <p>
+                I want more time, freedom, and knowledge for the people I care about.
+                Health and relationships matter alongside those goals.
+                Automation is useful when it gives us room for life outside the screen.
+              </p>
+            </details>
+          </div>
+        </div>
+        <p class="domain-next">
+          Attention also makes space for new directions.
+          <a href="#crossroads">
+            Follow the Crossroads →
+          </a>
+        </p>
+      </section>
+      <section class="view domain crossroads" id="crossroads"
+        aria-labelledby="crossroads-title" data-view>
+        <div class="domain-top">
+          <a href="#map">
+            ← Return to map
+          </a>
+          <span>
+            Curiosity in motion
+          </span>
+        </div>
+        <div class="domain-hero">
+          <div>
+            <p class="kicker">
+              The Crossroads
+            </p>
+            <h2 id="crossroads-title" tabindex="-1">
+              Follow the question.
+              <br />
+              <em>
+                See where it goes.
+              </em>
+            </h2>
+            <p class="domain-lede">
+              My interests rarely stay in one lane. Trading challenges my discipline. Marketing and
+              sales are subjects I am exploring. Travel and stories invite different ways to see.
+            </p>
+          </div>
+          <svg class="domain-art routes" viewBox="0 0 400 320" aria-hidden="true">
+            <path
+              d="M15 270C95 274 98 208 180 201s105 19 202-36
+              M179 201C153 158 181 117 236 90S293 41 282 7
+              M179 201C228 247 232 275 243 315"/>
+            <circle cx="74" cy="253" r="12"/>
+            <circle cx="179" cy="201" r="19"/>
+            <circle cx="306" cy="203" r="12"/>
+            <circle cx="236" cy="90" r="12"/>
+            <path d="m277 161 13 18 25-35M47 52h95m-95 18h58M330 45h28m-14-14v28"/>
+          </svg>
+        </div>
+        <div class="domain-body">
+          <div>
+            <h3>
+              Not a straight line
+            </h3>
+            <p>
+              I like time-travel stories, especially Steins;Gate, and hearing how people make sense
+              of the world. I enjoy discovering places with more trees than buildings.
+            </p>
+          </div>
+          <div class="depth">
+            <details id="crossroads-trading">
+              <summary>
+                Trading as practice
+                <span aria-hidden="true">
+                  +
+                </span>
+              </summary>
+              <p>
+                For me, trading is a psychological exercise in self-control. It is not a claim of
+                financial expertise or a promise of results.
+              </p>
+            </details>
+            <details id="crossroads-learning">
+              <summary>
+                What I am learning
+                <span aria-hidden="true">
+                  +
+                </span>
+              </summary>
+              <p>
+                Right now I am curious about AI, marketing, and sales.
+                I want to understand how people find useful ideas and decide
+                which ones deserve attention.
+              </p>
+            </details>
+          </div>
+        </div>
+        <p class="domain-next">
+          Curiosity is better shared.
+          <a href="#connect">
+            Meet at Connect →
+          </a>
+        </p>
+      </section>
+      <section class="view connect" id="connect" aria-labelledby="connect-title" data-view>
+        <div class="domain-top">
+          <a href="#map">
+            ← Return to map
+          </a>
+          <span>
+            Say hello
+          </span>
+        </div>
+        <div class="connect-content">
+          <p class="kicker">
+            A place to meet
+          </p>
+          <h2 id="connect-title" tabindex="-1">
+            Where do our paths
+            <em>
+              cross?
+            </em>
+          </h2>
+          <p>
+            Tell me what you are thinking about. A technical problem, a question, or a shared
+            curiosity is a good place to start.
+          </p>
+          <ul>
+            <li>
+              <a href="mailto:waldo.ibarra@linux.com">
+                <strong>
+                  Email
+                </strong>
+                <span>
+                  Write to me directly ↗
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.linkedin.com/in/waldoibarra">
+                <strong>
+                  LinkedIn
+                </strong>
+                <span>
+                  Talk about work ↗
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/waldoibarra">
+                <strong>
+                  GitHub
+                </strong>
+                <span>
+                  Explore what I build ↗
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.instagram.com/waldo_lovesyou/">
+                <strong>
+                  Instagram
+                </strong>
+                <span>
+                  A more personal window ↗
+                </span>
+              </a>
+            </li>
+          </ul>
+          <a class="text-link" href="#map">
+            Keep exploring the map →
+          </a>
+        </div>
+      </section>
     </main>
-
-    <!-- include: home/components/site-footer/site-footer.html -->
+    <footer class="site-footer">
+      <span>
+        Waldo Ibarra · Made with curiosity and care.
+      </span>
+      <a href="#map">
+        Back to the map ↑
+      </a>
+    </footer>
   </body>
 </html>

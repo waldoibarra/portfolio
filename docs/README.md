@@ -33,6 +33,7 @@ Choose a page by what you need to do or understand. Start with the
 
 - [Architecture](/architecture.md): components, ownership boundaries, and design-to-code handoff.
 - [Glossary](/GLOSSARY.md): site, design, routing, and delivery terms.
+- [Public identity](/docs/explanation/public-identity.md): values, audience, evidence, and privacy.
 - [Delivery model](/docs/explanation/delivery.md): local checks, workflow filtering, and
   deployment dependencies.
 - [Decision records](/docs/decisions/README.md): why choices were made, alternatives, and status.

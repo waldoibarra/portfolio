@@ -1,43 +1,24 @@
-# Waldo's Portfolio
+# Waldo's portfolio
 
-A live software-architecture portfolio backed by its frontend, AWS infrastructure,
-delivery automation, and engineering decisions.
+I build useful systems and share what I learn. My work connects software architecture,
+AI agents, and the people who use them. I care about what good systems make possible
+beyond work: time to learn, love, and live deliberately.
 
-## Live site
+[Meet me at waldo.love](https://waldo.love) or [explore Pi Lens](https://github.com/waldoibarra/pi-lens),
+a display-only way to make Pi transcripts easier to read.
 
-[Open the portfolio](https://waldo.love).
+## What this repository shows
 
-## Engineering proof
+The world map uses semantic HTML and native CSS. Its content remains readable without JavaScript.
+A small TypeScript enhancer makes the places addressable and restores browser history.
+Custom Terraform defines AWS infrastructure. One ordered workflow delivers the site and
+infrastructure together. The editable [landing design](docs/designs/landing.fig) records visual
+intent separately from production code.
 
-- **Semantic without JavaScript:** the landing page uses semantic HTML and native CSS.
-  Its content needs neither client-side JavaScript nor a frontend runtime.
-- **Infrastructure in code:** custom Terraform defines the AWS deployment.
-  CloudFront Origin Access Control serves its private S3 origin.
-- **Repeatable delivery:** Mise pins the toolchain, and `just` provides the command interface.
-  One ordered GitHub Actions workflow deploys website artifacts and infrastructure together.
-- **Recorded decisions:** architectural decision records preserve alternatives, tradeoffs, and
-  decision status.
-
-## Run locally
-
-With Mise activated and `just` available, run:
-
-```sh
-just setup
-just run
-```
-
-Open the URL printed by Vite. See [local setup](docs/how-to/run-locally.md) for first-time
-tool installation. Frontend development needs no AWS credentials.
-
-## Explore the repository
-
-- [Architecture](https://github.com/waldoibarra/portfolio/blob/trunk/architecture.md)
-- [Portfolio language](https://github.com/waldoibarra/portfolio/blob/trunk/GLOSSARY.md)
-- [Run locally](https://github.com/waldoibarra/portfolio/blob/trunk/docs/how-to/run-locally.md)
-- [Documentation](https://github.com/waldoibarra/portfolio/blob/trunk/docs/README.md)
-- [Decision records](https://github.com/waldoibarra/portfolio/tree/trunk/docs/decisions)
+Browse the [architecture](architecture.md), [documentation](docs/README.md), and
+[decision records](docs/decisions/README.md). Read [public identity](docs/explanation/public-identity.md)
+for the choices behind the site's voice. For setup and commands, follow [run locally](docs/how-to/run-locally.md).
 
 ## License
 
-[MIT](https://github.com/waldoibarra/portfolio/blob/trunk/LICENSE.md)
+[MIT](LICENSE.md)

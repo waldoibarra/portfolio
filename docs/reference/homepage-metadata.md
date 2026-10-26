@@ -11,12 +11,13 @@ There are no configured fallback values.
 
 | JSON field | Type | Generated HTML |
 | --- | --- | --- |
-| `title` | String | `<title>`, `og:title`, `twitter:title`, `og:image:alt`, and `twitter:image:alt` |
+| `title` | String | `<title>`, `og:title`, and `twitter:title` |
 | `author` | String | `meta[name="author"]` |
 | `description` | String | Standard description, `og:description`, and `twitter:description` |
 | `url` | String | Canonical link and `og:url` |
 | `type` | String | `og:type`; the portfolio uses `website` |
 | `image.url` | String | `og:image` and `twitter:image` |
+| `image.alt` | String | Image-specific description for `og:image:alt` and `twitter:image:alt` |
 | `image.width` | Number | `og:image:width`, in pixels |
 | `image.height` | Number | `og:image:height`, in pixels |
 | `image.type` | String | `og:image:type`, the image's MIME type |
@@ -24,7 +25,7 @@ There are no configured fallback values.
 
 The canonical and image URLs are absolute HTTPS URLs. Image metadata describes the static
 1200 × 630 JPEG at [`public/images/social-preview.jpg`](/public/images/social-preview.jpg).
-Metadata, hero copy, and portrait edits do not redraw that image. Changes to its text or photo
+Metadata, homepage copy, and portrait edits do not redraw that image. Changes to its text or photo
 require manual review and regeneration before release. The replacement remains a 1200 × 630
 JPEG, with metadata matching the asset. There is no automated `just social-preview` recipe.
 
@@ -40,7 +41,7 @@ in the homepage HTML shell.
 
 During `just run`, saving the metadata JSON triggers a full-page browser reload through Vite's
 development client. The next HTML transformation reads the saved values without a server restart.
-Existing HTML include edits also trigger full-page reloads.
+Homepage HTML edits also trigger full-page reloads.
 
 `just build` writes the generated tags into `dist/home/index.html`.
 Browsers and sharing crawlers receive them in the initial production response.

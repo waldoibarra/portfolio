@@ -1,136 +1,65 @@
 # Architecture
 
-Read this map before changing application code or infrastructure. For task instructions, start
-with the [documentation index](/docs/README.md).
+`waldo.love` is a static, explorable portfolio. Its homepage introduces Waldo through a world map.
+Visitors choose the Workshop, Observatory, Garden, Crossroads, or Connect.
+Each view has its own fragment URL; deeper disclosures also have direct links.
+The `/resume` route remains available, separate and unpromoted pending content review.
 
-`waldo.love` is a static portfolio site, also served at `www.waldo.love`.
-Semantic HTML and component-scoped native CSS implement its single landing page.
-Its content needs neither a frontend runtime framework nor a page script.
-Vite 8 composes the HTML components during development and builds.
-CloudFront serves the output from a private S3 bucket through Origin Access Control (OAC).
-Custom Terraform owns the website resources. Domain registration and the existing public hosted zone
-are account prerequisites.
-Explicit one-time operations outside Terraform manage them.
+## Ownership
 
-## System boundaries
-
-| Area | Owns | Does not own |
+| Area | Owns | Boundary |
 | --- | --- | --- |
-| [`src/`](/src/), [`public/`](/public/) | Semantic landing-page HTML, component-scoped native CSS, static assets, and Vite type declarations | Infrastructure or deployment |
-| [`infrastructure/`](/infrastructure/) | S3, CloudFront, ACM, Route53, provider pins, and Terraform Cloud backend configuration | Artifact uploads, which run through `just s3-sync` |
-| [`infrastructure/tests/`](/infrastructure/tests/) | Native Terraform tests with mock providers | Integration tests against real AWS |
-| [`scripts/`](/scripts/) | Setup, deployment, and explicit domain-account operations invoked by `just` | Automatic purchases or domain retirement in CI |
-| [`.github/workflows/`](/.github/workflows/) | One coordinated website and infrastructure production workflow | Inline shell logic; project tasks call recipes |
-| [`docs/designs/`](/docs/designs/) | Editable design source and its design preview | Production frontend implementation |
+| [`src/home/`](/src/home/) | Semantic world content, native styles, and fragment enhancement | No backend or client framework |
+| [`public/`](/public/) | Portrait, fonts, sharing image, and standalone résumé | Static assets and separate résumé document |
+| [`docs/designs/`](/docs/designs/) | Editable visual intent and preview | No automatic production synchronization |
+| [`infrastructure/`](/infrastructure/) | Terraform for S3, CloudFront, ACM, and Route53 | No artifact uploads |
+| [`.github/workflows/`](/.github/workflows/) | Coordinated build and production delivery | Recipes from the [justfile](/justfile), not inline shell |
+| [`scripts/`](/scripts/) | Setup and deployment operations invoked by recipes | No automatic account purchases |
 
-There are no source tests yet. The infrastructure tests cover S3, OAC, and CloudFront properties.
-Read [Infrastructure reference](/docs/reference/infrastructure.md) for resources, security
-settings, inputs, outputs, and environment requirements.
+## Homepage behavior
 
-## Toolchain and delivery
+[`index.html`](/src/home/index.html) owns the complete initial document.
+All views and native disclosures remain readable without JavaScript.
+[`home.css`](/src/home/home.css) owns the map and each place's visual atmosphere.
+[`world.ts`](/src/home/world.ts) synchronizes panels, title, location indicator, and focus.
+It runs once before hiding inactive views, then responds to `hashchange`.
+Native links create history entries; unknown fragments use `replaceState` to recover the map.
+`#main` preserves the skip link, while detail fragments open their parent disclosure.
+[`world.test.mjs`](/src/home/world.test.mjs) exercises fragment and source contracts through `just test-world`.
+[`world.browser.test.mjs`](/src/home/world.browser.test.mjs) exercises production browser behavior.
+Run it through `just test-world-browser` with an external Playwright module path.
+It requires a built preview; Chromium coverage does not establish other browsers' behavior.
 
-[`.mise.toml`](/.mise.toml) manages project tools. The [justfile](/justfile) is the command
-interface, and [`hk.pkl`](/hk.pkl) selects pre-commit checks by staged paths.
-Vite 8 provides development and build tooling.
-Strict TypeScript checks cover [`vite.config.ts`](/vite.config.ts) and
-future behavior modules. Tool-specific configuration remains in the root configuration files
-and [`config/`](/config/).
+[`metadata.json`](/src/home/metadata.json) owns the initial title and sharing metadata.
+Vite generates these tags in the HTML response; the script updates the browser title after navigation.
+Read the [metadata reference](/docs/reference/homepage-metadata.md) before changing its fields.
+Vite 8 builds the homepage as `dist/home/index.html`.
+The standalone résumé copies to `dist/resume/index.html`.
+Development and preview rewrite `/` and `/resume` to those documents.
+CloudFront uses `home/index.html` as its default root object and a viewer-request function for `/resume`.
+Other paths are not homepage fallbacks.
 
-Local development starts with `just setup`, then `just run`; it needs no AWS credentials.
-Infrastructure plans are reviewed locally with `AWS_PROFILE=waldo`. Only GitHub Actions applies
-Terraform or deploys production; CI uses its own credentials, not the workstation profile.
+## Design and delivery
 
-Development uses direct commits to `trunk`, without branches or PRs.
-On matching pushes, the production workflow checks and builds both domains,
-then stages website objects.
-It applies infrastructure and waits for CloudFront before removing obsolete objects
-and invalidating caches.
-Read the [delivery model](/docs/explanation/delivery.md) for filtering, gates, and deployment
-dependencies.
+The editable [`landing.fig`](/docs/designs/landing.fig) records visual intent.
+Production markup and CSS remain the authority for browser behavior.
+Read [edit the design](/docs/how-to/edit-landing-design.md) and
+[implement the design](/docs/how-to/implement-landing-design.md) for that handoff.
 
-The domain migration permits downtime and removes the previous domain's website routing.
-There is no redirect service or old-site recovery guarantee. Bucket `waldoibarra-com-site`,
-OAC `waldoibarra-com-oac`, and workspace `waldoibarra-com` keep their historical names to
-preserve resource and state identities. These names are not website domains.
+[`.mise.toml`](/.mise.toml) manages project tools; the [justfile](/justfile) is the command interface.
+`just build` typechecks TypeScript and builds production assets.
+The production workflow checks and builds both domains, stages website objects, applies infrastructure,
+then waits for CloudFront before removing obsolete objects and invalidating caches.
+Read the [delivery model](/docs/explanation/delivery.md) for gates and deployment dependencies.
 
-## Design and implementation
+Custom Terraform owns website resources.
+Domain registration and the existing public hosted zone are account prerequisites.
+Explicit operations outside Terraform manage them.
+Historical bucket, OAC, and workspace names retain their identities during domain migration.
+There is no redirect service or old-site recovery guarantee.
+Infrastructure tests use mock providers; they do not test real AWS integration.
 
-[`landing.fig`](/docs/designs/landing.fig) records visual intent. [`src/home/index.html`](/src/home/index.html)
-owns the document shell and section order.
-Its private sections, components, and foundations live under
-[`src/home/`](/src/home/).
-Promote nothing to `shared/` until another page reuses it.
-[`home.css`](/src/home/home.css) composes the page's styles without changing their cascade order.
-The homepage's [`action-link` component](/src/home/components/action-link/) owns the LinkedIn
-action used by the hero and contact sections. Its
-[`linkedin-action.html`](/src/home/components/action-link/linkedin-action.html) defines the label,
-destination, and title once. Reuse within the homepage stays in `home/components/`.
-The `html-components` plugin in [`vite.config.ts`](/vite.config.ts) recursively
-expands source-root-relative include comments.
-It runs before Vite processes HTML, adding neither wrappers nor browser JavaScript.
-Nested includes also resolve from `src/`; cycles and invalid or escaping
-paths are rejected.
-
-[`src/home/metadata.json`](/src/home/metadata.json) owns the homepage's title, description, author,
-canonical URL, and sharing metadata.
-Vite generates the tags in the initial HTML for development and production.
-The homepage shell retains charset, viewport, favicon, and stylesheet declarations.
-The sharing image is a separate static asset at
-[`public/images/social-preview.jpg`](/public/images/social-preview.jpg).
-Read the [homepage metadata reference](/docs/reference/homepage-metadata.md) before changing
-the field mapping or generation behavior.
-
-Page entrypoints live in `src/<page>/index.html`. Vite emits `dist/home/index.html`.
-The standalone [`résumé`](/public/resume/index.html) is copied to
-`dist/resume/index.html`. Development and preview
-rewrite `/` and `/resume` to those documents. CloudFront uses `home/index.html` as its default
-root object and a viewer-request function for `/resume`. Unknown paths are not homepage fallbacks.
-Future built pages need an entry in `build.rolldownOptions.input` and an explicit public route.
-
-Import and export are a handoff, not automatic bidirectional synchronization. The design palette
-records visual intent; [`foundations.css`](/src/home/styles/foundations.css) owns production colors.
-OpenPencil is a workstation tool and is not required by the website build or CI.
-
-Read [Edit the landing design](/docs/how-to/edit-landing-design.md) before
-changing the document.
-Read [Implement the landing design](/docs/how-to/implement-landing-design.md)
-before translating it into semantic HTML and component-scoped CSS.
-Tool ownership and known export limitations live
-in the [OpenPencil reference](/docs/reference/openpencil.md).
-
-## Evolving the system
-
-**Keep ownership local.** The homepage owns its sections and action-link component.
-Promote a component to `shared/` only when another page needs it.
-The design file records visual intent; production markup and styles remain under `src/home/`.
-Update both when visual intent changes, because export does not synchronize them.
-
-**Preserve delivery contracts.** A new built page needs a Vite entrypoint and an explicit public route.
-Review the artifact layout and CloudFront function together before changing either.
-Keep one ordered production workflow for coupled site and infrastructure changes.
-Read the [delivery model](/docs/explanation/delivery.md) before changing its path filters or order.
-
-**Keep docs with owners.** Update this map when boundaries change.
-Update the relevant task guide or reference when commands, configuration, or behavior changes.
-Use the [decision index](/docs/decisions/README.md) only for decisions meeting its recording criteria.
+Keep new homepage concerns within `src/home/` until another page needs reuse.
+A new built page needs a Vite entrypoint and explicit public route.
 Read [documentation maintenance](/docs/README.md#maintain-the-documentation) before reorganizing pages.
-
-## AI-assisted development
-
-Instruction files route agent tasks; recipes provide a shared command interface.
-Git hooks select relevant local checks before commits reach `trunk`.
-EditorConfig checks catch formatting drift in generated changes.
-ADR `decision-makers` metadata records human and model participation in architectural decisions.
-The proposed AI-first stance is in
-[ADR-0008](/docs/decisions/0008-ai-assisted-development-as-first-class-concern.md).
-Its status remains `proposed` in the [decision index](/docs/decisions/README.md).
-
-## Documentation boundaries
-
-- [README](/README.md): what the portfolio is and what its engineering demonstrates.
-- [Glossary](/GLOSSARY.md): terms separating site, design, routing, and delivery concepts.
-- [Documentation index](/docs/README.md): task guides, reference, and explanations organized
-  by reader need. Each topic has one home; other pages link to it.
-- This architecture map: current components and ownership boundaries.
-- [Agent router](/AGENTS.md): which document to read before a task.
-- [Decision records](/docs/decisions/README.md): durable reasoning, alternatives, and status.
+ADR-0008's AI-first stance remains proposed in the [decision index](/docs/decisions/README.md).

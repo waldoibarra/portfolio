@@ -73,7 +73,7 @@ For live sharing checks, see [Verify a deployment](/docs/how-to/verify-deploymen
 
 Before releasing text or photo changes, review
 [`public/images/social-preview.jpg`](/public/images/social-preview.jpg) and regenerate it manually
-if needed. Metadata, hero copy, and portrait edits do not redraw this static image. Keep it a
+if needed. Metadata, homepage copy, and portrait edits do not redraw this static image. Keep it a
 1200 × 630 JPEG and keep the sharing metadata aligned with the asset. There is no automated
 `just social-preview` recipe.
 

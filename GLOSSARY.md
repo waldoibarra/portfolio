@@ -5,14 +5,20 @@ Read [architecture.md](architecture.md) before changing their implementation.
 
 ## Site and design
 
-**Landing page**:
-The portfolio's homepage at `/`, containing the hero, work, services, and contact sections.
+**World map**:
+The homepage overview at `/`, introducing Waldo and offering labeled places to explore.
+
+**Domain view**:
+A shareable destination within the homepage, focused on one group of interests.
+
+**Depth link**:
+A fragment leading directly to a disclosure inside a domain view.
 
 **Résumé**:
-The standalone career document served at `/resume`, separate from the landing page.
+The standalone career document served at `/resume`, separate from the world map.
 
 **Landing design**:
-The editable OpenPencil document expressing visual intent for desktop and mobile compositions.
+The editable OpenPencil document expressing the world map's visual intent for desktop and mobile compositions.
 It is not the production HTML.
 
 ## Delivery

@@ -17,7 +17,7 @@ after its EditorConfig, shell, TypeScript, and CSS lint steps:
 
 | Order | Recipe | Guarantee |
 | --- | --- | --- |
-| 1 | `build`, `lint-tf`, `tf-check` | Build the artifact; initialize, validate and mock-test Terraform; exercise the production route function locally |
+| 1 | `build`, `test-world`, `lint-tf`, `tf-check` | Build and test the homepage; initialize and mock-test Terraform; test production routing locally |
 | 2 | `tf-plan` | Save the exact infrastructure plan to ignored `infrastructure/tfplan` |
 | 3 | `s3-stage` | Upload `dist/` without `--delete`, retaining objects needed by the old configuration |
 | 4 | `tf-apply` | Apply only that saved plan, not a freshly calculated plan |

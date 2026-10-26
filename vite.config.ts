@@ -14,6 +14,7 @@ interface HomeMetadata {
   type: string;
   image: {
     url: string;
+    alt: string;
     width: number;
     height: number;
     type: string;
@@ -44,12 +45,12 @@ function renderHomeMetadata(): string {
     meta('property', 'og:image:width', metadata.image.width),
     meta('property', 'og:image:height', metadata.image.height),
     meta('property', 'og:image:type', metadata.image.type),
-    meta('property', 'og:image:alt', metadata.title),
+    meta('property', 'og:image:alt', metadata.image.alt),
     meta('name', 'twitter:card', metadata.twitterCard),
     meta('name', 'twitter:title', metadata.title),
     meta('name', 'twitter:description', metadata.description),
     meta('name', 'twitter:image', metadata.image.url),
-    meta('name', 'twitter:image:alt', metadata.title),
+    meta('name', 'twitter:image:alt', metadata.image.alt),
   ].join('\n    ');
 }
 

@@ -8,7 +8,7 @@ Workstation tooling and observed limitations for contributors working with the e
 | Tool | Owner and configuration |
 | --- | --- |
 | OpenPencil desktop app | Homebrew |
-| `@open-pencil/cli` | Global Mise config in `$HOME/.dotfiles/`; configured as `latest`, with 0.15.1 installed when checked |
+| `@open-pencil/cli` | Global Mise config in `$HOME/.dotfiles/`; configured as `latest`, with 0.16.0 exercised locally |
 | `@open-pencil/mcp` | Global Mise config in `$HOME/.dotfiles/`; configured as `latest`, with 0.15.1 installed when checked |
 | Node and Bun | Global Mise config in `$HOME/.dotfiles/` |
 
@@ -18,14 +18,18 @@ Design tools are not required by the website build or CI. The repository also ha
 
 The [justfile](/justfile) recipe `just open-design` launches `docs/designs/landing.fig` in the
 macOS app. It targets the installed bundle identifier, `net.dannote.open-pencil`, without relying
-on the `.fig` file association. OpenPencil 0.15.1 has no CLI `open` subcommand.
+on the `.fig` file association. OpenPencil 0.16.0 has no CLI `open` subcommand.
 
 The guides use the globally managed `openpencil` directly from the repository root:
 
 - [Edit the landing design](/docs/how-to/edit-landing-design.md)
 - [Implement the landing design](/docs/how-to/implement-landing-design.md)
 
-## Contrast lint observation
+## Historical observations from the earlier flat landing
+
+The following observations describe the replaced brochure design, not the current world map.
+The current world-map export was reviewed and saved as `docs/designs/landing-preview.png`.
+Future design edits require a new export review.
 
 The earlier flat landing document triggered misleading contrast lint errors.
 Two dark CTA labels sat over cyan sibling rectangles with 12:1 fill-color contrast.
@@ -50,8 +54,8 @@ Set `lineHeight` to a numeric pixel value. The Figma-style `{unit: "PIXELS", val
 was readable during evaluation but reopened as `null`. Explicit line breaks and matching text
 bounds keep desktop and mobile exports predictable.
 
-Resized instances can return to their master's width when reopened in the app. The primary action
-therefore has separate desktop and mobile component masters, with the same label and destination.
+Resized instances could return to their master's width when reopened in the app.
+The earlier primary action used separate desktop and mobile component masters.
 
 Saving after `insertChild` can remap node ids. Later scripted edits should find layers by name.
 
@@ -66,7 +70,8 @@ Position tighter pairs absolutely inside the empty sidebearing.
 Mixed-color text on one line needs two text layers. Range fills are not exposed on the 0.15.1
 eval API. Size each layer to the glyphs. Extra box width reads as extra space.
 
-`LAYER_BLUR` saved as `FOREGROUND_BLUR` in 0.15.1. Soft orbs in this design use image fills.
+`LAYER_BLUR` saved as `FOREGROUND_BLUR` in 0.15.1.
+The earlier design used image fills for its soft orbs.
 
 Live cross-page raster exports can fail even with an explicit page ID. Use saved-file exports
 with `--page Landing` and `--page Mobile` to review both compositions.
