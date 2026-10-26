@@ -150,4 +150,16 @@ The maintained documentation audit repaired current guidance and preserved histo
 Independent review found no remaining blocker.
 Chromium covered the complete local acceptance flow; WebKit and Firefox covered critical interactions.
 Real-device and screen-reader behavior remain unverified.
-Publication and exact-artifact live verification remain pending.
+Release `059a59703bc7305615ecfcb39dc14cb1abc8c075` was pushed to `origin/trunk`.
+[Production run 40255976078](https://github.com/waldoibarra/portfolio/actions/runs/40255976078)
+completed successfully on October 26, 2026.
+The infrastructure plan and apply reported no resource changes.
+
+Both `https://waldo.love/` and `https://www.waldo.love/` serve the intended build.
+Their HTML SHA-256 matches the locally built artifact:
+`f49c5b1cf84f81c356e38136057225f41aae19d63b9df76345c2318a728c2771`.
+Rendered Chromium regressions passed against both live hostnames.
+HTTPS homepage, résumé, and sharing-image responses returned 200 with their expected content types.
+HTTP redirected to HTTPS; unknown routes returned 403 instead of the homepage.
+The release did not publish GitHub or LinkedIn profile updates.
+The personal Ghostwriter profile still awaits confirmation of its separate machine-local destination.
