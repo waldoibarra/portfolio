@@ -6,7 +6,9 @@ Top-level entries often placed the former header and return link above the viewp
 Repeated destination clicks also moved the viewport without changing the fragment.
 
 The current enhancer settles top-level destinations at the document start.
-It does so after panel visibility changes and again after initial loading.
+It does so after panel visibility changes and again after browser-managed page restoration.
+WebKit testing exposed focus returning to the document body after some deep-link refreshes.
+A `pageshow` animation-frame synchronization restores the summary focus after that restoration.
 A repeated destination click needs explicit handling because its unchanged fragment does not fire `hashchange`.
 History restoration is manual, so Back and Forward return to the beginning.
 This sacrifices a reader's previous scroll position within a domain.
@@ -52,11 +54,19 @@ The semantic index keeps every link operable through keyboard, touch, and ordina
 
 ## Motion and visual continuity
 
-Four original illustrations identify different universes within one drawing grammar.
-The portrait remains the common thread; handwriting marks brief observations only.
-Drawn connections and warm ink evoke tactile materials.
-Private references remain outside public assets.
-Its narrow layout uses labeled lists instead of a compressed graph.
+Four illustrated worlds share warm ink, tactile texture, forests, and natural water.
+The approved AI-assisted library portrait introduces Waldo before the destination directory.
+Connect uses the approved courtyard portrait with colorful clothing and plants.
+A visible artwork disclosure distinguishes generated scenes from documentary photographs.
+Private source photographs remain outside public assets.
+
+The former atlas repeated the directory and delayed the portrait on narrow screens.
+One illustrated directory now owns the destination links.
+Each destination keeps its title and plain-language subject visible.
+Native disclosures reveal optional topic links without requiring another view or script.
+The library retains Shelves and Connections for direct or relationship-led exploration.
+Keyboard, touch, and no-script visitors can open the same disclosures.
+Repeating a depth link also reopens a disclosure the reader manually closed.
 
 After user navigation, the selected illustration briefly arrives through the Web Animations API.
 The enhancer cancels its previous `Animation` before updating the next view.

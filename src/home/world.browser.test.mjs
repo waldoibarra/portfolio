@@ -8,7 +8,12 @@ const modulePath = process.argv[2] || process.env.PLAYWRIGHT_MODULE;
 if (!modulePath) {
   throw new Error('Pass an installed Playwright module path or set PLAYWRIGHT_MODULE.');
 }
-const { chromium } = await import(pathToFileURL(join(modulePath, 'index.mjs')).href);
+const engines = await import(pathToFileURL(join(modulePath, 'index.mjs')).href);
+const browserName = process.env.WORLD_TEST_BROWSER || 'chromium';
+if (!['chromium', 'firefox', 'webkit'].includes(browserName)) {
+  throw new Error(`Unsupported browser: ${browserName}`);
+}
+const engine = engines[browserName];
 const origin = process.env.WORLD_TEST_URL || 'http://localhost:4173/';
 const views = ['map', 'workshop', 'observatory', 'garden', 'crossroads', 'connect'];
 
@@ -61,14 +66,30 @@ async function expectView(page, view, hash = `#${view}`) {
   return actual;
 }
 
-test('production world navigation and focus', { timeout: 60000 }, async () => {
-  const browser = await chromium.launch({ headless: true });
+test(`${browserName}: production world navigation and focus`, { timeout: 120000 }, async () => {
+  const browser = await engine.launch({ headless: true });
   try {
     const context = await browser.newContext();
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
+    page.on('response', response => {
+      if (response.url().startsWith(origin) && response.status() >= 400) {
+        errors.push(`${response.status()} ${response.url()}`);
+      }
+    });
     await page.goto(origin);
+    const longSentences = await page.locator('p, li, figcaption').evaluateAll(elements => {
+      const sentences = new Intl.Segmenter('en', { granularity: 'sentence' });
+      return elements.flatMap(element => {
+        const text = element.textContent.replace(/\s+/g, ' ').trim();
+        return [...sentences.segment(text)].flatMap(({ segment }) => {
+          const words = segment.trim().split(/\s+/).filter(Boolean).length;
+          return words > 17 ? [{ words, sentence: segment.trim() }] : [];
+        });
+      });
+    });
+    assert.deepEqual(longSentences, [], 'Public prose must stay within 17 words per sentence');
     assert.equal((await expectView(page, 'map', '')).focused, '');
     assert.equal(await page.locator('.map-view [data-location="map"]')
       .getAttribute('aria-current'), 'location');
@@ -161,11 +182,36 @@ test('production world navigation and focus', { timeout: 60000 }, async () => {
       await expectDetail(page, detail);
       await page.reload();
       await expectView(page, view, `#${detail}`);
+      await page.waitForFunction(id => document.activeElement ===
+        document.getElementById(id)?.querySelector('summary'), detail);
       assert.equal(await page.locator(`#${detail}`).evaluate(el => el.open), true);
       assert.equal(await page.locator(`#${detail} summary`)
         .evaluate(el => document.activeElement === el), true);
       await expectDetail(page, detail);
     }
+    // Repeating a depth link must reopen its manually closed disclosure.
+    await page.goto(new URL('#garden-care', origin).href);
+    await page.locator('#garden-care summary').click();
+    assert.equal(await page.locator('#garden-care').evaluate(el => el.open), false);
+    const detailHistory = await page.evaluate(() => history.length);
+    await page.locator('#garden .topic-nav a[href="#garden-care"]').click();
+    assert.equal(await page.locator('#garden-care').evaluate(el => el.open), true);
+    assert.equal(await page.evaluate(() => history.length), detailHistory);
+    await expectDetail(page, 'garden-care');
+
+    await page.goto(origin);
+    assert.equal(await page.locator('.shelf-topics[open]').count(), 0);
+    assert.equal(await page.locator('.atlas-directory .landmark:visible').count(), 4);
+    await page.locator('.shelf-topics summary').first().focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await page.locator('.shelf-topics[open]').count(), 1);
+    await page.keyboard.press('Enter');
+    assert.equal(await page.locator('.shelf-topics[open]').count(), 0);
+    await page.goto(new URL('#library-artwork', origin).href);
+    await expectView(page, 'map', '#library-artwork');
+    assert.equal(await page.locator('#library-artwork').evaluate(el => el.open), true);
+    await expectDetail(page, 'library-artwork');
+
     for (const hash of ['#unknown', '#%E0%A4%A', '#%3Cimg%20src=x%20onerror=alert(1)%3E']) {
       await page.goto(new URL(hash, origin).href);
       await expectView(page, 'map');
@@ -224,7 +270,15 @@ test('production world navigation and focus', { timeout: 60000 }, async () => {
     await page.goto(new URL('#connect', origin).href);
     const icons = await page.locator('.connect li img').evaluateAll(images =>
       images.map(image => image.complete && image.naturalWidth > 0 && image.alt === ''));
-    assert.deepEqual(icons, [true, true, true, true]);
+    assert.deepEqual(icons, [true, true, true, true, true]);
+    assert.equal(await page.locator('#connect a[href="https://wa.me/523318825463"]').count(), 1);
+    for (const view of ['workshop', 'connect']) {
+      assert.equal(await page.locator(`#${view} a[href="/resume"]`).count(), 1);
+    }
+    const resume = await page.request.get(new URL('/resume', origin).href);
+    assert.equal(resume.status(), 200);
+    assert.match(resume.headers()['content-type'], /text\/html/);
+    assert.match(await resume.text(), /Waldo Ibarra/);
     const atlasTopics = [
       'workshop-agents', 'workshop-review', 'workshop-sharing',
       'observatory-coherence', 'observatory-worldviews', 'observatory-inquiry',
@@ -245,6 +299,12 @@ test('production world navigation and focus', { timeout: 60000 }, async () => {
           `${view} navigation at ${width}px: ${JSON.stringify(geometry)}`);
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
           true, `${view} overflows at ${width}px`);
+        for (const image of await page.locator(`#${view} img`).all()) {
+          await image.scrollIntoViewIfNeeded();
+          await image.evaluate(element => element.decode());
+          assert.equal(await image.evaluate(element => element.naturalWidth > 0), true);
+        }
+        await page.evaluate(() => window.scrollTo(0, 0));
         if (process.env.WORLD_CAPTURE) {
           await page.screenshot({ path: `${process.env.WORLD_CAPTURE}/${view}-${width}.png` });
         }
@@ -262,6 +322,10 @@ test('production world navigation and focus', { timeout: 60000 }, async () => {
       for (const detail of atlasTopics) {
         const link = page.locator(`.atlas-directory a[href="#${detail}"]`);
         assert.equal(await link.count(), 1);
+        const disclosure = link.locator('xpath=ancestor::details');
+        if (!await disclosure.evaluate(el => el.open)) {
+          await disclosure.locator('summary').click();
+        }
         await link.click();
         await expectView(page, detail.split('-')[0], `#${detail}`);
         assert.equal(await page.locator(`#${detail}`).evaluate(el => el.open), true);
@@ -336,10 +400,34 @@ test('production world navigation and focus', { timeout: 60000 }, async () => {
     await expectView(page, 'workshop');
     assert.equal(await page.locator('#workshop .journal-plate')
       .evaluate(el => el.getAnimations().length), 0);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(origin);
+    await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+    assert.equal(await page.evaluate(() =>
+      document.documentElement.scrollWidth <= innerWidth), true);
+    await page.locator('.shelf-topics summary').first().click();
+    await page.locator('.atlas-directory a[href="#workshop-agents"]').click();
+    await expectView(page, 'workshop', '#workshop-agents');
+    await expectDetail(page, 'workshop-agents');
+    await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+    if (process.env.WORLD_CAPTURE) {
+      for (const width of [1440, 390]) {
+        await page.setViewportSize({ width, height: 900 });
+        await page.goto(origin);
+        await page.evaluate(() => document.fonts.ready);
+        for (const image of await page.locator('#map img').all()) {
+          await image.scrollIntoViewIfNeeded();
+          await image.evaluate(element => element.decode());
+        }
+        await page.evaluate(() => window.scrollTo(0, 0));
+        await page.screenshot({ path: `${process.env.WORLD_CAPTURE}/library-full-${width}.png`,
+          fullPage: true });
+      }
+    }
     assert.deepEqual(errors, []);
     await context.close();
 
-    const touch = await browser.newContext({ hasTouch: true, isMobile: true,
+    const touch = await browser.newContext({ hasTouch: true, isMobile: browserName !== 'firefox',
       viewport: { width: 390, height: 844 } });
     try {
       const mobile = await touch.newPage();
@@ -366,6 +454,10 @@ test('production world navigation and focus', { timeout: 60000 }, async () => {
       assert.equal(await plain.locator('[data-lens-control]:visible').count(), 0);
       assert.equal(await plain.locator('[data-open-connections]:visible').count(), 0);
       assert.equal(await plain.locator('.connection-index a[href="#workshop-review"]').count(), 1);
+      await plain.locator('.shelf-topics summary').first().click();
+      assert.equal(await plain.locator('.shelf-topics').first().evaluate(el => el.open), true);
+      assert.equal(await plain.locator('.atlas-directory a[href="#workshop-agents"]')
+        .isVisible(), true);
       await plain.locator('.landmark[href="#workshop"]').click();
       assert.equal(new URL(plain.url()).hash, '#workshop');
       await plain.locator('#workshop-practice summary').click();

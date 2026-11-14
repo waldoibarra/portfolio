@@ -19,9 +19,11 @@ The `#map` fragment remains the library's compatibility URL.
 Do not hide a view or relationship directory before the script initializes successfully.
 Hide the lens controls until the enhancer can switch directories.
 
-The enhancer in [`world.ts`](/src/home/world.ts) synchronizes panels after resolving the initial fragment.
+The enhancer in [`world.ts`](/src/home/world.ts) synchronizes panels after resolving the initial
+fragment.
 It responds to `hashchange` for normal links and browser history.
-Settle top-level destinations at document start, including direct entry, refresh, and Back or Forward.
+Settle top-level destinations at document start, including direct entry, refresh, and Back or
+Forward.
 Handle repeated same-destination clicks separately because they do not fire `hashchange`.
 Reveal the parent before scrolling to depth content or focusing its summary.
 Focus a detail summary on direct entry and refresh as well as intentional navigation.
@@ -53,8 +55,11 @@ The [OpenPencil reference](/docs/reference/openpencil.md) records its limitation
 
 Homepage metadata is generated from [`metadata.json`](/src/home/metadata.json).
 The sharing image needs a separate manual update when its copy changes.
-The 1200 × 630 JPEG uses the public portrait and original local world illustrations.
-Leave `/resume` unlinked until its content passes separate review.
+The 1200 × 630 JPEG uses the approved AI-assisted library portrait and locally composed text.
+The [asset recipe](/docs/reference/visual-assets.md#reproduce-the-optimized-assets) regenerates it
+alongside responsive images.
+Preserve the requested résumé links in Workshop and Connect, and WhatsApp in Connect.
+The existing résumé content will be replaced in the next approved redesign.
 
 ## Check the result
 
@@ -78,12 +83,18 @@ just test-world-browser /path/to/installed/node_modules/playwright
 ```
 
 Alternatively, set `PLAYWRIGHT_MODULE` and run `just test-world-browser`.
+Set `WORLD_TEST_BROWSER=firefox` or `WORLD_TEST_BROWSER=webkit` to exercise another installed
+  engine.
+The default remains Chromium.
 No Playwright dependency or browser installation belongs in this repository.
 The browser regression covers viewport positioning, repeated clicks, skip focus, history, details,
 malformed fragments, relationship controls, no-JavaScript content, and hidden tab stops.
+It also checks topic disclosure, image decoding, local resource errors, enlarged text, and public
+  sentence lengths.
 Treat unavailable Playwright or Chromium as a release blocker for this navigation change.
 Also inspect rapid links and modified clicks in a browser.
 Check focus, the skip link, and disclosure controls with a keyboard.
-Check no-JavaScript reading, reduced motion, 200 percent zoom, and 1440, 768, 390, and 320 px layouts.
+Check no-JavaScript reading, reduced motion, 200 percent zoom, and 1440, 768, 390, and 320 px
+layouts.
 Compare rendered output with the [editable design](/docs/designs/landing.fig).
 `just preview` serves the last build, so rebuild before reviewing a changed source.

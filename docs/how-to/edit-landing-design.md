@@ -15,12 +15,14 @@ The Garden uses light botanical greens; the Crossroads uses coral route charts.
 Connect welcomes direct conversation.
 These places share typography; each production view embeds its own navigation.
 Do not restore the old Work, Approach, About, and Contact brochure sections.
-Avoid decorative scores, forced journeys, private reference images, or unreviewed résumé links.
+Avoid decorative scores, forced journeys, and private reference images.
+The requested résumé and WhatsApp links remain available without a forced exploration sequence.
 
 Keep separate desktop and mobile compositions.
-Mobile must present readable labels, not a scaled desktop atlas.
+Mobile uses compact illustrated rows with readable labels, not a scaled desktop layout.
 The preview records the desktop library; the Mobile page records narrow wayfinding.
-Colored glyphs indicate each universe; production SVGs carry the actual drawings.
+The design embeds the same approved portrait and domain artwork used by the website.
+Its text and image layers remain editable; native topic disclosures work only in production HTML.
 Production code owns the deeper views and interactive states.
 Update the design alongside the [implementation guide](/docs/how-to/implement-landing-design.md).
 

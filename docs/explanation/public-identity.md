@@ -19,4 +19,5 @@ Each channel offers a different depth of the same person.
 Public copy draws on supplied biographies and current personal context.
 It distinguishes established work from current interests, including marketing and sales.
 Private images, health and intimate details, confidential work, and unsupported claims stay unpublished.
-The résumé remains available at `/resume` without a homepage link pending separate content review.
+Waldo requested résumé links in Workshop and Connect and a direct WhatsApp link in Connect.
+The existing `/resume` remains a legacy career document pending the separately planned replacement.

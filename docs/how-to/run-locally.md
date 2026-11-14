@@ -69,13 +69,15 @@ Keep charset, viewport, stylesheet, and favicon declarations in
 [`src/home/index.html`](/src/home/index.html). Read the
 [homepage metadata reference](/docs/reference/homepage-metadata.md) before changing field names
 or the sharing image.
-For live sharing checks, see [Verify a deployment](/docs/how-to/verify-deployment.md#check-sharing-previews).
+For live sharing checks, see [Verify a
+deployment](/docs/how-to/verify-deployment.md#check-sharing-previews).
 
 Before releasing text or photo changes, review
 [`public/images/social-preview.jpg`](/public/images/social-preview.jpg) and regenerate it manually
 if needed. Metadata, homepage copy, and portrait edits do not redraw this static image. Keep it a
-1200 × 630 JPEG and keep the sharing metadata aligned with the asset. There is no automated
-`just social-preview` recipe.
+1200 × 630 JPEG and keep the sharing metadata aligned with the asset.
+The [visual asset recipe](/docs/reference/visual-assets.md#reproduce-the-optimized-assets)
+regenerates it from approved local masters.
 
 ## Choose the next task
 

@@ -3,7 +3,8 @@
 `waldo.love` is a static, explorable portfolio. Its homepage is Waldo's living library.
 Visitors choose the Workshop, Observatory, Garden, Crossroads, or Connect.
 Each view has its own fragment URL; deeper disclosures also have direct links.
-The `/resume` route remains available, separate and unpromoted pending content review.
+The existing `/resume` route is linked from Workshop and Connect at Waldo's request.
+Its replacement belongs to the upcoming redesign; this release does not rewrite its content.
 
 ## Ownership
 
@@ -23,34 +24,49 @@ The `/resume` route remains available, separate and unpromoted pending content r
 Vite expands source-relative includes at build and development time, without a runtime request.
 All views, relationship summaries, and native disclosures remain readable without JavaScript.
 [`home.css`](/src/home/home.css) owns shared styles and domain palettes.
-[`library.css`](/src/home/library.css) owns library-specific composition and lens controls.
-Original artwork lives in [`public/images/journal/`](/public/images/journal/).
-Licensed icons and Caveat have provenance in the [asset reference](/docs/reference/visual-assets.md).
-[`world.ts`](/src/home/world.ts) synchronizes panels, title, view-local location indicators, and focus.
+[`library.css`](/src/home/library.css) owns the portrait-led introduction, illustrated directory,
+topic disclosures, and lens controls.
+The directory is the single set of destination links; topic links appear inside native disclosures.
+Responsive artwork lives in [`public/images/worlds/`](/public/images/worlds/).
+Approved AI-assisted portraits live in [`public/images/personal/`](/public/images/personal/).
+Earlier SVG studies remain in `public/images/journal/`, but the homepage no longer uses them.
+Licensed icons and Caveat have provenance in the [asset
+reference](/docs/reference/visual-assets.md).
+[`world.ts`](/src/home/world.ts) synchronizes panels, title, view-local location indicators, and
+focus.
 It enhances the library's native radio lenses and cancels interrupted artwork arrivals.
 It runs once before hiding inactive views, then responds to `hashchange`.
+After `pageshow`, one animation frame restores focus following browser-managed page restoration.
 Native links create history entries; unknown fragments use `replaceState` to recover the library.
-Top-level entries settle at document start, including direct entry, repeated clicks, and history traversal.
+Top-level entries settle at document start, including direct entry, repeated clicks, and history
+traversal.
 The enhancer handles unchanged fragments explicitly because they do not fire `hashchange`.
 Clicking the skip link focuses and scrolls to main without changing URL, active view, or history.
 Initial `#main` entry instead opens the library, focuses main, and retains that fragment.
 Detail fragments, including peer working notes, open their disclosure.
+Repeating a depth link reopens a manually closed disclosure without adding history.
 They focus its summary with viewport clearance.
-Read [navigation as orientation](/docs/explanation/experience-design.md) for observed friction and tradeoffs.
-[`world.test.mjs`](/src/home/world.test.mjs) exercises fragment and source contracts through `just test-world`.
+Read [navigation as orientation](/docs/explanation/experience-design.md) for observed friction and
+tradeoffs.
+[`world.test.mjs`](/src/home/world.test.mjs) exercises fragment and source contracts through `just
+test-world`.
 The library lists precise topics and labeled relationships.
 Each domain offers embedded return, location, contact, topic, and related links.
 [`world.browser.test.mjs`](/src/home/world.browser.test.mjs) exercises production browser behavior.
 Run it through `just test-world-browser` with an external Playwright module path.
-It requires a built preview; Chromium coverage does not establish other browsers' behavior.
+It requires a built preview; Chromium is the default.
+Set `WORLD_TEST_BROWSER` to `firefox` or `webkit` to exercise those installed engines.
+The regression also checks rendered prose length, image loading, and enlarged-text reflow.
 
 [`metadata.json`](/src/home/metadata.json) owns the initial title and sharing metadata.
-Vite generates these tags in the HTML response; the script updates the browser title after navigation.
+Vite generates these tags in the HTML response; the script updates the browser title after
+navigation.
 Read the [metadata reference](/docs/reference/homepage-metadata.md) before changing its fields.
 Vite 8 builds the homepage as `dist/home/index.html`.
 The standalone résumé copies to `dist/resume/index.html`.
 Development and preview rewrite `/` and `/resume` to those documents.
-CloudFront uses `home/index.html` as its default root object and a viewer-request function for `/resume`.
+CloudFront uses `home/index.html` as its default root object and a viewer-request function for
+`/resume`.
 Other paths are not homepage fallbacks.
 
 ## Design and delivery
@@ -60,9 +76,11 @@ Production markup and CSS remain the authority for browser behavior.
 Read [edit the design](/docs/how-to/edit-landing-design.md) and
 [implement the design](/docs/how-to/implement-landing-design.md) for that handoff.
 
-[`.mise.toml`](/.mise.toml) manages project tools; the [justfile](/justfile) is the command interface.
+[`.mise.toml`](/.mise.toml) manages project tools; the [justfile](/justfile) is the command
+interface.
 `just build` typechecks TypeScript and builds production assets.
-The production workflow checks and builds both domains, stages website objects, applies infrastructure,
+The production workflow checks and builds both domains, stages website objects, applies
+infrastructure,
 then waits for CloudFront before removing obsolete objects and invalidating caches.
 Read the [delivery model](/docs/explanation/delivery.md) for gates and deployment dependencies.
 
@@ -75,5 +93,6 @@ Infrastructure tests use mock providers; they do not test real AWS integration.
 
 Keep new homepage concerns within `src/home/` until another page needs reuse.
 A new built page needs a Vite entrypoint and explicit public route.
-Read [documentation maintenance](/docs/README.md#maintain-the-documentation) before reorganizing pages.
+Read [documentation maintenance](/docs/README.md#maintain-the-documentation) before reorganizing
+pages.
 ADR-0008's AI-first stance remains proposed in the [decision index](/docs/decisions/README.md).

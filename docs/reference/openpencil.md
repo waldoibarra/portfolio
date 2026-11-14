@@ -28,10 +28,13 @@ The guides use the globally managed `openpencil` directly from the repository ro
 ## Historical observations from the earlier flat landing
 
 The following observations describe the replaced brochure design, not the current library.
-The library overview export was reviewed and saved as `docs/designs/landing-preview.png`.
-The Mobile page also records distinct narrow landmarks and a subject directory.
-Both previews label Shelves and Connections but cannot demonstrate radio behavior.
-Colored glyphs are design placeholders; production uses original SVG illustrations.
+The current library export is saved as `docs/designs/landing-preview.png`.
+Landing and Mobile contain editable text and image layers using the approved generated artwork.
+Mobile records compact destination rows; Places contains the four domain illustrations.
+Both previews label Shelves and Connections but cannot demonstrate radio or disclosure behavior.
+The browser implementation remains authoritative for interaction, responsive typography, and exact
+  spacing.
+Strict-font desktop and mobile exports succeeded; design lint reported zero errors and warnings.
 Future design edits require a new export review.
 
 The earlier flat landing document triggered misleading contrast lint errors.

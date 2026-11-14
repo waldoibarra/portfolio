@@ -97,7 +97,10 @@ if (typeof document !== 'undefined') {
       });
   }
   window.addEventListener('hashchange', () => synchronize());
-  window.addEventListener('load', () => synchronize(false), { once: true });
+  // Restore deep-link focus after the browser finishes page restoration.
+  window.addEventListener('pageshow', () => {
+    requestAnimationFrame(() => synchronize(false));
+  });
   document.addEventListener('click', event => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey ||
         event.shiftKey || event.altKey) return;
@@ -114,7 +117,7 @@ if (typeof document !== 'undefined') {
     }
     if (link.hash !== window.location.hash) return;
     const route = resolveFragment(link.hash);
-    if (route.invalid || route.detail) return;
+    if (route.invalid) return;
     event.preventDefault();
     synchronize();
   });

@@ -107,7 +107,7 @@ build-for-prod:
 test-world:
   node --test src/home/world.test.mjs
 
-# Exercise the built homepage in Chromium using an externally installed Playwright module
+# Exercise the built homepage using external Playwright (Chromium by default)
 [group("Debug")]
 test-world-browser playwright_module="":
   @node src/home/world.browser.test.mjs "{{ playwright_module }}"
@@ -192,6 +192,11 @@ check: (lint) (build) (test-world) (tf-check)
 [group("Debug")]
 debug-pre-commit-hook:
   hk run pre-commit -v
+
+# Optimize approved image masters using an externally installed Sharp module
+[group("Design")]
+prepare-visual-assets source_directory sharp_module:
+  @node scripts/prepare-visual-assets.mjs "{{ source_directory }}" "{{ sharp_module }}"
 
 # Open the landing design in OpenPencil
 [group("Design")]

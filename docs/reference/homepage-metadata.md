@@ -25,10 +25,12 @@ There are no configured fallback values.
 
 The canonical and image URLs are absolute HTTPS URLs. Image metadata describes the static
 1200 × 630 JPEG at [`public/images/social-preview.jpg`](/public/images/social-preview.jpg).
-The image combines the public portrait with four original local journal illustrations.
+The image combines an approved AI-assisted library portrait with locally composed introduction text.
 Metadata, homepage copy, and portrait edits do not redraw that image. Changes to its text or photo
 require manual review and regeneration before release. The replacement remains a 1200 × 630
-JPEG, with metadata matching the asset. There is no automated `just social-preview` recipe.
+JPEG, with metadata matching the asset. The [visual asset
+recipe](/docs/reference/visual-assets.md#reproduce-the-optimized-assets) regenerates it alongside
+the responsive artwork.
 
 ## Generation and reload behavior
 
@@ -57,5 +59,6 @@ provide the corresponding X card settings. The homepage has an author but no art
 date.
 
 The build does not refresh third-party preview caches. Local JSON edits do not change the deployed
-site or cards already shared. Read [Check sharing previews](/docs/how-to/verify-deployment.md#check-sharing-previews)
+site or cards already shared. Read [Check sharing
+previews](/docs/how-to/verify-deployment.md#check-sharing-previews)
 before verifying a deployed change.

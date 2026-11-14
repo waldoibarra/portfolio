@@ -44,11 +44,15 @@ Choose a page by what you need to do or understand. Start with the
 
 ## Explore current work and retained context
 
-- [Library plan](/docs/plans/library-world.md): accepted scope, checks, and delivery work.
+- [Visual library plan](/docs/plans/visual-library.md): approved image integration, progressive
+  disclosure, and local verification.
+- [Library plan](/docs/plans/library-world.md): prior navigation and deployment history.
 - [Personal-brand research](/docs/research/personal-brand.md): evidence for the introduction.
-- [Publication review](/docs/drafts/publication-review.md): draft review boundaries, not published profiles.
+- [Publication review](/docs/drafts/publication-review.md): draft review boundaries, not published
+  profiles.
 - [Earlier journal plan](/docs/plans/journal-world.md) and
-  [interactive-world plan](/docs/plans/interactive-world.md): historical predecessors, not current authority.
+  [interactive-world plan](/docs/plans/interactive-world.md): historical predecessors, not current
+  authority.
 
 ## Maintain the documentation
 

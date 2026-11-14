@@ -1,20 +1,21 @@
-/* The library index owns its relationships and reading modes. */
+/* The library owns its introduction, destination directory, and reading lenses. */
 .place-nav {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
   align-items: center;
   gap: .5rem 1rem;
-  margin-bottom: 3rem;
-  border-bottom: 1px solid #d9dac46e;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--library-rule);
+  padding-bottom: .75rem;
 }
 
 .place-nav a {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: #ffe0a6;
-  font-size: .85rem;
+  color: var(--library-cream);
+  font-size: .95rem;
   text-decoration: none;
 }
 
@@ -23,11 +24,91 @@
   text-underline-offset: .5em;
 }
 
+.map-view {
+  --accent: #b5dbc2;
+  --library-cream: #ffe0a6;
+  --library-muted: #d5ddd4;
+  --library-rule: #d9dac46e;
+
+  max-width: 96rem;
+  margin-inline: auto;
+  background: #172e32;
+}
+
+.library-welcome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2rem 3rem;
+}
+
+.map-intro {
+  flex: 1 1 22rem;
+  min-width: 0;
+}
+
+.map-intro .kicker {
+  color: var(--accent);
+}
+
+.map-intro h1 {
+  font-size: clamp(2.8rem, 4.7vw, 5rem);
+  margin-bottom: 1.5rem;
+  max-width: 12ch;
+}
+
+.map-intro h1 em {
+  color: var(--accent);
+}
+
+.map-intro > :where(p:not(.kicker)) {
+  color: var(--library-muted);
+  line-height: 1.7;
+  font-size: 1.1rem;
+  max-width: 34rem;
+}
+
+.map-intro strong {
+  color: #fff5de;
+}
+
+.library-portrait {
+  flex: 1.4 1 28rem;
+  min-width: 0;
+  margin: 0;
+}
+
+.library-portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1rem 1rem 4rem;
+}
+
+.library-portrait figcaption {
+  margin-top: .85rem;
+  color: var(--library-muted);
+  font-size: .8rem;
+  line-height: 1.6;
+}
+
+.library-portrait :where(figcaption) a {
+  display: inline-block;
+  padding-block: .3rem;
+  color: var(--library-cream);
+}
+
 .library-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: .5rem 2rem;
+  gap: .5rem 1.5rem;
+}
+
+.library-actions .text-link {
+  align-items: center;
+  min-height: 48px;
+  margin-top: 0;
 }
 
 .map-intro .library-shortcut {
@@ -45,8 +126,24 @@
 
 html.world-ready .map-intro .library-shortcut {
   display: inline-flex;
-  align-items: center;
-  min-height: 44px;
+}
+
+.map-index {
+  padding-top: 3rem;
+  margin-top: 3rem;
+  border-top: 1px solid var(--library-rule);
+}
+
+.index-heading h2 {
+  font: 400 clamp(1.8rem, 3vw, 2.7rem)/1.2 Georgia, serif;
+  letter-spacing: -.03em;
+  margin-bottom: .75rem;
+}
+
+.index-heading p {
+  color: var(--library-muted);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
 }
 
 .library-lens {
@@ -64,10 +161,11 @@ html.world-ready .library-lens {
 }
 
 .library-lens legend {
-  float: left;
-  width: 100%;
-  margin-bottom: .75rem;
-  font: 400 1.35rem Georgia, serif;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
 }
 
 .library-lens label {
@@ -75,8 +173,9 @@ html.world-ready .library-lens {
   display: inline-flex;
   align-items: center;
   gap: .65rem;
-  padding: .75rem 1rem;
+  padding: .65rem 1rem;
   border: 1px solid #e9d9ad8c;
+  border-radius: .25rem;
   min-height: 48px;
   transition: background-color 150ms ease-out, color 150ms ease-out;
 }
@@ -93,10 +192,77 @@ html.world-ready .library-lens {
   accent-color: #17262b;
 }
 
+.atlas-directory {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  align-items: start;
+  gap: 2rem;
+}
+
+.atlas-entry {
+  min-width: 0;
+}
+
+.landmark {
+  display: block;
+  text-decoration: none;
+}
+
+.landmark img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: .4rem;
+  margin-bottom: 1.2rem;
+}
+
+.landmark h3 {
+  font: 400 1.8rem/1.2 Georgia, serif;
+  margin-bottom: .4rem;
+  color: var(--library-cream);
+}
+
+.landmark span {
+  font-size: .85rem;
+  color: var(--accent);
+}
+
+.landmark:where(:hover) h3 {
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+
+.atlas-entry > p {
+  color: var(--library-muted);
+  line-height: 1.6;
+  margin-block: 1rem;
+}
+
+.shelf-topics {
+  border-top: 1px solid var(--library-rule);
+}
+
+.shelf-topics summary, .artwork-note summary {
+  cursor: pointer;
+  padding-block: .85rem;
+  min-height: 48px;
+  color: var(--library-cream);
+  font-size: .9rem;
+}
+
+.shelf-topics a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding-block: .5rem;
+  line-height: 1.5;
+}
+
 .connection-index {
   max-width: 74rem;
-  border-block: 1px solid #d9dac46e;
-  padding-block: 2rem;
+  padding-block: 1rem;
 }
 
 .connection-index h3 {
@@ -112,13 +278,13 @@ html.world-ready .library-lens {
   margin: 1.5rem 0 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
   gap: 0 2rem;
 }
 
 .connection-index li {
   padding: 1.25rem 0;
-  border-top: 1px solid #d9dac46e;
+  border-top: 1px solid var(--library-rule);
 }
 
 .connection-index strong {
@@ -128,22 +294,63 @@ html.world-ready .library-lens {
 }
 
 .connection-index a {
-  color: #ffe0a6;
+  display: inline-block;
+  padding-block: .35rem;
+  color: var(--library-cream);
+}
+
+.artwork-note {
+  margin-top: 3rem;
+  border-top: 1px solid var(--library-rule);
+  scroll-margin-top: 2rem;
+  color: var(--library-muted);
+  max-width: 46rem;
+}
+
+.artwork-note p {
+  line-height: 1.7;
 }
 
 .library-signature {
-  margin: 3rem 0 0;
-  color: #d5ddd4;
+  margin: 2rem 0 0;
+  color: var(--library-muted);
   font-size: .85rem;
 }
 
 @media (width <= 620px) {
-  .connection-index ul {
-    grid-template-columns: 1fr;
+  .place-nav {
+    margin-bottom: 1.75rem;
   }
 
-  .place-nav {
-    margin-bottom: 2rem;
+  .library-welcome {
+    gap: 1.5rem;
+  }
+
+  .landmark {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .landmark img {
+    flex: none;
+    width: 6.5rem;
+    margin-bottom: 0;
+  }
+
+  .landmark div {
+    flex: 1 1 9rem;
+    min-width: 0;
+  }
+
+  .landmark h3 {
+    font-size: 1.55rem;
+  }
+
+  .map-index {
+    margin-top: 2rem;
+    padding-top: 2rem;
   }
 }
 
