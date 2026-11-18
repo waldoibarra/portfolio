@@ -3,6 +3,14 @@ data "aws_route53_zone" "main" {
   private_zone = false
 }
 
+resource "aws_route53_record" "gmail_mx" {
+  zone_id = data.aws_route53_zone.main.zone_id
+  name    = var.domain_name
+  type    = "MX"
+  ttl     = 300
+  records = ["1 smtp.google.com."]
+}
+
 resource "aws_route53_record" "root_txt" {
   zone_id = data.aws_route53_zone.main.zone_id
   name    = var.domain_name

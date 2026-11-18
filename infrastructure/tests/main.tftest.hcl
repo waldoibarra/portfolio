@@ -69,6 +69,21 @@ run "plan_domain_cutover" {
   }
 }
 
+run "validate_gmail_routing" {
+  command = plan
+
+  assert {
+    condition = (
+      aws_route53_record.gmail_mx.zone_id == data.aws_route53_zone.main.zone_id &&
+      aws_route53_record.gmail_mx.name == "waldo.love" &&
+      aws_route53_record.gmail_mx.type == "MX" &&
+      aws_route53_record.gmail_mx.ttl == 300 &&
+      aws_route53_record.gmail_mx.records == toset(["1 smtp.google.com."])
+    )
+    error_message = "The root MX record must route incoming mail to Google at priority 1"
+  }
+}
+
 run "validate_google_domain_verification" {
   command = plan
 

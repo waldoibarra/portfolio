@@ -33,7 +33,7 @@ variables and targets the `production` GitHub environment.
 | [`s3.tf`](/infrastructure/s3.tf) | Deterministic bucket name `waldoibarra-com-site`; all four public-access blocks enabled; AES256 server-side encryption; `BucketOwnerEnforced` ownership |
 | [`cloudfront.tf`](/infrastructure/cloudfront.tf) | Origin Access Control (OAC) signs S3 requests with SigV4; distribution serves the root and `www` domains and defaults to `home/index.html`; a published viewer-request Function resolves `/resume` |
 | [`acm.tf`](/infrastructure/acm.tf) | DNS-validated certificate for the root domain and wildcard subdomains, with `create_before_destroy`; validation records use known domain-name keys and ACM-computed record values |
-| [`dns.tf`](/infrastructure/dns.tf) | Looks up an existing public hosted zone by domain name; creates root and `www` alias A records pointing to CloudFront, plus root TXT records for Google verification |
+| [`dns.tf`](/infrastructure/dns.tf) | Looks up an existing public hosted zone by domain name; creates root and `www` alias A records pointing to CloudFront, plus root TXT and MX records for Google Workspace |
 
 The bucket policy grants `s3:GetObject` to CloudFront's service principal
 only for this distribution's source ARN.
@@ -53,7 +53,7 @@ retain historical identifiers for resource and state continuity. They do not ret
 routing. Keep the distribution and Terraform output identities as well; cosmetic renaming
 must not replace them.
 
-## Email domain verification
+## Google Workspace DNS
 
 `dns.tf` declares the Google Workspace ownership challenge in `aws_route53_record.root_txt`.
 The record uses the root domain and a 300-second TTL.
@@ -65,9 +65,9 @@ Reconcile any unmanaged records instead of overwriting them.
 
 The planned Google Workspace mailbox is `be@waldo.love`.
 This configuration establishes neither mailbox activation nor delivery readiness.
-MX, SPF, DKIM, and DMARC setup remains pending; no mail-routing records are declared yet.
-After deployment, confirm ownership in Google.
-Configure mail routing and authentication, then test delivery.
+The root MX record routes incoming mail to `smtp.google.com.` at priority 1 (TTL 300 seconds).
+After confirming the public MX record, activate Gmail in Google Admin and test incoming mail.
+SPF, DKIM, and DMARC remain separate steps for outbound authentication.
 Follow the [infrastructure change guide](../how-to/change-infrastructure.md) for reviewed CI deployment.
 
 ## Request routing
