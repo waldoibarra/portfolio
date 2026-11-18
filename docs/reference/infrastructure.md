@@ -33,13 +33,13 @@ variables and targets the `production` GitHub environment.
 | [`s3.tf`](/infrastructure/s3.tf) | Deterministic bucket name `waldoibarra-com-site`; all four public-access blocks enabled; AES256 server-side encryption; `BucketOwnerEnforced` ownership |
 | [`cloudfront.tf`](/infrastructure/cloudfront.tf) | Origin Access Control (OAC) signs S3 requests with SigV4; distribution serves the root and `www` domains and defaults to `home/index.html`; a published viewer-request Function resolves `/resume` |
 | [`acm.tf`](/infrastructure/acm.tf) | DNS-validated certificate for the root domain and wildcard subdomains, with `create_before_destroy`; validation records use known domain-name keys and ACM-computed record values |
-| [`dns.tf`](/infrastructure/dns.tf) | Looks up an existing public hosted zone by domain name; creates root and `www` alias A records pointing to CloudFront |
+| [`dns.tf`](/infrastructure/dns.tf) | Looks up an existing public hosted zone by domain name; creates root and `www` alias A records pointing to CloudFront, plus root TXT records for Google verification |
 
 The bucket policy grants `s3:GetObject` to CloudFront's service principal
 only for this distribution's source ARN.
 CloudFront redirects HTTP to HTTPS, requires `TLSv1.2_2021`,
 allows GET/HEAD/OPTIONS, and caches GET/HEAD. The distribution enables compression and IPv6,
-forwards no query strings or cookies, and has no geographic restriction. DNS currently declares
+forwards no query strings or cookies, and has no geographic restriction. Website routing currently declares
 A records only. The full cache and distribution settings remain in the resource source.
 
 `waldo.love` and `www.waldo.love` are the only website hostnames. Terraform reads an existing
@@ -52,6 +52,23 @@ The bucket `waldoibarra-com-site`, OAC `waldoibarra-com-oac`, and workspace `wal
 retain historical identifiers for resource and state continuity. They do not retain old-domain
 routing. Keep the distribution and Terraform output identities as well; cosmetic renaming
 must not replace them.
+
+## Email domain verification
+
+`dns.tf` declares the Google Workspace ownership challenge in `aws_route53_record.root_txt`.
+The record uses the root domain and a 300-second TTL.
+Its public verification value belongs in Git; passwords and recovery codes do not.
+Keep this value after verification, and add future root TXT values to the same record set.
+Do not create separate Terraform resources for the same zone, name, and TXT type.
+Inspect existing root TXT values before deployment.
+Reconcile any unmanaged records instead of overwriting them.
+
+The planned Google Workspace mailbox is `be@waldo.love`.
+This configuration establishes neither mailbox activation nor delivery readiness.
+MX, SPF, DKIM, and DMARC setup remains pending; no mail-routing records are declared yet.
+After deployment, confirm ownership in Google.
+Configure mail routing and authentication, then test delivery.
+Follow the [infrastructure change guide](../how-to/change-infrastructure.md) for reviewed CI deployment.
 
 ## Request routing
 

@@ -69,6 +69,21 @@ run "plan_domain_cutover" {
   }
 }
 
+run "validate_google_domain_verification" {
+  command = plan
+
+  assert {
+    condition = (
+      aws_route53_record.root_txt.zone_id == data.aws_route53_zone.main.zone_id &&
+      aws_route53_record.root_txt.name == "waldo.love" &&
+      aws_route53_record.root_txt.type == "TXT" &&
+      aws_route53_record.root_txt.ttl == 300 &&
+      contains(aws_route53_record.root_txt.records, "google-site-verification=nUXzE4DlX2o4VnDAe_CedAqtsAF_ikgZ-0nobaDyplU")
+    )
+    error_message = "The root TXT record must retain the Google verification token with a 300-second TTL"
+  }
+}
+
 run "validate_s3_public_access_block" {
   command = plan
 
