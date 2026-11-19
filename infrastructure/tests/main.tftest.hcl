@@ -93,9 +93,26 @@ run "validate_google_domain_verification" {
       aws_route53_record.root_txt.name == "waldo.love" &&
       aws_route53_record.root_txt.type == "TXT" &&
       aws_route53_record.root_txt.ttl == 300 &&
-      contains(aws_route53_record.root_txt.records, "google-site-verification=nUXzE4DlX2o4VnDAe_CedAqtsAF_ikgZ-0nobaDyplU")
+      aws_route53_record.root_txt.records == toset([
+        "google-site-verification=nUXzE4DlX2o4VnDAe_CedAqtsAF_ikgZ-0nobaDyplU",
+        "v=spf1 include:_spf.google.com ~all",
+      ])
     )
-    error_message = "The root TXT record must retain the Google verification token with a 300-second TTL"
+    error_message = "The root TXT record must retain Google verification and authorize Google through a single SPF policy"
+  }
+}
+
+run "validate_google_dkim" {
+  command = plan
+
+  assert {
+    condition = (
+      aws_route53_record.google_dkim.name == "google._domainkey.waldo.love" &&
+      aws_route53_record.google_dkim.type == "TXT" &&
+      alltrue([for chunk in split("\"\"", one(aws_route53_record.google_dkim.records)) : length(chunk) <= 255]) &&
+      sha256(replace(one(aws_route53_record.google_dkim.records), "\"\"", "")) == "06b195abdf24475c9af1e52e3074f890028870ce144c9d54a350819c707c8459"
+    )
+    error_message = "DKIM chunks must reconstruct the supplied Google key at the google selector"
   }
 }
 

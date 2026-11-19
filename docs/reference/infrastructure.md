@@ -67,7 +67,11 @@ The planned Google Workspace mailbox is `be@waldo.love`.
 This configuration establishes neither mailbox activation nor delivery readiness.
 The root MX record routes incoming mail to `smtp.google.com.` at priority 1 (TTL 300 seconds).
 After confirming the public MX record, activate Gmail in Google Admin and test incoming mail.
-SPF, DKIM, and DMARC remain separate steps for outbound authentication.
+The root TXT set includes one SPF policy authorizing Google Workspace.
+`google._domainkey` holds the public DKIM key as one TXT value comprising multiple strings.
+After publication, confirm both TXT records resolve and start DKIM authentication in Google Admin.
+Send an external test message and check its headers for `spf=pass` and `dkim=pass`.
+This configuration does not publish a DMARC policy.
 Follow the [infrastructure change guide](../how-to/change-infrastructure.md) for reviewed CI deployment.
 
 ## Request routing
