@@ -7,6 +7,16 @@ const shell = readFileSync(new URL('index.html', import.meta.url), 'utf8');
 const html = shell.replace(/<!-- include: (home\/notes\/[a-z-]+\.html) -->/g,
   (_, filename) => readFileSync(new URL(`../${filename}`, import.meta.url), 'utf8'));
 
+test('homepage and résumé use the selected contact mailbox', () => {
+  const resume = readFileSync(new URL('../../public/resume/index.html', import.meta.url), 'utf8');
+  for (const page of [html, resume]) {
+    const addresses = [...page.matchAll(/href="mailto:([^"]+)"/g)].map(match => match[1]);
+    assert.deepEqual(addresses, ['be@waldo.love']);
+    assert.doesNotMatch(page, /waldo\.ibarra@linux\.com/);
+  }
+  assert.match(resume, />be@waldo\.love<\/a>/);
+});
+
 test('working notes remain reachable from their topics in initial HTML', () => {
   for (const [view, notes] of Object.entries({
     workshop: ['policy', 'verification', 'native', 'delivery'],

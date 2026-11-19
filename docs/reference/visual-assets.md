@@ -31,7 +31,8 @@ Original personal photographs and provider upload references are not included in
 | Public asset | Source and model | Intended placement |
 | --- | --- | --- |
 | `personal/library-*.webp` | Soul ID base, refined with Nano Banana 2.1; job `9b113ea9-63f6-4319-867e-2bf19afc1cd8` | Library introduction |
-| `personal/courtyard-*.webp` | Soul ID base, refined with Nano Banana 2.1; job `3579580b-f91a-4d68-a609-5c1975ab8c7c` | Connect |
+| `personal/river-*.webp` | Nano Banana 2.1; job `9037eb72-ae63-44d2-aa90-ace4102534de` | Connect |
+| `personal/courtyard-*.webp` | Soul ID base, refined with Nano Banana 2.1; job `3579580b-f91a-4d68-a609-5c1975ab8c7c` | Retired Connect portrait, retained for rollback |
 | `worlds/workshop-*.webp` | Nano Banana 2.1; job `20a72e73-072f-4bce-9a92-d0e1caa7f704` | Workshop and directory |
 | `worlds/observatory-*.webp` | Nano Banana 2.1; job `62c9d4b9-a284-43ff-9971-04a82a7df6c9` | Observatory and directory |
 | `worlds/garden-*.webp` | Nano Banana 2.1; job `bb4a670b-8ee7-49d2-bb6f-e6c63caada8b` | Garden and directory |
@@ -50,6 +51,10 @@ The local image workspace is `~/projects/prototypes/waldo-profile/`.
 Its manifests retain prompts, source references, generated masters, review decisions, and provider
 costs.
 The source workspace remains separate from the deployed portfolio.
+Connect uses the approved full seated composition from `outputs/current-review/instagram.png`,
+not its avatar crop.
+The library and world masters now live under `archive/2026-11-14-earlier-rounds/outputs/`.
+The reproduction script uses those archived paths without changing the selected artwork.
 
 Run the recipe with an existing Sharp module installation:
 
@@ -64,7 +69,8 @@ dependency.
 Review the portrait crop and sharing image after regeneration.
 
 The library portrait has 640, 960, and 1600 pixel variants.
-The courtyard portrait has 640 and 960 pixel variants.
+The river portrait has 640 and 960 pixel variants, preserving the complete square composition.
+The retired courtyard variants remain available but are no longer regenerated.
 Each world has 320, 640, and 1280 pixel variants, cropped to 4:3 without distortion.
 The smallest variants serve compact mobile thumbnails.
 Earlier SVGs and the original portrait remain available as prior assets, not active homepage

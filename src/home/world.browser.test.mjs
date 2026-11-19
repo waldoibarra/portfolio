@@ -304,9 +304,21 @@ test(`${browserName}: production world navigation and focus`, { timeout: 120000 
           await image.evaluate(element => element.decode());
           assert.equal(await image.evaluate(element => element.naturalWidth > 0), true);
         }
+        if (view === 'connect') {
+          const portrait = await page.locator('.connect-portrait img').evaluate(image => ({
+            source: new URL(image.currentSrc).pathname,
+            width: image.naturalWidth,
+            height: image.naturalHeight,
+            rendered: image.getBoundingClientRect().toJSON(),
+          }));
+          assert.match(portrait.source, /^\/images\/personal\/river-(640|960)\.webp$/);
+          assert.equal(portrait.width, portrait.height);
+          assert.ok(Math.abs(portrait.rendered.width - portrait.rendered.height) < 1);
+        }
         await page.evaluate(() => window.scrollTo(0, 0));
         if (process.env.WORLD_CAPTURE) {
-          await page.screenshot({ path: `${process.env.WORLD_CAPTURE}/${view}-${width}.png` });
+          await page.screenshot({ path: `${process.env.WORLD_CAPTURE}/${view}-${width}.png`,
+            fullPage: view === 'connect' });
         }
       }
       for (const note of ['workshop-policy', 'workshop-verification', 'workshop-native',

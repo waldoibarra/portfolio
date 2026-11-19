@@ -25,7 +25,8 @@ async function saveWebp(pipeline, filename) {
     height: info.height, bytes: info.size });
 }
 
-const librarySource = join(source, 'outputs/round-2/masters/04-portfolio.png');
+const archivedOutputs = join(source, 'archive/2026-11-14-earlier-rounds/outputs');
+const librarySource = join(archivedOutputs, 'round-2/masters/04-portfolio.png');
 const library = sharp(librarySource).rotate();
 const { width, height } = await library.metadata();
 // Preserve the subject and illustrated shelves while removing unused left-side space.
@@ -37,12 +38,12 @@ for (const size of [640, 960, 1600]) {
     join(personal, `library-${size}.webp`));
 }
 for (const size of [640, 960]) {
-  await saveWebp(sharp(join(source, 'outputs/round-2/masters/03-instagram.png'))
-    .rotate().resize(size, size), join(personal, `courtyard-${size}.webp`));
+  await saveWebp(sharp(join(source, 'outputs/current-review/instagram.png'))
+    .rotate().resize({ width: size }), join(personal, `river-${size}.webp`));
 }
 for (const name of ['workshop', 'observatory', 'garden', 'crossroads']) {
   for (const size of [320, 640, 1280]) {
-    await saveWebp(sharp(join(source, `outputs/implementation/masters/${name}.png`))
+    await saveWebp(sharp(join(archivedOutputs, `implementation/masters/${name}.png`))
       .rotate().resize(size, size * 3 / 4, { fit: 'cover' }),
     join(worlds, `${name}-${size}.webp`));
   }
